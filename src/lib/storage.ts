@@ -2,7 +2,9 @@
 // Uploads go through /api/storage/upload (server-side, auth-gated)
 // Signed URLs via /api/storage/signed-url (server-side, auth-gated)
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
+// Accept any image/* MIME type — covers JPEG, PNG, GIF, WebP, HEIC, HEIF, BMP, TIFF, etc.
+// Android/iPhone cameras all produce image/* types
+const ALLOWED_MIMES_PREFIX = 'image/'
 const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB (iPhone photos can be large)
 
 const MIME_TO_EXT: Record<string, string> = {
@@ -19,8 +21,8 @@ export async function uploadPhoto(
   file: File,
   projectId: string
 ): Promise<{ path: string; thumbnailPath: string }> {
-  if (!ALLOWED_MIMES.includes(file.type)) {
-    throw new Error(`File type "${file.type}" is not allowed. Accepted types: JPEG, PNG, GIF, WebP, HEIC.`)
+  if (!file.type.startsWith(ALLOWED_MIMES_PREFIX)) {
+    throw new Error(`File type "${file.type}" is not allowed. Only image files are accepted.`)
   }
   if (file.size > MAX_PHOTO_SIZE) {
     throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 20 MB limit.`)

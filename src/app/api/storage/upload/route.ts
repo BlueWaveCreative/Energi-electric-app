@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { uploadToR2 } from '@/lib/r2'
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
+// Accept any image/* type + PDF for blueprints
 const MAX_SIZE = 50 * 1024 * 1024 // 50MB (covers both photos and plans)
 
 export async function POST(request: Request) {
@@ -21,10 +21,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing file or key' }, { status: 400 })
   }
 
-  // Validate type (allow PDFs for plan uploads)
-  const allowedTypes = [...ALLOWED_MIMES, 'application/pdf']
-  if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
+  // Validate type — accept any image/* or PDF for blueprints
+  if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+    return NextResponse.json({ error: 'Invalid file type. Only images and PDFs are accepted.' }, { status: 400 })
   }
 
   if (file.size > MAX_SIZE) {

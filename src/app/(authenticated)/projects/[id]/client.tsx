@@ -77,7 +77,7 @@ export function ProjectDetailClient({
         `${phase?.name ?? 'A phase'} is complete on ${project.name}`
       )
     }
-    router.refresh()
+    window.location.reload()
   }
 
   async function handleClockIn() {
@@ -108,7 +108,7 @@ export function ProjectDetailClient({
     } else {
       sendNotification('clock_events', 'Clock Out', `Crew member clocked out at ${project.name}`)
     }
-    router.refresh()
+    window.location.reload()
   }
 
   async function handleAddNote(content: string) {
@@ -119,18 +119,18 @@ export function ProjectDetailClient({
       linked_id: project.id,
     })
     setShowNoteModal(false)
-    router.refresh()
+    window.location.reload()
   }
 
   async function handleDeletePhoto(photoId: string) {
     if (!confirm('Delete this photo?')) return
     await supabase.from('photos').delete().eq('id', photoId)
-    router.refresh()
+    window.location.reload()
   }
 
   async function handleDeleteMultiplePhotos(photoIds: string[]) {
     await supabase.from('photos').delete().in('id', photoIds)
-    router.refresh()
+    window.location.reload()
   }
 
   async function handlePhotoCapture(file: File) {
@@ -144,7 +144,7 @@ export function ProjectDetailClient({
         linked_id: project.id,
       })
       sendNotification('new_photo', 'New Photo', `New photo added to ${project.name}`)
-      router.refresh()
+      window.location.reload()
     } catch (err) {
       console.error('Photo upload failed:', err)
       alert(`Photo upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -173,7 +173,7 @@ export function ProjectDetailClient({
       notes: entry.notes || null,
     })
     setShowTimeModal(false)
-    router.refresh()
+    window.location.reload()
   }
 
   return (
@@ -226,7 +226,7 @@ export function ProjectDetailClient({
                         onChange={async () => {
                           const newStatus = task.status === 'complete' ? 'pending' : 'complete'
                           await supabase.from('tasks').update({ status: newStatus }).eq('id', task.id)
-                          router.refresh()
+                          window.location.reload()
                         }}
                         className="w-5 h-5 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
                         aria-label={`Mark "${task.title}" as ${task.status === 'complete' ? 'incomplete' : 'complete'}`}
