@@ -1,4 +1,4 @@
-import { formatDate, formatDuration } from '@/lib/utils'
+import { formatDate, formatDuration, formatTime } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import type { TimeEntry, Profile, Phase } from '@/lib/types/database'
 
@@ -48,7 +48,12 @@ export function TimeEntryList({ entries, showUser = true }: TimeEntryListProps) 
             )}
           </div>
           <div className="text-right ml-3 flex-shrink-0">
-            <p className="text-sm font-medium">{formatDuration(entry.duration_minutes ?? 0)}</p>
+            <p className="text-sm font-medium text-gray-900">{formatDuration(entry.duration_minutes ?? 0)}</p>
+            {entry.method === 'clock' && entry.end_time && (
+              <p className="text-xs text-gray-600">
+                {formatTime(new Date(entry.start_time))} - {formatTime(new Date(entry.end_time))} ET
+              </p>
+            )}
             <p className="text-xs text-gray-500">{formatDate(new Date(entry.start_time))}</p>
           </div>
         </div>

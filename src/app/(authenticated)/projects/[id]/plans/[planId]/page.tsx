@@ -34,7 +34,7 @@ export default async function PlanAnnotationPage({
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <h1 className="font-semibold text-gray-900">{plan.name}</h1>
-          <span className="text-xs text-gray-400">v{plan.version}</span>
+          <span className="text-xs text-gray-500">v{plan.version}</span>
         </div>
       </div>
 

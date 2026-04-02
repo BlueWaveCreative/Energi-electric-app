@@ -42,7 +42,7 @@ export default async function ProjectsPage() {
       <div className="p-4 md:p-6 space-y-3">
         {!projects?.length ? (
           <div className="text-center py-12">
-            <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <FolderOpen className="w-12 h-12 text-gray-500 mx-auto mb-3" />
             <p className="text-gray-500">No projects yet</p>
           </div>
         ) : (

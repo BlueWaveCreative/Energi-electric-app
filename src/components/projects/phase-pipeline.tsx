@@ -14,7 +14,7 @@ const statusIcon = {
 }
 
 const statusColor = {
-  not_started: 'text-gray-400 border-gray-300',
+  not_started: 'text-gray-500 border-gray-300',
   in_progress: 'text-[#68BD45] border-[#68BD45] bg-[#68BD45]/10',
   complete: 'text-green-600 border-green-600 bg-green-50',
 }
