@@ -40,7 +40,7 @@ export function PhotoGallery({ photos, onDelete }: PhotoGalleryProps) {
   }, [photos, supabase])
 
   if (photos.length === 0) {
-    return <p className="text-sm text-gray-400 italic">No photos yet</p>
+    return <p className="text-sm text-gray-500 italic">No photos yet</p>
   }
 
   return (

@@ -191,14 +191,14 @@ export function ProjectDetailClient({
                         className="w-5 h-5 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
                         aria-label={`Mark "${task.title}" as ${task.status === 'complete' ? 'incomplete' : 'complete'}`}
                       />
-                      <span className={task.status === 'complete' ? 'line-through text-gray-400' : 'text-gray-700'}>
+                      <span className={task.status === 'complete' ? 'line-through text-gray-500' : 'text-gray-700'}>
                         {task.title}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 italic">No tasks in this phase</p>
+                <p className="text-sm text-gray-500 italic">No tasks in this phase</p>
               )}
             </PhaseCard>
           )

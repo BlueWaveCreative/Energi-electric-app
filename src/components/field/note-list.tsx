@@ -11,7 +11,7 @@ interface NoteListProps {
 
 export function NoteList({ notes }: NoteListProps) {
   if (notes.length === 0) {
-    return <p className="text-sm text-gray-400 italic">No notes yet</p>
+    return <p className="text-sm text-gray-500 italic">No notes yet</p>
   }
 
   return (

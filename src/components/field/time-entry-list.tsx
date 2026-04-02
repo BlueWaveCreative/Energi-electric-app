@@ -14,7 +14,7 @@ interface TimeEntryListProps {
 
 export function TimeEntryList({ entries, showUser = true }: TimeEntryListProps) {
   if (entries.length === 0) {
-    return <p className="text-sm text-gray-400 italic">No time entries</p>
+    return <p className="text-sm text-gray-500 italic">No time entries</p>
   }
 
   const totalMinutes = entries.reduce((sum, e) => sum + (e.duration_minutes ?? 0), 0)
@@ -49,7 +49,7 @@ export function TimeEntryList({ entries, showUser = true }: TimeEntryListProps) 
           </div>
           <div className="text-right ml-3 flex-shrink-0">
             <p className="text-sm font-medium">{formatDuration(entry.duration_minutes ?? 0)}</p>
-            <p className="text-xs text-gray-400">{formatDate(new Date(entry.start_time))}</p>
+            <p className="text-xs text-gray-500">{formatDate(new Date(entry.start_time))}</p>
           </div>
         </div>
       ))}
