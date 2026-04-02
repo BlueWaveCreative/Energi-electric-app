@@ -112,12 +112,12 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
           if (file) handleFile(file)
         }}
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+          dragOver ? 'border-[#68BD45] bg-[#68BD45]/5' : 'border-gray-300'
         }`}
       >
         {selectedFile ? (
           <div className="flex items-center justify-center gap-3">
-            <FileImage className="w-8 h-8 text-blue-500" />
+            <FileImage className="w-8 h-8 text-[#68BD45]" />
             <div className="text-left">
               <p className="font-medium">{selectedFile.name}</p>
               <p className="text-sm text-gray-500">

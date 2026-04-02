@@ -49,7 +49,7 @@ export function ProjectCard({ project, phaseCount, completedPhases }: ProjectCar
           </div>
           <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-blue-600 h-1.5 rounded-full transition-all"
+              className="bg-[#68BD45] h-1.5 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>

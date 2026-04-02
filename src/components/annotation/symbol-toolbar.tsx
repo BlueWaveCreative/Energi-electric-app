@@ -28,7 +28,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
             className={cn(
               'px-2 py-1 text-xs rounded-md font-medium transition-colors',
               activeCategory === cat.name
-                ? 'bg-blue-100 text-blue-700'
+                ? 'bg-[#68BD45]/10 text-[#68BD45]'
                 : 'text-gray-500 hover:bg-gray-100'
             )}
           >
@@ -43,7 +43,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
           <button
             key={symbol.name}
             onClick={() => onSelectSymbol(symbol)}
-            className="flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            className="flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 hover:border-[#68BD45]/30 hover:bg-[#68BD45]/5 transition-colors"
             title={symbol.label}
             aria-label={symbol.label}
           >
@@ -77,7 +77,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
               aria-label={`Wire color: ${wc.name}`}
               className={cn(
                 'w-6 h-6 rounded-full border-2 transition-transform',
-                activeColor === wc.color ? 'border-blue-500 scale-110' : 'border-gray-300'
+                activeColor === wc.color ? 'border-[#68BD45] scale-110' : 'border-gray-300'
               )}
               style={{ backgroundColor: wc.color }}
             />

@@ -70,7 +70,7 @@ export function SettingsClient({ users }: SettingsClientProps) {
                   <button
                     onClick={() => toggleUserStatus(u.id, u.status)}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      u.status === 'active' ? 'bg-blue-600' : 'bg-gray-300'
+                      u.status === 'active' ? 'bg-[#68BD45]' : 'bg-gray-300'
                     }`}
                     role="switch"
                     aria-checked={u.status === 'active'}

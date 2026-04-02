@@ -39,7 +39,7 @@ function SignupForm() {
   return (
     <form onSubmit={handleSignup} className="space-y-4">
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg" role="alert">
+        <div className="bg-red-900/30 text-red-400 border border-red-800/50 text-sm p-3 rounded-lg" role="alert">
           {error}
         </div>
       )}

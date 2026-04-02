@@ -34,13 +34,13 @@ export function NoteForm({ onSubmit, placeholder = 'Add a note...' }: NoteFormPr
         placeholder={placeholder}
         aria-label="Note content"
         rows={2}
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm resize-none"
       />
       <button
         type="submit"
         disabled={!content.trim() || saving}
         aria-label="Add Note"
-        className="self-end p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="self-end p-2 bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Send className="w-4 h-4" />
       </button>

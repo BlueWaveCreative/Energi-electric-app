@@ -49,7 +49,7 @@ export function DrawingTools({
           className={cn(
             'p-3 rounded-md transition-colors',
             activeMode === mode
-              ? 'bg-blue-100 text-blue-700'
+              ? 'bg-[#68BD45]/10 text-[#68BD45]'
               : 'text-gray-500 hover:bg-gray-100'
           )}
         >

@@ -102,7 +102,7 @@ export function ProjectForm({ templates }: ProjectFormProps) {
           id="template"
           value={templateId}
           onChange={(e) => setTemplateId(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
         >
           <option value="">No template — start blank</option>
           {templates.map((t) => (
@@ -114,8 +114,8 @@ export function ProjectForm({ templates }: ProjectFormProps) {
       </div>
 
       {templateId && (
-        <div className="bg-blue-50 rounded-lg p-3">
-          <p className="text-sm font-medium text-blue-700 mb-2">Phases from template:</p>
+        <div className="bg-[#68BD45]/10 rounded-lg p-3">
+          <p className="text-sm font-medium text-[#68BD45] mb-2">Phases from template:</p>
           <div className="flex flex-wrap gap-1">
             {templates
               .find((t) => t.id === templateId)
@@ -123,7 +123,7 @@ export function ProjectForm({ templates }: ProjectFormProps) {
               .map((phase) => (
                 <span
                   key={phase.id}
-                  className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                  className="px-2 py-0.5 bg-[#68BD45]/20 text-[#68BD45] text-xs rounded-full"
                 >
                   {phase.name}
                 </span>
