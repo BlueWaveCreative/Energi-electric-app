@@ -3,9 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card } from '@/components/ui/card'
 import {
-  FolderOpen, Clock, Play, Square, StickyNote, Camera, Map,
+  FolderOpen, Clock, Play, StickyNote, Camera, Map,
   FileStack, Users, BarChart3, Download, Plus, CheckSquare,
-  Smartphone, Monitor, Zap
+  Smartphone, Monitor, Zap, DollarSign, CalendarDays,
+  CloudSun, Bell, ClipboardCheck
 } from 'lucide-react'
 
 function Section({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
@@ -158,10 +159,47 @@ export default async function HelpPage() {
           <p>Tap <strong>Save</strong> to save your annotations. They persist across sessions.</p>
         </Section>
 
+        {/* Expenses */}
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Expenses & Materials</h3>
+
+        <Section icon={DollarSign} title="Tracking Expenses">
+          <p>Open a project and scroll to the <strong>Expenses</strong> section to see all costs for that job.</p>
+          <Step number={1}>Tap <strong>Add Expense</strong>.</Step>
+          <Step number={2}>Enter the amount, a description (e.g., "Panel breakers from Home Depot"), and pick a category.</Step>
+          <Step number={3}>Optionally snap a photo of the receipt.</Step>
+          <Step number={4}>Set the date and tap <strong>Add Expense</strong>.</Step>
+          <p className="text-gray-500 mt-1">The running total at the top shows total spend for the project. Receipt photos are stored with thumbnails for quick review.</p>
+          <p className="text-gray-500"><strong>Categories:</strong> Materials, Rental, Permit Fee, Other.</p>
+        </Section>
+
+        {/* Inspections */}
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Permits & Inspections</h3>
+
+        <Section icon={ClipboardCheck} title="Tracking Inspections">
+          <p>Open a project and scroll to the <strong>Inspections</strong> section to see all permits and inspections.</p>
+          {isAdmin && (
+            <>
+              <Step number={1}>Tap <strong>Add Inspection</strong>.</Step>
+              <Step number={2}>Select the type (Rough-in Inspection, Final Inspection, Permit Application, or Other).</Step>
+              <Step number={3}>Set the status: <strong>Pending</strong>, <strong>Scheduled</strong>, <strong>Passed</strong>, or <strong>Failed</strong>.</Step>
+              <Step number={4}>Add the scheduled date and any notes (inspector name, corrections needed, etc.).</Step>
+            </>
+          )}
+          <p className="text-gray-500 mt-1">Status badges are color-coded: gray for pending, green for passed, red for failed. {isAdmin ? 'Update the status as inspections happen.' : 'Your admin manages inspection records.'}</p>
+        </Section>
+
         {/* Admin Only */}
         {isAdmin && (
           <>
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Admin Tools</h3>
+
+            <Section icon={CalendarDays} title="Crew Schedule">
+              <p>Go to <strong>Schedule</strong> to see and manage the two-week crew schedule.</p>
+              <p>The board shows the current week and next week, with crew members down the left and days across the top.</p>
+              <Step number={1}>Tap an empty cell to assign a crew member to a project for that day.</Step>
+              <Step number={2}>Tap a filled cell to change the assignment or clear it.</Step>
+              <p className="text-gray-500 mt-1">Projects are color-coded so you can see the distribution at a glance. Today's column is highlighted in green. Each crew member can only be assigned to one project per day.</p>
+            </Section>
 
             <Section icon={FileStack} title="Templates">
               <p>Templates define standard phases for different project types (e.g., "Residential New Build" with Rough-in, Trim-out, Final phases).</p>
@@ -181,8 +219,30 @@ export default async function HelpPage() {
               <p><strong>Invite crew members:</strong> Tap <strong>Copy Invite Link</strong> and send it to them. They'll create their own account.</p>
               <p><strong>Deactivate a user:</strong> Toggle the switch next to their name. They'll lose access immediately.</p>
             </Section>
+
+            <Section icon={Bell} title="Push Notifications">
+              <p>Get notified on your phone or desktop when crew activity happens.</p>
+              <Step number={1}>Go to <strong>Settings</strong> and scroll to <strong>Notifications</strong>.</Step>
+              <Step number={2}>Tap <strong>Enable Push Notifications</strong> and allow when your browser asks.</Step>
+              <Step number={3}>Toggle each notification type on or off:</Step>
+              <ul className="list-disc ml-5 space-y-1">
+                <li><strong>Clock In/Out</strong> — know when crew starts or stops work</li>
+                <li><strong>Phase Complete</strong> — get alerted when a project phase is marked done</li>
+                <li><strong>New Photo</strong> — see when crew uploads job site photos</li>
+              </ul>
+              <p className="text-gray-500 mt-1">Notifications are only sent to admin users. Turn off any type that's too noisy.</p>
+            </Section>
           </>
         )}
+
+        {/* Weather & Tips */}
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Dashboard Features</h3>
+
+        <Section icon={CloudSun} title="Weather Forecast">
+          <p>The dashboard shows a <strong>3-day weather forecast</strong> for the Wilmington area.</p>
+          <p>Rain and storm days are highlighted with a warning color so you can plan outdoor work accordingly.</p>
+          <p className="text-gray-500">The forecast updates every hour automatically.</p>
+        </Section>
 
         {/* Tips */}
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Tips</h3>
