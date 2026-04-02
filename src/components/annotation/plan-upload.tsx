@@ -28,9 +28,30 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
 
   async function handleUpload() {
     if (!selectedFile || !name.trim()) return
+
+    const ALLOWED_PLAN_MIMES = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf']
+    const MAX_PLAN_SIZE = 50 * 1024 * 1024
+
+    if (!ALLOWED_PLAN_MIMES.includes(selectedFile.type)) {
+      setProgress('Error: Only PDF, PNG, JPG, or WebP files are accepted.')
+      return
+    }
+    if (selectedFile.size > MAX_PLAN_SIZE) {
+      setProgress(`Error: File size exceeds the 50 MB limit.`)
+      return
+    }
+
     setUploading(true)
 
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        setProgress('Error: Session expired. Please log in again.')
+        setUploading(false)
+        return
+      }
+
       let uploadFile: File | Blob = selectedFile
       let filePath: string
 
@@ -57,13 +78,12 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
       if (uploadError) throw uploadError
 
       setProgress('Saving...')
-      const { data: { user } } = await supabase.auth.getUser()
 
       const { error: dbError } = await supabase.from('plans').insert({
         project_id: projectId,
         name: name.trim(),
         file_path: filePath,
-        uploaded_by: user!.id,
+        uploaded_by: user.id,
       })
 
       if (dbError) throw dbError
@@ -116,6 +136,7 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
         <input
           type="file"
           accept=".pdf,.png,.jpg,.jpeg,.webp"
+          aria-label="Choose a blueprint file to upload"
           onChange={(e) => {
             const file = e.target.files?.[0]
             if (file) handleFile(file)

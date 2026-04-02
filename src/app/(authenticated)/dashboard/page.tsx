@@ -148,9 +148,11 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Recent Activity</h2>
-            <Link href="/activity" className="text-sm text-blue-600 hover:underline">
-              View all
-            </Link>
+            {isAdmin && (
+              <Link href="/activity" className="text-sm text-blue-600 hover:underline">
+                View all
+              </Link>
+            )}
           </div>
           <Card>
             <ActivityFeed items={recentActivity} limit={5} />

@@ -19,8 +19,15 @@ export async function uploadPhoto(
     throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 10 MB limit.`)
   }
 
+  const MIME_TO_EXT: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+    'image/heic': 'heic',
+  }
   const timestamp = Date.now()
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const ext = MIME_TO_EXT[file.type] ?? 'jpg'
   const path = `projects/${projectId}/photos/${timestamp}.${ext}`
   const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.${ext}`
 

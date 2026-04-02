@@ -61,6 +61,12 @@ export function TemplateForm({ template }: TemplateFormProps) {
       } else {
         const { data: { user } } = await supabase.auth.getUser()
 
+        if (!user) {
+          setError('Session expired. Please log in again.')
+          setSaving(false)
+          return
+        }
+
         const { data: newTemplate, error: createError } = await supabase
           .from('project_templates')
           .insert({ name: name.trim(), description: description.trim() || null, created_by: user!.id })

@@ -31,17 +31,22 @@ export function ManualTimeForm({ projectId, onSubmit, phases }: ManualTimeFormPr
     if (h === 0 && m === 0) return
 
     setSaving(true)
-    await onSubmit({
-      date,
-      hours: h,
-      minutes: m,
-      notes: notes.trim(),
-      phaseId: phaseId || null,
-    })
-    setHours('')
-    setMinutes('')
-    setNotes('')
-    setSaving(false)
+    try {
+      await onSubmit({
+        date,
+        hours: h,
+        minutes: m,
+        notes: notes.trim(),
+        phaseId: phaseId || null,
+      })
+      setHours('')
+      setMinutes('')
+      setNotes('')
+    } catch {
+      // caller handles display
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (

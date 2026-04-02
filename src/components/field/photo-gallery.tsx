@@ -24,9 +24,13 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
     async function loadUrls() {
       const entries = await Promise.all(
         photos.map(async (photo) => {
-          const path = photo.thumbnail_path ?? photo.file_path
-          const url = await getSignedUrl(supabase, path)
-          return [photo.id, url] as const
+          try {
+            const path = photo.thumbnail_path ?? photo.file_path
+            const url = await getSignedUrl(supabase, path)
+            return [photo.id, url] as const
+          } catch {
+            return [photo.id, ''] as const
+          }
         })
       )
       setUrls(Object.fromEntries(entries))

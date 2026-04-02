@@ -16,7 +16,11 @@ export function PhotoCapture({ onCapture, disabled }: PhotoCaptureProps) {
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    await onCapture(file)
+    try {
+      await onCapture(file)
+    } catch {
+      // caller handles display
+    }
     e.target.value = ''
   }
 
@@ -28,6 +32,7 @@ export function PhotoCapture({ onCapture, disabled }: PhotoCaptureProps) {
         type="file"
         accept="image/*"
         capture="environment"
+        aria-label="Take a photo"
         onChange={handleFile}
         className="hidden"
       />
@@ -47,6 +52,7 @@ export function PhotoCapture({ onCapture, disabled }: PhotoCaptureProps) {
         ref={fileRef}
         type="file"
         accept="image/*"
+        aria-label="Upload a photo"
         onChange={handleFile}
         className="hidden"
       />

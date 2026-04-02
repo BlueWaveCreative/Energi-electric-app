@@ -27,6 +27,7 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
   const [saving, setSaving] = useState(false)
   const [undoStack, setUndoStack] = useState<string[]>([])
   const [redoStack, setRedoStack] = useState<string[]>([])
+  const bgImgRef = useRef<FabricImage | null>(null)
   const [annotationId, setAnnotationId] = useState<string | null>(
     annotations.find((a) => a.user_id === userId)?.id ?? null
   )
@@ -63,17 +64,14 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
       })
 
       canvas.backgroundImage = bgImg
+      bgImgRef.current = bgImg
       canvas.renderAll()
 
-      // Load existing annotations after background is set
+      // Load existing annotations after background is set — prefer current user's annotation
       if (annotations.length > 0) {
-        const latestAnnotation = annotations.sort(
-          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )[0]
-
-        if (latestAnnotation.canvas_data && Object.keys(latestAnnotation.canvas_data).length > 0) {
-          await canvas.loadFromJSON(latestAnnotation.canvas_data)
-          // Re-apply background after loadFromJSON (it may overwrite it)
+        const myAnnotation = annotations.find((a) => a.user_id === userId)
+        if (myAnnotation?.canvas_data && Object.keys(myAnnotation.canvas_data).length > 0) {
+          await canvas.loadFromJSON(myAnnotation.canvas_data)
           canvas.backgroundImage = bgImg
           canvas.renderAll()
         }
@@ -229,6 +227,7 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
     setUndoStack((prev) => prev.slice(0, -1))
 
     canvas.loadFromJSON(JSON.parse(previousState)).then(() => {
+      if (bgImgRef.current) canvas.backgroundImage = bgImgRef.current
       canvas.renderAll()
     })
   }
@@ -244,6 +243,7 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
     setRedoStack((prev) => prev.slice(0, -1))
 
     canvas.loadFromJSON(JSON.parse(nextState)).then(() => {
+      if (bgImgRef.current) canvas.backgroundImage = bgImgRef.current
       canvas.renderAll()
     })
   }

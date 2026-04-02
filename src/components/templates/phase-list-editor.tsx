@@ -99,6 +99,8 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
 
       <div className="flex gap-2">
         <Input
+          id="new-phase"
+          label="New phase name"
           value={newPhaseName}
           onChange={(e) => setNewPhaseName(e.target.value)}
           placeholder="Phase name (e.g., Rough-in)"

@@ -18,11 +18,13 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 space-y-3">
       {/* Category tabs */}
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1" role="tablist" aria-label="Symbol categories">
         {SYMBOL_CATEGORIES.map((cat) => (
           <button
             key={cat.name}
             onClick={() => setActiveCategory(cat.name)}
+            role="tab"
+            aria-selected={activeCategory === cat.name}
             className={cn(
               'px-2 py-1 text-xs rounded-md font-medium transition-colors',
               activeCategory === cat.name
@@ -43,6 +45,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
             onClick={() => onSelectSymbol(symbol)}
             className="flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
             title={symbol.label}
+            aria-label={symbol.label}
           >
             <svg
               viewBox={`0 0 ${symbol.width} ${symbol.height}`}
@@ -71,6 +74,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
               key={wc.color}
               onClick={() => onColorChange(wc.color)}
               title={wc.name}
+              aria-label={`Wire color: ${wc.name}`}
               className={cn(
                 'w-6 h-6 rounded-full border-2 transition-transform',
                 activeColor === wc.color ? 'border-blue-500 scale-110' : 'border-gray-300'

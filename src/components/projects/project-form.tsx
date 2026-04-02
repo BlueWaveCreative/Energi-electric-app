@@ -29,6 +29,12 @@ export function ProjectForm({ templates }: ProjectFormProps) {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
+      if (!user) {
+        setError('Session expired. Please log in again.')
+        setSaving(false)
+        return
+      }
+
       const { data: project, error: createError } = await supabase
         .from('projects')
         .insert({

@@ -175,6 +175,7 @@ export function ProjectDetailClient({
                           router.refresh()
                         }}
                         className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        aria-label={`Mark "${task.title}" as ${task.status === 'complete' ? 'incomplete' : 'complete'}`}
                       />
                       <span className={task.status === 'complete' ? 'line-through text-gray-400' : 'text-gray-700'}>
                         {task.title}
@@ -235,9 +236,16 @@ export function ProjectDetailClient({
         type="file"
         accept="image/*"
         capture="environment"
+        aria-label="Take a project photo"
         onChange={async (e) => {
           const file = e.target.files?.[0]
-          if (file) await handlePhotoCapture(file)
+          if (file) {
+            try {
+              await handlePhotoCapture(file)
+            } catch {
+              // error handled by uploadPhoto
+            }
+          }
           e.target.value = ''
         }}
         className="hidden"
