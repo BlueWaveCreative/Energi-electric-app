@@ -62,15 +62,15 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
             key={phase.id}
             className="flex items-center gap-2 bg-gray-50 rounded-lg p-2"
           >
-            <GripVertical className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0" />
             <span className="text-sm text-gray-500 w-6">{index + 1}.</span>
-            <span className="flex-1 text-sm font-medium">{phase.name}</span>
+            <span className="flex-1 text-sm font-medium text-gray-900">{phase.name}</span>
             <div className="flex gap-1">
               <button
                 type="button"
                 onClick={() => movePhase(index, 'up')}
                 disabled={index === 0}
-                className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-30"
                 aria-label="Move up"
               >
                 &uarr;
@@ -79,7 +79,7 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
                 type="button"
                 onClick={() => movePhase(index, 'down')}
                 disabled={index === phases.length - 1}
-                className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-30"
                 aria-label="Move down"
               >
                 &darr;

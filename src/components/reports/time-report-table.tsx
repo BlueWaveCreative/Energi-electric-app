@@ -33,23 +33,23 @@ export function TimeReportTable({ entries }: TimeReportTableProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 text-left">
-              <th className="py-3 px-3 font-medium text-gray-500">Date</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Worker</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Project</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Phase</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Hours</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Method</th>
-              <th className="py-3 px-3 font-medium text-gray-500">Notes</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Date</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Worker</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Project</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Phase</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Hours</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Method</th>
+              <th className="py-3 px-3 font-medium text-gray-600">Notes</th>
             </tr>
           </thead>
           <tbody>
             {entries.map((entry) => (
               <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="py-2 px-3">{formatDate(new Date(entry.start_time))}</td>
-                <td className="py-2 px-3 font-medium">{entry.worker_name}</td>
-                <td className="py-2 px-3">{entry.project_name}</td>
+                <td className="py-2 px-3 text-gray-700">{formatDate(new Date(entry.start_time))}</td>
+                <td className="py-2 px-3 font-medium text-gray-900">{entry.worker_name}</td>
+                <td className="py-2 px-3 text-gray-700">{entry.project_name}</td>
                 <td className="py-2 px-3 text-gray-500">{entry.phase_name ?? '-'}</td>
-                <td className="py-2 px-3 font-mono">{formatDuration(entry.duration_minutes)}</td>
+                <td className="py-2 px-3 font-mono text-gray-900">{formatDuration(entry.duration_minutes)}</td>
                 <td className="py-2 px-3">
                   <Badge variant={entry.method === 'clock' ? 'info' : 'default'}>
                     {entry.method}
@@ -70,8 +70,8 @@ export function TimeReportTable({ entries }: TimeReportTableProps) {
         {entries.map((entry) => (
           <div key={entry.id} className="bg-white border border-gray-200 rounded-lg p-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-sm">{entry.worker_name}</span>
-              <span className="font-mono text-sm font-bold">{formatDuration(entry.duration_minutes)}</span>
+              <span className="font-medium text-sm text-gray-900">{entry.worker_name}</span>
+              <span className="font-mono text-sm font-bold text-gray-900">{formatDuration(entry.duration_minutes)}</span>
             </div>
             <div className="text-xs text-gray-500 space-y-0.5">
               <p>{entry.project_name}{entry.phase_name ? ` — ${entry.phase_name}` : ''}</p>

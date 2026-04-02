@@ -320,6 +320,7 @@ export function ProjectDetailClient({
         onClockOut={handleClockOut}
         onAddNote={() => setShowNoteModal(true)}
         onTakePhoto={() => cameraRef.current?.click()}
+        onLogTime={() => setShowTimeModal(true)}
         onViewPlans={() => router.push(`/projects/${project.id}/plans`)}
         hasPlans={hasPlans}
       />

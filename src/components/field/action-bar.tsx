@@ -1,6 +1,6 @@
 'use client'
 
-import { Play, Square, StickyNote, Camera, Map } from 'lucide-react'
+import { Play, Square, StickyNote, Camera, Map, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatElapsed } from '@/hooks/use-timer'
 
@@ -12,6 +12,7 @@ interface ActionBarProps {
   onClockOut: () => void
   onAddNote: () => void
   onTakePhoto: () => void
+  onLogTime: () => void
   onViewPlans: () => void
   hasPlans: boolean
 }
@@ -24,6 +25,7 @@ export function ActionBar({
   onClockOut,
   onAddNote,
   onTakePhoto,
+  onLogTime,
   onViewPlans,
   hasPlans,
 }: ActionBarProps) {
@@ -51,7 +53,7 @@ export function ActionBar({
             isTimerRunning && isThisProject
               ? 'text-red-600'
               : isTimerRunning
-                ? 'text-gray-300'
+                ? 'text-gray-500'
                 : 'text-green-600'
           )}
         >
@@ -79,6 +81,15 @@ export function ActionBar({
         >
           <Camera className="w-6 h-6" />
           Photo
+        </button>
+
+        {/* Log Time */}
+        <button
+          onClick={onLogTime}
+          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#68BD45]"
+        >
+          <Clock className="w-6 h-6" />
+          Log Time
         </button>
 
         {/* View Plans */}

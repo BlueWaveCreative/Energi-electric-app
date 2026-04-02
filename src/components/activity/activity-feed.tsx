@@ -51,7 +51,7 @@ export function ActivityFeed({ items, limit }: ActivityFeedProps) {
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-xs text-gray-500">{item.project_name}</span>
-                <span className="text-xs text-gray-400">-</span>
+                <span className="text-xs text-gray-500">-</span>
                 <span className="text-xs text-gray-500">{formatDate(new Date(item.timestamp))}</span>
               </div>
             </div>

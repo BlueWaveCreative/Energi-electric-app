@@ -29,7 +29,7 @@ export function TimeReportSummary({
           <div className="flex items-center gap-3">
             <stat.icon className={`w-8 h-8 ${stat.color}`} />
             <div>
-              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               <p className="text-xs text-gray-500">{stat.label}</p>
             </div>
           </div>

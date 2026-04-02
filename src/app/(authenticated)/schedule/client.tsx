@@ -217,7 +217,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: Sc
             'w-full rounded-md px-1.5 py-1 text-xs font-medium transition-colors min-h-[32px] focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50',
             entry
               ? 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-              : 'hover:bg-gray-50 text-gray-300 hover:text-gray-400 group'
+              : 'hover:bg-gray-50 text-gray-500 hover:text-gray-600 group'
           )}
           aria-label={
             entry
@@ -341,7 +341,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: Sc
                   className={cn(
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
                     date === today && 'bg-[#68BD45]/5',
-                    isWeekend(date) ? 'text-gray-400' : 'text-gray-600'
+                    isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >
                   {formatDayHeader(date)}
@@ -354,7 +354,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: Sc
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
                     i === 0 && 'border-l border-gray-200',
                     date === today && 'bg-[#68BD45]/5',
-                    isWeekend(date) ? 'text-gray-400' : 'text-gray-600'
+                    isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >
                   {formatDayHeader(date)}

@@ -41,7 +41,7 @@ export default async function TemplatesPage() {
       <div className="p-4 md:p-6 space-y-3">
         {!templates?.length ? (
           <div className="text-center py-12">
-            <FileStack className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <FileStack className="w-12 h-12 text-gray-500 mx-auto mb-3" />
             <p className="text-gray-500">No templates yet</p>
             <p className="text-sm text-gray-500 mt-1">
               Create templates to standardize your project phases

@@ -62,7 +62,7 @@ export default async function PlansPage({
         <div className="space-y-3">
           {!plans?.length ? (
             <div className="text-center py-8">
-              <FileImage className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <FileImage className="w-12 h-12 text-gray-500 mx-auto mb-3" />
               <p className="text-gray-500">No plans uploaded yet</p>
             </div>
           ) : (
