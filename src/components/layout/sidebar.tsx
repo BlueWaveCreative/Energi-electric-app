@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock } from 'lucide-react'
+import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
@@ -13,6 +13,8 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, adminOnly: false },
   { href: '/projects', label: 'Projects', icon: FolderOpen, adminOnly: false },
   { href: '/my-time', label: 'My Time', icon: Clock, adminOnly: false },
+  { href: '/reports', label: 'Reports', icon: BarChart3, adminOnly: true },
+  { href: '/activity', label: 'Activity', icon: Activity, adminOnly: true },
   { href: '/templates', label: 'Templates', icon: FileStack, adminOnly: true },
   { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
 ]

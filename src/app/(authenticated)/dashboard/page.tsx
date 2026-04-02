@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Plus, FolderOpen, Clock } from 'lucide-react'
 import { formatDuration } from '@/lib/utils'
+import { ActivityFeed, type ActivityItem } from '@/components/activity/activity-feed'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -42,6 +43,37 @@ export default async function DashboardPage() {
     (sum, entry) => sum + (entry.duration_minutes ?? 0),
     0
   ) ?? 0
+
+  const { data: recentNotes } = await supabase
+    .from('notes')
+    .select('id, created_at, content, profiles(name)')
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  const { data: recentTimeEntries } = await supabase
+    .from('time_entries')
+    .select('id, start_time, duration_minutes, method, profiles(name), projects(name)')
+    .order('start_time', { ascending: false })
+    .limit(5)
+
+  const recentActivity: ActivityItem[] = [
+    ...(recentNotes ?? []).map((n) => ({
+      id: `note-${n.id}`,
+      type: 'note' as const,
+      user_name: (n.profiles as any)?.name ?? 'Unknown',
+      project_name: '',
+      description: `added a note: "${(n.content as string).slice(0, 40)}..."`,
+      timestamp: n.created_at,
+    })),
+    ...(recentTimeEntries ?? []).map((e) => ({
+      id: `time-${e.id}`,
+      type: 'time_entry' as const,
+      user_name: (e.profiles as any)?.name ?? 'Unknown',
+      project_name: (e.projects as any)?.name ?? '',
+      description: `logged ${formatDuration(e.duration_minutes ?? 0)}`,
+      timestamp: e.start_time,
+    })),
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 
   return (
     <div>
@@ -111,6 +143,18 @@ export default async function DashboardPage() {
               })}
             </div>
           )}
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Recent Activity</h2>
+            <Link href="/activity" className="text-sm text-blue-600 hover:underline">
+              View all
+            </Link>
+          </div>
+          <Card>
+            <ActivityFeed items={recentActivity} limit={5} />
+          </Card>
         </div>
       </div>
     </div>
