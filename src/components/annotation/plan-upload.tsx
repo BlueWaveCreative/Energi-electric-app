@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { isPdfFile, pdfToImages, dataUrlToBlob } from '@/lib/pdf-to-image'
+import { uploadPlanFile } from '@/lib/storage'
 
 interface PlanUploadProps {
   projectId: string
@@ -74,13 +75,7 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
       }
 
       setProgress('Uploading...')
-      const { error: uploadError } = await supabase.storage
-        .from('project-files')
-        .upload(filePath, uploadFile, {
-          contentType: uploadFile instanceof File ? uploadFile.type : 'image/png',
-        })
-
-      if (uploadError) throw uploadError
+      await uploadPlanFile(uploadFile, filePath)
 
       setProgress('Saving...')
 

@@ -1,14 +1,20 @@
-// Photo storage helpers
-// Currently uses Supabase Storage. Will migrate to Cloudflare R2
-// when credentials are available — same interface, just swap the upload target.
-
-import type { SupabaseClient } from '@supabase/supabase-js'
+// Photo & plan storage via Cloudflare R2
+// Uploads go through /api/storage/upload (server-side, auth-gated)
+// Signed URLs via /api/storage/signed-url (server-side, auth-gated)
 
 const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic']
 const MAX_PHOTO_SIZE = 10 * 1024 * 1024 // 10MB
 
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/heic': 'heic',
+}
+
 export async function uploadPhoto(
-  supabase: SupabaseClient,
+  _supabase: unknown, // kept for API compatibility — not used
   file: File,
   projectId: string
 ): Promise<{ path: string; thumbnailPath: string }> {
@@ -19,46 +25,54 @@ export async function uploadPhoto(
     throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 10 MB limit.`)
   }
 
-  const MIME_TO_EXT: Record<string, string> = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/gif': 'gif',
-    'image/webp': 'webp',
-    'image/heic': 'heic',
-  }
   const timestamp = Date.now()
   const ext = MIME_TO_EXT[file.type] ?? 'jpg'
   const path = `projects/${projectId}/photos/${timestamp}.${ext}`
   const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.${ext}`
 
-  // Upload original
-  const { error: uploadError } = await supabase.storage
-    .from('project-files')
-    .upload(path, file, { contentType: file.type })
+  // Upload original to R2
+  await uploadToR2(path, file)
 
-  if (uploadError) throw uploadError
-
-  // Create thumbnail via canvas
+  // Create and upload thumbnail
   const thumbnailBlob = await createThumbnail(file, 300)
-  await supabase.storage
-    .from('project-files')
-    .upload(thumbnailPath, thumbnailBlob, { contentType: file.type })
+  await uploadToR2(thumbnailPath, thumbnailBlob)
 
   return { path, thumbnailPath }
 }
 
-export function getSignedUrl(
-  supabase: SupabaseClient,
-  path: string,
-  expiresIn = 3600
+export async function uploadPlanFile(
+  file: File | Blob,
+  key: string
+): Promise<void> {
+  await uploadToR2(key, file)
+}
+
+async function uploadToR2(key: string, file: File | Blob): Promise<void> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('key', key)
+
+  const res = await fetch('/api/storage/upload', {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: 'Upload failed' }))
+    throw new Error(data.error ?? 'Upload failed')
+  }
+}
+
+export async function getSignedUrl(
+  _supabase: unknown, // kept for API compatibility — not used
+  path: string
 ): Promise<string> {
-  return supabase.storage
-    .from('project-files')
-    .createSignedUrl(path, expiresIn)
-    .then(({ data, error }) => {
-      if (error) throw error
-      return data.signedUrl
-    })
+  const res = await fetch(`/api/storage/signed-url?key=${encodeURIComponent(path)}`)
+  if (!res.ok) {
+    throw new Error('Failed to get signed URL')
+  }
+  const data = await res.json()
+  return data.url
 }
 
 async function createThumbnail(file: File, maxSize: number): Promise<Blob> {
