@@ -1,5 +1,9 @@
 function escapeCSVValue(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+  // Neutralize formula injection (=, +, -, @, tab, carriage return)
+  if (/^[=+\-@\t\r]/.test(value)) {
+    value = `'${value}`
+  }
+  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes("'")) {
     return `"${value.replace(/"/g, '""')}"`
   }
   return value

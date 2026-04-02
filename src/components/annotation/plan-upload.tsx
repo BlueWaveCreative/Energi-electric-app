@@ -64,7 +64,12 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
         uploadFile = dataUrlToBlob(images[0])
         filePath = `projects/${projectId}/plans/${Date.now()}.png`
       } else {
-        const ext = selectedFile.name.split('.').pop() ?? 'png'
+        const PLAN_MIME_TO_EXT: Record<string, string> = {
+          'image/png': 'png',
+          'image/jpeg': 'jpg',
+          'image/webp': 'webp',
+        }
+        const ext = PLAN_MIME_TO_EXT[selectedFile.type] ?? 'png'
         filePath = `projects/${projectId}/plans/${Date.now()}.${ext}`
       }
 
