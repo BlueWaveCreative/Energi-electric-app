@@ -25,6 +25,6 @@ describe('Sidebar', () => {
   it('highlights active link', () => {
     render(<Sidebar isAdmin={true} />)
     const dashboardLink = screen.getByText('Dashboard').closest('a')
-    expect(dashboardLink?.className).toContain('bg-blue')
+    expect(dashboardLink?.className).toContain('68BD45')
   })
 })

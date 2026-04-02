@@ -4,8 +4,8 @@
   "description": "Project management for Blue Shores Electric",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#2563eb",
+  "background_color": "#32373C",
+  "theme_color": "#68BD45",
   "orientation": "any",
   "icons": [
     {

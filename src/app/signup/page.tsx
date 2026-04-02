@@ -45,7 +45,7 @@ function SignupForm() {
       )}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
           Full Name
         </label>
         <input
@@ -54,13 +54,13 @@ function SignupForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
           placeholder="John Smith"
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
           Email
         </label>
         <input
@@ -69,13 +69,13 @@ function SignupForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
           Password
         </label>
         <input
@@ -85,7 +85,7 @@ function SignupForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
           placeholder="Min 8 characters"
         />
       </div>
@@ -93,7 +93,7 @@ function SignupForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2 px-4 bg-[#68BD45] text-white font-medium rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Creating account...' : 'Create Account'}
       </button>
@@ -103,10 +103,12 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#32373C] px-4">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-2">Join Blue Shores Electric</h1>
-        <p className="text-gray-500 text-center mb-8">Create your account</p>
+        <div className="flex justify-center mb-6">
+          <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-12" />
+        </div>
+        <p className="text-gray-400 text-center mb-8">Create your account</p>
         <SignupForm />
       </div>
     </div>

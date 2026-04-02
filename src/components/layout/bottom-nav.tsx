@@ -35,11 +35,11 @@ export function BottomNav({ isAdmin }: BottomNavProps) {
               className={cn(
                 'flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors min-w-[60px]',
                 isActive
-                  ? 'text-blue-600'
+                  ? 'text-[#68BD45]'
                   : 'text-gray-400 hover:text-gray-600'
               )}
             >
-              <item.icon className={cn('w-6 h-6', isActive && 'text-blue-600')} />
+              <item.icon className={cn('w-6 h-6', isActive && 'text-[#68BD45]')} />
               {item.label}
             </Link>
           )
