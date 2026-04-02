@@ -63,18 +63,32 @@ export async function uploadPlanFile(
 }
 
 async function uploadToR2(key: string, file: File | Blob): Promise<void> {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('key', key)
+  const contentType = file instanceof File ? file.type : 'image/jpeg'
 
-  const res = await fetch('/api/storage/upload', {
+  // Step 1: Get a presigned upload URL from our API
+  const presignRes = await fetch('/api/storage/presign', {
     method: 'POST',
-    body: formData,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, contentType }),
   })
 
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({ error: 'Upload failed' }))
-    throw new Error(data.error ?? 'Upload failed')
+  if (!presignRes.ok) {
+    const data = await presignRes.json().catch(() => ({ error: 'Failed to get upload URL' }))
+    throw new Error(data.error ?? 'Failed to get upload URL')
+  }
+
+  const { uploadUrl } = await presignRes.json()
+
+  // Step 2: Upload directly to R2 using the presigned URL
+  // This bypasses Vercel's body size limit entirely
+  const uploadRes = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body: file,
+  })
+
+  if (!uploadRes.ok) {
+    throw new Error(`Upload failed: ${uploadRes.status} ${uploadRes.statusText}`)
   }
 }
 

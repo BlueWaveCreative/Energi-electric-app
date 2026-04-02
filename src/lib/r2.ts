@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
-import { getSignedUrl as getPresignedUrl } from '@aws-sdk/s3-request-presigner'
+import { getSignedUrl as s3GetSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID!
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID!
@@ -38,5 +38,18 @@ export async function getR2SignedUrl(
     Bucket: R2_BUCKET,
     Key: key,
   })
-  return getPresignedUrl(r2Client, command, { expiresIn })
+  return s3GetSignedUrl(r2Client, command, { expiresIn })
+}
+
+export async function getR2UploadUrl(
+  key: string,
+  contentType: string,
+  expiresIn = 600
+): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    ContentType: contentType,
+  })
+  return s3GetSignedUrl(r2Client, command, { expiresIn })
 }
