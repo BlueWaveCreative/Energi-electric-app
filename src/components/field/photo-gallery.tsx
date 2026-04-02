@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X } from 'lucide-react'
+import { X, Trash2 } from 'lucide-react'
 import { useSupabase } from '@/hooks/use-supabase'
 import { getSignedUrl } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
@@ -13,9 +13,10 @@ interface PhotoWithUser extends Photo {
 
 interface PhotoGalleryProps {
   photos: PhotoWithUser[]
+  onDelete?: (photoId: string) => void
 }
 
-export function PhotoGallery({ photos }: PhotoGalleryProps) {
+export function PhotoGallery({ photos, onDelete }: PhotoGalleryProps) {
   const supabase = useSupabase()
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithUser | null>(null)
   const [urls, setUrls] = useState<Record<string, string>>({})
@@ -65,7 +66,14 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
       </div>
 
       {selectedPhoto && (
-        <LightBox photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
+        <LightBox
+          photo={selectedPhoto}
+          onClose={() => setSelectedPhoto(null)}
+          onDelete={onDelete ? () => {
+            onDelete(selectedPhoto.id)
+            setSelectedPhoto(null)
+          } : undefined}
+        />
       )}
     </>
   )
@@ -74,9 +82,11 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
 function LightBox({
   photo,
   onClose,
+  onDelete,
 }: {
   photo: PhotoWithUser
   onClose: () => void
+  onDelete?: () => void
 }) {
   const supabase = useSupabase()
   const [fullUrl, setFullUrl] = useState<string>('')
@@ -124,6 +134,15 @@ function LightBox({
           <p className="text-gray-400 text-xs mt-1">
             {photo.profiles?.name} — {formatDate(new Date(photo.created_at))}
           </p>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="mt-3 inline-flex items-center gap-1 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors"
+              aria-label="Delete photo"
+            >
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -60,17 +60,25 @@ export function ProjectDetailClient({
 
   async function handleClockOut() {
     const result = stopTimer()
-    if (!result || result.durationMinutes < 1) return
+    if (!result) return
 
-    await supabase.from('time_entries').insert({
+    // Ensure at least 1 minute is logged
+    const duration = Math.max(1, result.durationMinutes)
+
+    const { error } = await supabase.from('time_entries').insert({
       user_id: userId,
       project_id: result.projectId,
       phase_id: result.phaseId,
       start_time: result.startTime,
       end_time: result.endTime,
-      duration_minutes: result.durationMinutes,
+      duration_minutes: duration,
       method: 'clock',
     })
+
+    if (error) {
+      console.error('Failed to save time entry:', error)
+      alert('Failed to save time entry. Please try again.')
+    }
     router.refresh()
   }
 
@@ -82,6 +90,12 @@ export function ProjectDetailClient({
       linked_id: project.id,
     })
     setShowNoteModal(false)
+    router.refresh()
+  }
+
+  async function handleDeletePhoto(photoId: string) {
+    if (!confirm('Delete this photo?')) return
+    await supabase.from('photos').delete().eq('id', photoId)
     router.refresh()
   }
 
@@ -203,7 +217,7 @@ export function ProjectDetailClient({
       {/* Photos section */}
       <div>
         <h2 className="text-lg font-semibold mb-3">Photos</h2>
-        <PhotoGallery photos={photos} />
+        <PhotoGallery photos={photos} onDelete={isAdmin ? handleDeletePhoto : undefined} />
       </div>
 
       {/* Time entries section */}
