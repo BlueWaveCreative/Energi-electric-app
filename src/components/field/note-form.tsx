@@ -1,0 +1,43 @@
+'use client'
+
+import { useState } from 'react'
+import { Send } from 'lucide-react'
+
+interface NoteFormProps {
+  onSubmit: (content: string) => Promise<void>
+  placeholder?: string
+}
+
+export function NoteForm({ onSubmit, placeholder = 'Add a note...' }: NoteFormProps) {
+  const [content, setContent] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!content.trim() || saving) return
+    setSaving(true)
+    await onSubmit(content.trim())
+    setContent('')
+    setSaving(false)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder={placeholder}
+        rows={2}
+        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+      />
+      <button
+        type="submit"
+        disabled={!content.trim() || saving}
+        aria-label="Add Note"
+        className="self-end p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <Send className="w-4 h-4" />
+      </button>
+    </form>
+  )
+}

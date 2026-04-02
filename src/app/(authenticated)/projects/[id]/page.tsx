@@ -28,6 +28,32 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound()
 
+  // Fetch notes, photos, time entries, and plans count in parallel
+  const [notesResult, photosResult, timeResult, plansResult] = await Promise.all([
+    supabase
+      .from('notes')
+      .select('*, profiles(name)')
+      .eq('linked_type', 'project')
+      .eq('linked_id', id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('photos')
+      .select('*, profiles(name)')
+      .eq('linked_type', 'project')
+      .eq('linked_id', id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('time_entries')
+      .select('*, profiles(name), phases(name)')
+      .eq('project_id', id)
+      .order('start_time', { ascending: false }),
+    supabase
+      .from('plans')
+      .select('id')
+      .eq('project_id', id)
+      .limit(1),
+  ])
+
   const isAdmin = profile?.role === 'admin'
 
   return (
@@ -44,7 +70,15 @@ export default async function ProjectDetailPage({
         }
       />
       <div className="p-4 md:p-6">
-        <ProjectDetailClient project={project} isAdmin={isAdmin} />
+        <ProjectDetailClient
+          project={project}
+          notes={notesResult.data ?? []}
+          photos={photosResult.data ?? []}
+          timeEntries={timeResult.data ?? []}
+          isAdmin={isAdmin}
+          userId={user.id}
+          hasPlans={(plansResult.data?.length ?? 0) > 0}
+        />
       </div>
     </div>
   )
