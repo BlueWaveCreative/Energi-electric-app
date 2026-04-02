@@ -41,7 +41,7 @@ export default async function MyTimePage() {
         </Card>
 
         <div>
-          <h2 className="text-lg font-semibold mb-3">Recent Entries</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Recent Entries</h2>
           <TimeEntryList entries={entries ?? []} showUser={false} />
         </div>
       </div>

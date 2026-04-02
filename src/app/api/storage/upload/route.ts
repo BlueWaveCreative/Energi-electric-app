@@ -5,6 +5,8 @@ import { uploadToR2 } from '@/lib/r2'
 // Accept any image/* type + PDF for blueprints
 const MAX_SIZE = 50 * 1024 * 1024 // 50MB (covers both photos and plans)
 
+export const maxDuration = 30 // Allow up to 30s for large uploads
+
 export async function POST(request: Request) {
   // Auth check
   const supabase = await createClient()
@@ -30,8 +32,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'File too large' }, { status: 400 })
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer())
-  await uploadToR2(key, buffer, file.type)
-
-  return NextResponse.json({ key })
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    await uploadToR2(key, buffer, file.type)
+    return NextResponse.json({ key })
+  } catch (err) {
+    console.error('R2 upload failed:', err)
+    const message = err instanceof Error ? err.message : 'Upload to storage failed'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }

@@ -106,7 +106,7 @@ export function NotificationSettings({ preferences, userId }: NotificationSettin
     <Card>
       <div className="flex items-center gap-2 mb-4">
         <Bell className="w-5 h-5 text-[#68BD45]" />
-        <h2 className="font-semibold">Notifications</h2>
+        <h2 className="font-semibold text-gray-900">Notifications</h2>
       </div>
 
       {!hasSubscription && (

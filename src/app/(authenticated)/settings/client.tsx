@@ -43,7 +43,7 @@ export function SettingsClient({ users, notificationPreferences, userId }: Setti
       <NotificationSettings preferences={notificationPreferences} userId={userId} />
 
       <Card>
-        <h2 className="font-semibold mb-3">Invite Crew Members</h2>
+        <h2 className="font-semibold text-gray-900 mb-3">Invite Crew Members</h2>
         <p className="text-sm text-gray-500 mb-3">
           Share this link with crew members to let them create an account.
         </p>
@@ -59,7 +59,7 @@ export function SettingsClient({ users, notificationPreferences, userId }: Setti
       </Card>
 
       <div>
-        <h2 className="font-semibold mb-3">Team ({users.length})</h2>
+        <h2 className="font-semibold text-gray-900 mb-3">Team ({users.length})</h2>
         <div className="space-y-2">
           {users.map((u) => (
             <Card key={u.id}>
