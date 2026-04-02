@@ -10,7 +10,12 @@ export async function createClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll()
+          return cookieStore.getAll().map(cookie => ({
+            ...cookie,
+            // Sanitize cookie values — remove invalid HTTP header characters
+            // Mobile browsers can produce chunked cookies with newlines
+            value: cookie.value.replace(/[\r\n]/g, ''),
+          }))
         },
         setAll(cookiesToSet) {
           try {
