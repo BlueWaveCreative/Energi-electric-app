@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity } from 'lucide-react'
+import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity, HelpCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/activity', label: 'Activity', icon: Activity, adminOnly: true },
   { href: '/templates', label: 'Templates', icon: FileStack, adminOnly: true },
   { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
+  { href: '/help', label: 'Help', icon: HelpCircle, adminOnly: false },
 ]
 
 export function Sidebar({ isAdmin }: SidebarProps) {
