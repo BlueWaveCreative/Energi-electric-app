@@ -1,11 +1,20 @@
-import webpush from 'web-push'
 import { type SupabaseClient } from '@supabase/supabase-js'
 
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_EMAIL}`,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+let vapidConfigured = false
+
+function getWebPush() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const webpush = require('web-push')
+  if (!vapidConfigured && process.env.VAPID_EMAIL && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+      `mailto:${process.env.VAPID_EMAIL}`,
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+      process.env.VAPID_PRIVATE_KEY!
+    )
+    vapidConfigured = true
+  }
+  return webpush
+}
 
 type NotificationType = 'clock_events' | 'phase_complete' | 'new_photo'
 
@@ -36,12 +45,13 @@ export async function sendPushToAdmins(
 
   if (!prefs?.length) return
 
+  const webpush = getWebPush()
   const payload = JSON.stringify({ title, body })
 
   const results = await Promise.allSettled(
     prefs.map((pref) =>
       webpush.sendNotification(
-        pref.push_subscription as unknown as webpush.PushSubscription,
+        pref.push_subscription as any,
         payload
       )
     )
