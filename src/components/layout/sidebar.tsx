@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity, CalendarDays, HelpCircle } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity, CalendarDays, HelpCircle, LogOut } from 'lucide-react'
+import { useSupabase } from '@/hooks/use-supabase'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
@@ -23,10 +24,18 @@ const navItems = [
 
 export function Sidebar({ isAdmin }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = useSupabase()
 
   const visibleItems = navItems.filter(
     (item) => !item.adminOnly || isAdmin
   )
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   return (
     <aside className="hidden md:flex md:flex-col md:w-64 bg-[#32373C] h-screen sticky top-0">
@@ -54,6 +63,16 @@ export function Sidebar({ isAdmin }: SidebarProps) {
           )
         })}
       </nav>
+
+      <div className="p-3 border-t border-white/10">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-colors w-full"
+        >
+          <LogOut className="w-5 h-5" />
+          Log Out
+        </button>
+      </div>
     </aside>
   )
 }

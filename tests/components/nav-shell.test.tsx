@@ -4,6 +4,11 @@ import { Sidebar } from '@/components/layout/sidebar'
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/dashboard',
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}))
+
+vi.mock('@/hooks/use-supabase', () => ({
+  useSupabase: () => ({ auth: { signOut: vi.fn() } }),
 }))
 
 describe('Sidebar', () => {
