@@ -7,13 +7,16 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Copy } from 'lucide-react'
-import type { Profile, UserStatus } from '@/lib/types/database'
+import { NotificationSettings } from '@/components/settings/notification-settings'
+import type { Profile, UserStatus, NotificationPreference } from '@/lib/types/database'
 
 interface SettingsClientProps {
   users: Profile[]
+  notificationPreferences: NotificationPreference | null
+  userId: string
 }
 
-export function SettingsClient({ users }: SettingsClientProps) {
+export function SettingsClient({ users, notificationPreferences, userId }: SettingsClientProps) {
   const supabase = useSupabase()
   const router = useRouter()
   const [copied, setCopied] = useState(false)
@@ -37,6 +40,8 @@ export function SettingsClient({ users }: SettingsClientProps) {
 
   return (
     <div className="space-y-6 max-w-xl">
+      <NotificationSettings preferences={notificationPreferences} userId={userId} />
+
       <Card>
         <h2 className="font-semibold mb-3">Invite Crew Members</h2>
         <p className="text-sm text-gray-500 mb-3">

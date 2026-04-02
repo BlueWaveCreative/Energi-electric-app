@@ -14,10 +14,14 @@ import { PhotoCapture } from '@/components/field/photo-capture'
 import { PhotoGallery } from '@/components/field/photo-gallery'
 import { TimeEntryList } from '@/components/field/time-entry-list'
 import { ManualTimeForm } from '@/components/field/manual-time-form'
+import { ExpenseForm } from '@/components/field/expense-form'
+import { ExpenseList } from '@/components/field/expense-list'
+import { InspectionForm } from '@/components/field/inspection-form'
+import { InspectionList } from '@/components/field/inspection-list'
 import { ActionBar } from '@/components/field/action-bar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import type { Project, Phase, Task, Note, Photo, TimeEntry, Profile, PhaseStatus } from '@/lib/types/database'
+import type { Project, Phase, Task, Note, Photo, TimeEntry, Expense, Inspection, Profile, PhaseStatus } from '@/lib/types/database'
 
 interface ProjectDetailClientProps {
   project: Project & {
@@ -26,6 +30,8 @@ interface ProjectDetailClientProps {
   notes: (Note & { profiles: Pick<Profile, 'name'> })[]
   photos: (Photo & { profiles: Pick<Profile, 'name'> })[]
   timeEntries: (TimeEntry & { profiles: Pick<Profile, 'name'>; phases?: Pick<Phase, 'name'> | null })[]
+  expenses: (Expense & { profiles: Pick<Profile, 'name'> })[]
+  inspections: (Inspection & { profiles: Pick<Profile, 'name'> })[]
   isAdmin: boolean
   userId: string
   hasPlans: boolean
@@ -36,6 +42,8 @@ export function ProjectDetailClient({
   notes,
   photos,
   timeEntries,
+  expenses,
+  inspections,
   isAdmin,
   userId,
   hasPlans,
@@ -45,17 +53,36 @@ export function ProjectDetailClient({
   const { isRunning, activeProjectId, elapsed, startTimer, stopTimer } = useTimer()
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [showTimeModal, setShowTimeModal] = useState(false)
+  const [showExpenseModal, setShowExpenseModal] = useState(false)
+  const [showInspectionModal, setShowInspectionModal] = useState(false)
   const cameraRef = useRef<HTMLInputElement>(null)
 
   const sortedPhases = [...project.phases].sort((a, b) => a.sort_order - b.sort_order)
 
+  function sendNotification(type: string, title: string, body: string) {
+    fetch('/api/notifications/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, title, body }),
+    }).catch(() => {})
+  }
+
   async function handlePhaseStatusChange(phaseId: string, status: PhaseStatus) {
     await supabase.from('phases').update({ status }).eq('id', phaseId)
+    if (status === 'complete') {
+      const phase = project.phases.find((p) => p.id === phaseId)
+      sendNotification(
+        'phase_complete',
+        'Phase Complete',
+        `${phase?.name ?? 'A phase'} is complete on ${project.name}`
+      )
+    }
     router.refresh()
   }
 
   async function handleClockIn() {
     startTimer(project.id, null)
+    sendNotification('clock_events', 'Clock In', `Crew member clocked in at ${project.name}`)
   }
 
   async function handleClockOut() {
@@ -78,6 +105,8 @@ export function ProjectDetailClient({
     if (error) {
       console.error('Failed to save time entry:', error)
       alert('Failed to save time entry. Please try again.')
+    } else {
+      sendNotification('clock_events', 'Clock Out', `Crew member clocked out at ${project.name}`)
     }
     router.refresh()
   }
@@ -113,6 +142,7 @@ export function ProjectDetailClient({
       linked_type: 'project',
       linked_id: project.id,
     })
+    sendNotification('new_photo', 'New Photo', `New photo added to ${project.name}`)
     router.refresh()
   }
 
@@ -229,6 +259,42 @@ export function ProjectDetailClient({
         />
       </div>
 
+      {/* Expenses section */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Expenses</h2>
+          <Button variant="ghost" size="sm" onClick={() => setShowExpenseModal(true)} className="hidden md:inline-flex">
+            + Add Expense
+          </Button>
+        </div>
+        <ExpenseList expenses={expenses} />
+        <div className="mt-3 md:hidden">
+          <Button variant="secondary" size="sm" onClick={() => setShowExpenseModal(true)}>
+            Add Expense
+          </Button>
+        </div>
+      </div>
+
+      {/* Inspections section */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Inspections</h2>
+          {isAdmin && (
+            <Button variant="ghost" size="sm" onClick={() => setShowInspectionModal(true)} className="hidden md:inline-flex">
+              + Add Inspection
+            </Button>
+          )}
+        </div>
+        <InspectionList inspections={inspections} />
+        {isAdmin && (
+          <div className="mt-3 md:hidden">
+            <Button variant="secondary" size="sm" onClick={() => setShowInspectionModal(true)}>
+              Add Inspection
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Time entries section */}
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -285,6 +351,24 @@ export function ProjectDetailClient({
           projectId={project.id}
           phases={sortedPhases.map((p) => ({ id: p.id, name: p.name }))}
           onSubmit={handleManualTime}
+        />
+      </Modal>
+
+      {/* Expense modal */}
+      <Modal open={showExpenseModal} onClose={() => setShowExpenseModal(false)} title="Add Expense">
+        <ExpenseForm
+          projectId={project.id}
+          userId={userId}
+          onSuccess={() => setShowExpenseModal(false)}
+        />
+      </Modal>
+
+      {/* Inspection modal */}
+      <Modal open={showInspectionModal} onClose={() => setShowInspectionModal(false)} title="Add Inspection">
+        <InspectionForm
+          projectId={project.id}
+          userId={userId}
+          onSuccess={() => setShowInspectionModal(false)}
         />
       </Modal>
     </div>

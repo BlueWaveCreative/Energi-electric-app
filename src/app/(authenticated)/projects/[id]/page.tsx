@@ -28,8 +28,8 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound()
 
-  // Fetch notes, photos, time entries, and plans count in parallel
-  const [notesResult, photosResult, timeResult, plansResult] = await Promise.all([
+  // Fetch notes, photos, time entries, plans count, expenses, and inspections in parallel
+  const [notesResult, photosResult, timeResult, plansResult, expensesResult, inspectionsResult] = await Promise.all([
     supabase
       .from('notes')
       .select('*, profiles(name)')
@@ -52,6 +52,16 @@ export default async function ProjectDetailPage({
       .select('id')
       .eq('project_id', id)
       .limit(1),
+    supabase
+      .from('expenses')
+      .select('*, profiles(name)')
+      .eq('project_id', id)
+      .order('expense_date', { ascending: false }),
+    supabase
+      .from('inspections')
+      .select('*, profiles:created_by(name)')
+      .eq('project_id', id)
+      .order('created_at', { ascending: false }),
   ])
 
   const isAdmin = profile?.role === 'admin'
@@ -75,6 +85,8 @@ export default async function ProjectDetailPage({
           notes={notesResult.data ?? []}
           photos={photosResult.data ?? []}
           timeEntries={timeResult.data ?? []}
+          expenses={expensesResult.data ?? []}
+          inspections={inspectionsResult.data ?? []}
           isAdmin={isAdmin}
           userId={user.id}
           hasPlans={(plansResult.data?.length ?? 0) > 0}

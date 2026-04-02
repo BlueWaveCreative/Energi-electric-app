@@ -8,6 +8,8 @@ import { Card } from '@/components/ui/card'
 import { Plus, FolderOpen, Clock } from 'lucide-react'
 import { formatDuration } from '@/lib/utils'
 import { ActivityFeed, type ActivityItem } from '@/components/activity/activity-feed'
+import { getWeatherForecast } from '@/lib/weather'
+import { WeatherCard } from '@/components/dashboard/weather-card'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -55,6 +57,13 @@ export default async function DashboardPage() {
     .select('id, start_time, duration_minutes, method, profiles(name), projects(name)')
     .order('start_time', { ascending: false })
     .limit(5)
+
+  let forecast = null
+  try {
+    forecast = await getWeatherForecast()
+  } catch {
+    // Weather API failure should not break the dashboard
+  }
 
   const recentActivity: ActivityItem[] = [
     ...(recentNotes ?? []).map((n) => ({
@@ -111,6 +120,8 @@ export default async function DashboardPage() {
             </div>
           </Card>
         </div>
+
+        {forecast && <WeatherCard forecast={forecast} />}
 
         <div>
           <div className="flex items-center justify-between mb-3">

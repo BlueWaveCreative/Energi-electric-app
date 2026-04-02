@@ -119,6 +119,52 @@ export interface Annotation {
   created_at: string
 }
 
+export interface ScheduleEntry {
+  id: string
+  user_id: string
+  project_id: string
+  date: string
+  notes: string | null
+  created_by: string
+  created_at: string
+}
+
+export interface Expense {
+  id: string
+  project_id: string
+  user_id: string
+  amount: number
+  description: string
+  category: string
+  receipt_path: string | null
+  receipt_thumbnail: string | null
+  expense_date: string
+  created_at: string
+}
+
+export interface Inspection {
+  id: string
+  project_id: string
+  type: string
+  status: string
+  scheduled_date: string | null
+  notes: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface NotificationPreference {
+  id: string
+  user_id: string
+  clock_events: boolean
+  phase_complete: boolean
+  new_photo: boolean
+  push_subscription: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+}
+
 // Joined types for common queries
 export interface ProjectWithPhases extends Project {
   phases: Phase[]
