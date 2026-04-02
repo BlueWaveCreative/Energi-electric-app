@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Trash2 } from 'lucide-react'
+import { X, Trash2, CheckSquare, Square } from 'lucide-react'
 import { useSupabase } from '@/hooks/use-supabase'
 import { getSignedUrl } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import type { Photo, Profile } from '@/lib/types/database'
 
 interface PhotoWithUser extends Photo {
@@ -14,12 +15,15 @@ interface PhotoWithUser extends Photo {
 interface PhotoGalleryProps {
   photos: PhotoWithUser[]
   onDelete?: (photoId: string) => void
+  onDeleteMultiple?: (photoIds: string[]) => void
 }
 
-export function PhotoGallery({ photos, onDelete }: PhotoGalleryProps) {
+export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGalleryProps) {
   const supabase = useSupabase()
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithUser | null>(null)
   const [urls, setUrls] = useState<Record<string, string>>({})
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function loadUrls() {
@@ -39,18 +43,79 @@ export function PhotoGallery({ photos, onDelete }: PhotoGalleryProps) {
     if (photos.length > 0) loadUrls()
   }, [photos, supabase])
 
+  function toggleSelect(id: string) {
+    const next = new Set(selectedIds)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    setSelectedIds(next)
+  }
+
+  function handleBulkDelete() {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Delete ${selectedIds.size} photo${selectedIds.size > 1 ? 's' : ''}?`)) return
+    onDeleteMultiple?.(Array.from(selectedIds))
+    setSelectedIds(new Set())
+    setSelectMode(false)
+  }
+
   if (photos.length === 0) {
     return <p className="text-sm text-gray-500 italic">No photos yet</p>
   }
 
+  const canDelete = !!onDelete || !!onDeleteMultiple
+
   return (
     <>
+      {/* Bulk actions bar */}
+      {canDelete && (
+        <div className="flex items-center gap-2 mb-2">
+          {selectMode ? (
+            <>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleBulkDelete}
+                disabled={selectedIds.size === 0}
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => {
+                setSelectMode(false)
+                setSelectedIds(new Set())
+              }}>
+                Cancel
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => {
+                if (selectedIds.size === photos.length) {
+                  setSelectedIds(new Set())
+                } else {
+                  setSelectedIds(new Set(photos.map(p => p.id)))
+                }
+              }}>
+                {selectedIds.size === photos.length ? 'Deselect All' : 'Select All'}
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => setSelectMode(true)}>
+              <CheckSquare className="w-4 h-4 mr-1" /> Select
+            </Button>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
         {photos.map((photo) => (
           <button
             key={photo.id}
-            onClick={() => setSelectedPhoto(photo)}
-            className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity"
+            onClick={() => {
+              if (selectMode) {
+                toggleSelect(photo.id)
+              } else {
+                setSelectedPhoto(photo)
+              }
+            }}
+            className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity"
           >
             {urls[photo.id] ? (
               <img
@@ -60,6 +125,16 @@ export function PhotoGallery({ photos, onDelete }: PhotoGalleryProps) {
               />
             ) : (
               <div className="w-full h-full animate-pulse bg-gray-200" />
+            )}
+            {/* Selection checkbox overlay */}
+            {selectMode && (
+              <div className="absolute top-1 left-1">
+                {selectedIds.has(photo.id) ? (
+                  <CheckSquare className="w-6 h-6 text-[#68BD45] drop-shadow-md" />
+                ) : (
+                  <Square className="w-6 h-6 text-white drop-shadow-md" />
+                )}
+              </div>
             )}
           </button>
         ))}

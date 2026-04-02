@@ -99,6 +99,11 @@ export function ProjectDetailClient({
     router.refresh()
   }
 
+  async function handleDeleteMultiplePhotos(photoIds: string[]) {
+    await supabase.from('photos').delete().in('id', photoIds)
+    router.refresh()
+  }
+
   async function handlePhotoCapture(file: File) {
     const { path, thumbnailPath } = await uploadPhoto(supabase, file, project.id)
     await supabase.from('photos').insert({
@@ -217,7 +222,11 @@ export function ProjectDetailClient({
       {/* Photos section */}
       <div>
         <h2 className="text-lg font-semibold mb-3">Photos</h2>
-        <PhotoGallery photos={photos} onDelete={isAdmin ? handleDeletePhoto : undefined} />
+        <PhotoGallery
+          photos={photos}
+          onDelete={isAdmin ? handleDeletePhoto : undefined}
+          onDeleteMultiple={isAdmin ? handleDeleteMultiplePhotos : undefined}
+        />
       </div>
 
       {/* Time entries section */}
