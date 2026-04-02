@@ -28,7 +28,7 @@ export function ActivityFeed({ items, limit }: ActivityFeedProps) {
 
   if (displayItems.length === 0) {
     return (
-      <div className="text-center py-6 text-gray-400 text-sm">
+      <div className="text-center py-6 text-gray-500 text-sm">
         No recent activity
       </div>
     )
@@ -50,9 +50,9 @@ export function ActivityFeed({ items, limit }: ActivityFeedProps) {
                 {' '}{item.description}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-gray-400">{item.project_name}</span>
-                <span className="text-xs text-gray-300">-</span>
-                <span className="text-xs text-gray-400">{formatDate(new Date(item.timestamp))}</span>
+                <span className="text-xs text-gray-500">{item.project_name}</span>
+                <span className="text-xs text-gray-400">-</span>
+                <span className="text-xs text-gray-500">{formatDate(new Date(item.timestamp))}</span>
               </div>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default async function TemplatesPage() {
           <div className="text-center py-12">
             <FileStack className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">No templates yet</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               Create templates to standardize your project phases
             </p>
           </div>
@@ -58,7 +58,7 @@ export default async function TemplatesPage() {
                       <p className="text-sm text-gray-500 mt-1">{template.description}</p>
                     )}
                   </div>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-500">
                     {template.template_phases?.length ?? 0} phases
                   </span>
                 </div>

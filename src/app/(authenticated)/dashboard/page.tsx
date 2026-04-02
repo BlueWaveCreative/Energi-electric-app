@@ -96,8 +96,8 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3">
               <FolderOpen className="w-8 h-8 text-[#68BD45]" />
               <div>
-                <p className="text-2xl font-bold">{projects?.length ?? 0}</p>
-                <p className="text-xs text-gray-500">Active Projects</p>
+                <p className="text-2xl font-bold text-gray-900">{projects?.length ?? 0}</p>
+                <p className="text-xs text-gray-600">Active Projects</p>
               </div>
             </div>
           </Card>
@@ -105,8 +105,8 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3">
               <Clock className="w-8 h-8 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">{formatDuration(totalMinutes)}</p>
-                <p className="text-xs text-gray-500">This Week</p>
+                <p className="text-2xl font-bold text-gray-900">{formatDuration(totalMinutes)}</p>
+                <p className="text-xs text-gray-600">This Week</p>
               </div>
             </div>
           </Card>
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Active Projects</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Active Projects</h2>
             <Link href="/projects" className="text-sm text-[#68BD45] hover:underline">
               View all
             </Link>
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Recent Activity</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
             {isAdmin && (
               <Link href="/activity" className="text-sm text-[#68BD45] hover:underline">
                 View all

@@ -53,7 +53,7 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
       <label className="block text-sm font-medium text-gray-700">Phases</label>
 
       {phases.length === 0 && (
-        <p className="text-sm text-gray-400 italic">No phases added yet</p>
+        <p className="text-sm text-gray-500 italic">No phases added yet</p>
       )}
 
       <div className="space-y-2">

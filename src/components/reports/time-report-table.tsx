@@ -76,7 +76,7 @@ export function TimeReportTable({ entries }: TimeReportTableProps) {
             <div className="text-xs text-gray-500 space-y-0.5">
               <p>{entry.project_name}{entry.phase_name ? ` — ${entry.phase_name}` : ''}</p>
               <p>{formatDate(new Date(entry.start_time))}</p>
-              {entry.notes && <p className="text-gray-400 truncate">{entry.notes}</p>}
+              {entry.notes && <p className="text-gray-500 truncate">{entry.notes}</p>}
             </div>
           </div>
         ))}

@@ -127,9 +127,9 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
           </div>
         ) : (
           <>
-            <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+            <Upload className="w-10 h-10 text-gray-500 mx-auto mb-2" />
             <p className="text-gray-600">Drop a blueprint here or click to browse</p>
-            <p className="text-sm text-gray-400 mt-1">PDF, PNG, or JPG</p>
+            <p className="text-sm text-gray-500 mt-1">PDF, PNG, or JPG</p>
           </>
         )}
 
