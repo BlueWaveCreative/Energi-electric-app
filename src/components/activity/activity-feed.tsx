@@ -45,8 +45,8 @@ export function ActivityFeed({ items, limit }: ActivityFeedProps) {
               <Icon className={`w-4 h-4 ${config.color}`} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm">
-                <span className="font-medium">{item.user_name}</span>
+              <p className="text-sm text-gray-800">
+                <span className="font-semibold text-gray-900">{item.user_name}</span>
                 {' '}{item.description}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
