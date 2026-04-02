@@ -29,20 +29,28 @@ export async function uploadPhoto(
   }
 
   const timestamp = Date.now()
-  const ext = MIME_TO_EXT[file.type] ?? 'jpg'
-  const path = `projects/${projectId}/photos/${timestamp}.${ext}`
+  const path = `projects/${projectId}/photos/${timestamp}.jpg`
   const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.jpg`
 
-  // Upload original to R2
-  await uploadToR2(path, file)
+  // Compress the photo client-side before uploading
+  // Vercel has a ~4.5MB body limit on serverless functions
+  // iPhone photos are often 5-15MB, so we resize to max 2048px and compress as JPEG
+  let uploadFile: File | Blob = file
+  try {
+    uploadFile = await compressImage(file, 2048, 0.85)
+  } catch {
+    // If compression fails (HEIC on some browsers), upload original
+  }
 
-  // Create and upload thumbnail (best-effort — HEIC/HEIF may not render in canvas)
+  // Upload compressed photo to R2
+  await uploadToR2(path, uploadFile)
+
+  // Create and upload thumbnail (best-effort)
   try {
     const thumbnailBlob = await createThumbnail(file, 300)
     await uploadToR2(thumbnailPath, thumbnailBlob)
     return { path, thumbnailPath }
   } catch {
-    // Thumbnail failed (unsupported format on this browser) — use original as fallback
     return { path, thumbnailPath: path }
   }
 }
@@ -118,6 +126,44 @@ async function createThumbnail(file: File, maxSize: number): Promise<Blob> {
     }
 
     img.onerror = () => reject(new Error('Failed to load image'))
+    img.src = url
+  })
+}
+
+async function compressImage(file: File, maxDimension: number, quality: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('Canvas not supported'))
+
+      let { width, height } = img
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = (height * maxDimension) / width
+          width = maxDimension
+        } else {
+          width = (width * maxDimension) / height
+          height = maxDimension
+        }
+      }
+
+      canvas.width = width
+      canvas.height = height
+      ctx.drawImage(img, 0, 0, width, height)
+
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error('Failed to compress image'))),
+        'image/jpeg',
+        quality
+      )
+    }
+
+    img.onerror = () => reject(new Error('Failed to load image for compression'))
     img.src = url
   })
 }

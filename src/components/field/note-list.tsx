@@ -20,7 +20,7 @@ export function NoteList({ notes }: NoteListProps) {
         <div key={note.id} className="bg-gray-50 rounded-lg p-3">
           <p className="text-sm text-gray-800 whitespace-pre-wrap">{note.content}</p>
           <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-            <span className="font-medium">{note.profiles?.name ?? 'Unknown'}</span>
+            <span className="font-medium text-gray-700">{note.profiles?.name ?? 'Unknown'}</span>
             <span>{formatDate(new Date(note.created_at))}</span>
           </div>
         </div>

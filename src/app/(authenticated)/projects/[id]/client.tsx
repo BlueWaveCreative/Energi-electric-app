@@ -247,7 +247,7 @@ export function ProjectDetailClient({
 
       {/* Notes section */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Notes</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Notes</h2>
         <NoteList notes={notes} />
         <div className="mt-3 hidden md:block">
           <NoteForm onSubmit={handleAddNote} />
@@ -256,7 +256,7 @@ export function ProjectDetailClient({
 
       {/* Photos section */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Photos</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Photos</h2>
         <PhotoGallery
           photos={photos}
           onDelete={isAdmin ? handleDeletePhoto : undefined}
@@ -267,7 +267,7 @@ export function ProjectDetailClient({
       {/* Expenses section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Expenses</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Expenses</h2>
           <Button variant="ghost" size="sm" onClick={() => setShowExpenseModal(true)} className="hidden md:inline-flex">
             + Add Expense
           </Button>
@@ -283,7 +283,7 @@ export function ProjectDetailClient({
       {/* Inspections section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Inspections</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Inspections</h2>
           {isAdmin && (
             <Button variant="ghost" size="sm" onClick={() => setShowInspectionModal(true)} className="hidden md:inline-flex">
               + Add Inspection
@@ -303,7 +303,7 @@ export function ProjectDetailClient({
       {/* Time entries section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Time Log</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Time Log</h2>
           <Button variant="ghost" size="sm" onClick={() => setShowTimeModal(true)} className="hidden md:inline-flex">
             + Manual Entry
           </Button>
