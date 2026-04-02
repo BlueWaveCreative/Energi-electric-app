@@ -57,10 +57,13 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
       if (uploadError) throw uploadError
 
       setProgress('Saving...')
+      const { data: { user } } = await supabase.auth.getUser()
+
       const { error: dbError } = await supabase.from('plans').insert({
         project_id: projectId,
         name: name.trim(),
         file_path: filePath,
+        uploaded_by: user!.id,
       })
 
       if (dbError) throw dbError
@@ -88,7 +91,7 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
           const file = e.dataTransfer.files[0]
           if (file) handleFile(file)
         }}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
         }`}
       >
@@ -119,7 +122,6 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
             e.target.value = ''
           }}
           className="absolute inset-0 opacity-0 cursor-pointer"
-          style={{ position: 'relative' }}
         />
       </div>
 

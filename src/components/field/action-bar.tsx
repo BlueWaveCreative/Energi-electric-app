@@ -47,7 +47,7 @@ export function ActionBar({
           onClick={isTimerRunning && isThisProject ? onClockOut : onClockIn}
           disabled={isTimerRunning && !isThisProject}
           className={cn(
-            'flex flex-col items-center gap-1 px-3 py-1 rounded-lg text-xs font-medium',
+            'flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium',
             isTimerRunning && isThisProject
               ? 'text-red-600'
               : isTimerRunning

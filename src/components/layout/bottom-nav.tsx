@@ -33,7 +33,7 @@ export function BottomNav({ isAdmin }: BottomNavProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center gap-1 px-3 py-1 rounded-lg text-xs font-medium transition-colors min-w-[60px]',
+                'flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors min-w-[60px]',
                 isActive
                   ? 'text-blue-600'
                   : 'text-gray-400 hover:text-gray-600'

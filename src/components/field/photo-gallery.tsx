@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { useSupabase } from '@/hooks/use-supabase'
 import { getSignedUrl } from '@/lib/storage'
@@ -22,12 +22,14 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
 
   useEffect(() => {
     async function loadUrls() {
-      const urlMap: Record<string, string> = {}
-      for (const photo of photos) {
-        const path = photo.thumbnail_path ?? photo.file_path
-        urlMap[photo.id] = await getSignedUrl(supabase, path)
-      }
-      setUrls(urlMap)
+      const entries = await Promise.all(
+        photos.map(async (photo) => {
+          const path = photo.thumbnail_path ?? photo.file_path
+          const url = await getSignedUrl(supabase, path)
+          return [photo.id, url] as const
+        })
+      )
+      setUrls(Object.fromEntries(entries))
     }
     if (photos.length > 0) loadUrls()
   }, [photos, supabase])
@@ -74,15 +76,26 @@ function LightBox({
 }) {
   const supabase = useSupabase()
   const [fullUrl, setFullUrl] = useState<string>('')
+  const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     getSignedUrl(supabase, photo.file_path).then(setFullUrl)
   }, [photo, supabase])
 
+  useEffect(() => {
+    overlayRef.current?.focus()
+  }, [])
+
   return (
     <div
+      ref={overlayRef}
       className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photo viewer"
+      tabIndex={-1}
     >
       <button
         onClick={onClose}

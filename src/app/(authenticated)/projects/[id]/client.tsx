@@ -60,7 +60,7 @@ export function ProjectDetailClient({
 
   async function handleClockOut() {
     const result = stopTimer()
-    if (!result) return
+    if (!result || result.durationMinutes < 1) return
 
     await supabase.from('time_entries').insert({
       user_id: userId,
@@ -123,7 +123,7 @@ export function ProjectDetailClient({
   }
 
   return (
-    <div className="space-y-6 pb-32 md:pb-6">
+    <div className="space-y-6 pb-40 md:pb-6">
       {/* Timer — desktop */}
       <div className="hidden md:block">
         <TimeTracker
@@ -174,7 +174,7 @@ export function ProjectDetailClient({
                           await supabase.from('tasks').update({ status: newStatus }).eq('id', task.id)
                           router.refresh()
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className={task.status === 'complete' ? 'line-through text-gray-400' : 'text-gray-700'}>
                         {task.title}
@@ -225,7 +225,7 @@ export function ProjectDetailClient({
         onClockOut={handleClockOut}
         onAddNote={() => setShowNoteModal(true)}
         onTakePhoto={() => cameraRef.current?.click()}
-        onViewPlans={() => {/* Plan 3 */}}
+        onViewPlans={() => router.push(`/projects/${project.id}/plans`)}
         hasPlans={hasPlans}
       />
 

@@ -27,6 +27,9 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
   const [saving, setSaving] = useState(false)
   const [undoStack, setUndoStack] = useState<string[]>([])
   const [redoStack, setRedoStack] = useState<string[]>([])
+  const [annotationId, setAnnotationId] = useState<string | null>(
+    annotations.find((a) => a.user_id === userId)?.id ?? null
+  )
 
   // Initialize canvas
   useEffect(() => {
@@ -41,43 +44,43 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
 
     fabricRef.current = canvas
 
-    // Load background image
-    async function loadBackground() {
+    // Load background image first, then annotations
+    async function loadBackgroundAndAnnotations() {
       const url = await getSignedUrl(supabase, filePath)
-      const img = await FabricImage.fromURL(url, { crossOrigin: 'anonymous' })
+      const bgImg = await FabricImage.fromURL(url, { crossOrigin: 'anonymous' })
 
       // Scale image to fit canvas
       const scale = Math.min(
-        canvas.width! / img.width!,
-        canvas.height! / img.height!
+        canvas.width! / bgImg.width!,
+        canvas.height! / bgImg.height!
       )
-      img.scale(scale)
-      img.set({
+      bgImg.scale(scale)
+      bgImg.set({
         selectable: false,
         evented: false,
         originX: 'left',
         originY: 'top',
       })
 
-      canvas.backgroundImage = img
+      canvas.backgroundImage = bgImg
       canvas.renderAll()
-    }
 
-    loadBackground()
+      // Load existing annotations after background is set
+      if (annotations.length > 0) {
+        const latestAnnotation = annotations.sort(
+          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )[0]
 
-    // Load existing annotations
-    if (annotations.length > 0) {
-      const latestAnnotation = annotations.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      )[0]
-
-      if (latestAnnotation.canvas_data && Object.keys(latestAnnotation.canvas_data).length > 0) {
-        canvas.loadFromJSON(latestAnnotation.canvas_data).then(() => {
-          // Re-lock the background after loading
+        if (latestAnnotation.canvas_data && Object.keys(latestAnnotation.canvas_data).length > 0) {
+          await canvas.loadFromJSON(latestAnnotation.canvas_data)
+          // Re-apply background after loadFromJSON (it may overwrite it)
+          canvas.backgroundImage = bgImg
           canvas.renderAll()
-        })
+        }
       }
     }
+
+    loadBackgroundAndAnnotations()
 
     // Track selection
     canvas.on('selection:created', () => setHasSelection(true))
@@ -263,22 +266,22 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
     const canvasData = canvas.toJSON()
 
     // Upsert annotation for this user on this plan
-    const existingAnnotation = annotations.find((a) => a.user_id === userId)
-
-    if (existingAnnotation) {
+    if (annotationId) {
       await supabase
         .from('annotations')
         .update({
           canvas_data: canvasData,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', existingAnnotation.id)
+        .eq('id', annotationId)
     } else {
-      await supabase.from('annotations').insert({
+      const { data } = await supabase.from('annotations').insert({
         plan_id: planId,
         user_id: userId,
         canvas_data: canvasData,
-      })
+      }).select('id').single()
+
+      if (data) setAnnotationId(data.id)
     }
 
     setSaving(false)

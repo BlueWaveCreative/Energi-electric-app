@@ -4,11 +4,21 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic']
+const MAX_PHOTO_SIZE = 10 * 1024 * 1024 // 10MB
+
 export async function uploadPhoto(
   supabase: SupabaseClient,
   file: File,
   projectId: string
 ): Promise<{ path: string; thumbnailPath: string }> {
+  if (!ALLOWED_MIMES.includes(file.type)) {
+    throw new Error(`File type "${file.type}" is not allowed. Accepted types: JPEG, PNG, GIF, WebP, HEIC.`)
+  }
+  if (file.size > MAX_PHOTO_SIZE) {
+    throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 10 MB limit.`)
+  }
+
   const timestamp = Date.now()
   const ext = file.name.split('.').pop() ?? 'jpg'
   const path = `projects/${projectId}/photos/${timestamp}.${ext}`

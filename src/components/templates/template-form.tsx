@@ -59,9 +59,11 @@ export function TemplateForm({ template }: TemplateFormProps) {
           if (phaseError) throw phaseError
         }
       } else {
+        const { data: { user } } = await supabase.auth.getUser()
+
         const { data: newTemplate, error: createError } = await supabase
           .from('project_templates')
-          .insert({ name: name.trim(), description: description.trim() || null })
+          .insert({ name: name.trim(), description: description.trim() || null, created_by: user!.id })
           .select()
           .single()
 

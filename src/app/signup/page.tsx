@@ -1,14 +1,12 @@
 'use client'
 
-import { Suspense, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/hooks/use-supabase'
 
 function SignupForm() {
   const supabase = useSupabase()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const inviteRole = searchParams.get('role') ?? 'field_worker'
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -25,7 +23,7 @@ function SignupForm() {
       email,
       password,
       options: {
-        data: { name, role: inviteRole },
+        data: { name, role: 'field_worker' },
       },
     })
 
@@ -109,9 +107,7 @@ export default function SignupPage() {
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center mb-2">Join Blue Shores Electric</h1>
         <p className="text-gray-500 text-center mb-8">Create your account</p>
-        <Suspense fallback={<div className="text-center text-gray-400">Loading...</div>}>
-          <SignupForm />
-        </Suspense>
+        <SignupForm />
       </div>
     </div>
   )

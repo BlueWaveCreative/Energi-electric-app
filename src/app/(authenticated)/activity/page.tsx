@@ -9,6 +9,14 @@ export default async function ActivityPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') redirect('/dashboard')
+
   // Fetch recent activity from multiple tables
   const [notesResult, photosResult, timeResult] = await Promise.all([
     supabase

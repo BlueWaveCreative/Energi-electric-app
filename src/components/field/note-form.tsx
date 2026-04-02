@@ -16,9 +16,14 @@ export function NoteForm({ onSubmit, placeholder = 'Add a note...' }: NoteFormPr
     e.preventDefault()
     if (!content.trim() || saving) return
     setSaving(true)
-    await onSubmit(content.trim())
-    setContent('')
-    setSaving(false)
+    try {
+      await onSubmit(content.trim())
+      setContent('')
+    } catch {
+      // Keep content so user can retry
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -27,6 +32,7 @@ export function NoteForm({ onSubmit, placeholder = 'Add a note...' }: NoteFormPr
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder={placeholder}
+        aria-label="Note content"
         rows={2}
         className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
       />

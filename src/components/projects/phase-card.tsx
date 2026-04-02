@@ -71,7 +71,7 @@ export function PhaseCard({
                   key={status}
                   onClick={() => onStatusChange(phase.id, status)}
                   className={cn(
-                    'px-2 py-1 text-xs rounded-md border transition-colors',
+                    'px-3 py-2 text-sm rounded-md border transition-colors',
                     phase.status === status
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-gray-200 text-gray-500 hover:border-gray-300'

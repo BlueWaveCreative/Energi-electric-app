@@ -98,7 +98,7 @@ export async function syncQueue(supabase: SupabaseClient): Promise<{
 
   for (const op of operations) {
     if (op.retries >= MAX_RETRIES) {
-      // Too many retries — skip but don't remove (manual cleanup needed)
+      await removeFromQueue(op.id)
       failed++
       continue
     }

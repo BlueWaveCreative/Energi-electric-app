@@ -38,7 +38,7 @@ export function SettingsClient({ users }: SettingsClientProps) {
   return (
     <div className="space-y-6 max-w-xl">
       <Card>
-        <h3 className="font-semibold mb-3">Invite Crew Members</h3>
+        <h2 className="font-semibold mb-3">Invite Crew Members</h2>
         <p className="text-sm text-gray-500 mb-3">
           Share this link with crew members to let them create an account.
         </p>
@@ -54,7 +54,7 @@ export function SettingsClient({ users }: SettingsClientProps) {
       </Card>
 
       <div>
-        <h3 className="font-semibold mb-3">Team ({users.length})</h3>
+        <h2 className="font-semibold mb-3">Team ({users.length})</h2>
         <div className="space-y-2">
           {users.map((u) => (
             <Card key={u.id}>

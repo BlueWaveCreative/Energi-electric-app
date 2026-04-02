@@ -45,8 +45,9 @@ export function DrawingTools({
           key={mode}
           onClick={() => onModeChange(mode)}
           title={label}
+          aria-label={label}
           className={cn(
-            'p-2 rounded-md transition-colors',
+            'p-3 rounded-md transition-colors',
             activeMode === mode
               ? 'bg-blue-100 text-blue-700'
               : 'text-gray-500 hover:bg-gray-100'
@@ -63,7 +64,8 @@ export function DrawingTools({
         onClick={onUndo}
         disabled={!canUndo}
         title="Undo"
-        className="p-2 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+        aria-label="Undo"
+        className="p-3 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-30"
       >
         <Undo2 className="w-5 h-5" />
       </button>
@@ -71,7 +73,8 @@ export function DrawingTools({
         onClick={onRedo}
         disabled={!canRedo}
         title="Redo"
-        className="p-2 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+        aria-label="Redo"
+        className="p-3 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-30"
       >
         <Redo2 className="w-5 h-5" />
       </button>
@@ -81,7 +84,8 @@ export function DrawingTools({
         onClick={onDelete}
         disabled={!hasSelection}
         title="Delete selected"
-        className="p-2 rounded-md text-red-500 hover:bg-red-50 disabled:opacity-30"
+        aria-label="Delete selected"
+        className="p-3 rounded-md text-red-500 hover:bg-red-50 disabled:opacity-30"
       >
         <Trash2 className="w-5 h-5" />
       </button>
@@ -93,7 +97,8 @@ export function DrawingTools({
         onClick={onSave}
         disabled={saving}
         title="Save annotations"
-        className="p-2 rounded-md text-green-600 hover:bg-green-50 disabled:opacity-50"
+        aria-label="Save annotations"
+        className="p-3 rounded-md text-green-600 hover:bg-green-50 disabled:opacity-50"
       >
         <Save className="w-5 h-5" />
       </button>

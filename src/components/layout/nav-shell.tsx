@@ -12,8 +12,11 @@ interface NavShellProps {
 export function NavShell({ isAdmin, children }: NavShellProps) {
   return (
     <div className="flex min-h-screen bg-gray-50">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:bg-white focus:px-4 focus:py-2 focus:text-blue-600 focus:rounded-lg focus:shadow-lg focus:top-2 focus:left-2">
+        Skip to content
+      </a>
       <Sidebar isAdmin={isAdmin} />
-      <main className="flex-1 pb-20 md:pb-0">
+      <main id="main-content" className="flex-1 pb-20 md:pb-0">
         {children}
       </main>
       <BottomNav isAdmin={isAdmin} />
