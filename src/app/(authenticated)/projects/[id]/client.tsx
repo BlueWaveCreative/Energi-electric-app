@@ -134,16 +134,21 @@ export function ProjectDetailClient({
   }
 
   async function handlePhotoCapture(file: File) {
-    const { path, thumbnailPath } = await uploadPhoto(supabase, file, project.id)
-    await supabase.from('photos').insert({
-      user_id: userId,
-      file_path: path,
-      thumbnail_path: thumbnailPath,
-      linked_type: 'project',
-      linked_id: project.id,
-    })
-    sendNotification('new_photo', 'New Photo', `New photo added to ${project.name}`)
-    router.refresh()
+    try {
+      const { path, thumbnailPath } = await uploadPhoto(supabase, file, project.id)
+      await supabase.from('photos').insert({
+        user_id: userId,
+        file_path: path,
+        thumbnail_path: thumbnailPath,
+        linked_type: 'project',
+        linked_id: project.id,
+      })
+      sendNotification('new_photo', 'New Photo', `New photo added to ${project.name}`)
+      router.refresh()
+    } catch (err) {
+      console.error('Photo upload failed:', err)
+      alert(`Photo upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
   }
 
   async function handleManualTime(entry: {

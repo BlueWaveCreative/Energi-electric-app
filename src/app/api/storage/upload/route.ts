@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { uploadToR2 } from '@/lib/r2'
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic']
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
 const MAX_SIZE = 50 * 1024 * 1024 // 50MB (covers both photos and plans)
 
 export async function POST(request: Request) {

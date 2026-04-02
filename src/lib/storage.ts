@@ -2,8 +2,8 @@
 // Uploads go through /api/storage/upload (server-side, auth-gated)
 // Signed URLs via /api/storage/signed-url (server-side, auth-gated)
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic']
-const MAX_PHOTO_SIZE = 10 * 1024 * 1024 // 10MB
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
+const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB (iPhone photos can be large)
 
 const MIME_TO_EXT: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -11,6 +11,7 @@ const MIME_TO_EXT: Record<string, string> = {
   'image/gif': 'gif',
   'image/webp': 'webp',
   'image/heic': 'heic',
+  'image/heif': 'heif',
 }
 
 export async function uploadPhoto(
@@ -22,22 +23,26 @@ export async function uploadPhoto(
     throw new Error(`File type "${file.type}" is not allowed. Accepted types: JPEG, PNG, GIF, WebP, HEIC.`)
   }
   if (file.size > MAX_PHOTO_SIZE) {
-    throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 10 MB limit.`)
+    throw new Error(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 20 MB limit.`)
   }
 
   const timestamp = Date.now()
   const ext = MIME_TO_EXT[file.type] ?? 'jpg'
   const path = `projects/${projectId}/photos/${timestamp}.${ext}`
-  const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.${ext}`
+  const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.jpg`
 
   // Upload original to R2
   await uploadToR2(path, file)
 
-  // Create and upload thumbnail
-  const thumbnailBlob = await createThumbnail(file, 300)
-  await uploadToR2(thumbnailPath, thumbnailBlob)
-
-  return { path, thumbnailPath }
+  // Create and upload thumbnail (best-effort — HEIC/HEIF may not render in canvas)
+  try {
+    const thumbnailBlob = await createThumbnail(file, 300)
+    await uploadToR2(thumbnailPath, thumbnailBlob)
+    return { path, thumbnailPath }
+  } catch {
+    // Thumbnail failed (unsupported format on this browser) — use original as fallback
+    return { path, thumbnailPath: path }
+  }
 }
 
 export async function uploadPlanFile(
