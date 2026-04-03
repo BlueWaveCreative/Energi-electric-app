@@ -268,6 +268,30 @@ export function ProjectDetailClient({
         </div>
       </div>
 
+      {/* Blueprints section */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-gray-900">Blueprints</h2>
+          <a
+            href={`/projects/${project.id}/plans`}
+            className="text-sm text-[#68BD45] hover:underline"
+          >
+            {hasPlans ? 'View Plans' : 'Upload Blueprint'}
+          </a>
+        </div>
+        {!hasPlans && (
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 text-center">
+            <p className="text-gray-500 text-sm">No blueprints uploaded yet.</p>
+            <a
+              href={`/projects/${project.id}/plans`}
+              className="text-[#68BD45] text-sm hover:underline mt-1 inline-block"
+            >
+              Upload one now
+            </a>
+          </div>
+        )}
+      </div>
+
       {/* Photos section */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-3">Photos</h2>

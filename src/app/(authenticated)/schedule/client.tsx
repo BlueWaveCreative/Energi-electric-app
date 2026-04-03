@@ -245,7 +245,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
         {isActive && (
           <div
             ref={popoverRef}
-            className="absolute z-20 top-full left-1/2 -translate-x-1/2 mt-1 w-52 bg-white rounded-lg border border-gray-200 shadow-lg py-1 max-h-64 overflow-y-auto"
+            className="absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-1 w-52 bg-white rounded-lg border border-gray-200 shadow-lg py-1 max-h-64 overflow-y-auto"
             role="listbox"
             aria-label="Select a project"
           >
