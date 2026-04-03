@@ -30,6 +30,8 @@ interface ScheduleBoardProps {
   projects: ProjectOption[]
   initialEntries: ScheduleEntryData[]
   rangeStart: string
+  isAdmin: boolean
+  currentUserId: string
 }
 
 const PROJECT_COLORS = [
@@ -88,7 +90,7 @@ function isWeekend(dateStr: string): boolean {
   return day === 0 || day === 6
 }
 
-export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: ScheduleBoardProps) {
+export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAdmin, currentUserId }: ScheduleBoardProps) {
   const [entries, setEntries] = useState<ScheduleEntryData[]>(initialEntries)
   const [activeCell, setActiveCell] = useState<{ userId: string; date: string } | null>(null)
   const [saving, setSaving] = useState(false)
@@ -196,7 +198,8 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: Sc
     const entry = getEntry(userId, date)
     const isToday = date === today
     const weekend = isWeekend(date)
-    const isActive = activeCell?.userId === userId && activeCell?.date === date
+    const canEdit = isAdmin || userId === currentUserId
+    const isActive = canEdit && activeCell?.userId === userId && activeCell?.date === date
     const color = entry ? projectColorMap.get(entry.project_id) ?? '#9CA3AF' : undefined
 
     return (
@@ -211,8 +214,8 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart }: Sc
       >
         <button
           type="button"
-          onClick={() => setActiveCell(isActive ? null : { userId, date })}
-          disabled={saving}
+          onClick={() => canEdit && setActiveCell(isActive ? null : { userId, date })}
+          disabled={saving || !canEdit}
           className={cn(
             'w-full rounded-md px-1.5 py-1 text-xs font-medium transition-colors min-h-[32px] focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50',
             entry

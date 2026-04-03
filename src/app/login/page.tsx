@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/hooks/use-supabase'
 
@@ -73,6 +74,12 @@ export default function LoginPage() {
               required
               className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent"
             />
+          </div>
+
+          <div className="flex justify-end">
+            <Link href="/forgot-password" className="text-sm text-[#68BD45] hover:underline">
+              Forgot password?
+            </Link>
           </div>
 
           <button
