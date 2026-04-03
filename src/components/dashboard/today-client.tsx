@@ -41,6 +41,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
   const { isRunning, activeProjectId, activePhaseId, elapsed, startTimer, stopTimer, clearTimer } = useTimer()
   const supabase = useSupabase()
   const [showAddJobModal, setShowAddJobModal] = useState(false)
+  const [isClockingOut, setIsClockingOut] = useState(false)
 
   const firstName = user.name?.split(' ')[0] ?? 'there'
   const today = new Date()
@@ -69,8 +70,11 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
   }
 
   async function handleClockOut() {
+    if (isClockingOut) return
+    setIsClockingOut(true)
+
     const result = stopTimer()
-    if (!result) return
+    if (!result) { setIsClockingOut(false); return }
 
     const duration = Math.max(1, result.durationMinutes)
 
@@ -87,6 +91,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
     if (error) {
       console.error('Failed to save time entry:', error)
       alert('Failed to save time entry. Your timer is still running — try again.')
+      setIsClockingOut(false)
       return
     }
 
@@ -118,7 +123,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Hey, {firstName}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             {dateStr} · {jobCount} job{jobCount !== 1 ? 's' : ''} today
           </p>
         </div>
@@ -131,28 +136,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
         </div>
       </div>
 
-      {/* Completed jobs */}
-      {completedJobs.map((job) => (
-        <JobCard
-          key={`done-${job.projectId}-${job.phaseId}`}
-          scheduleEntryId=""
-          project={{ id: job.projectId, name: job.projectName, address: null }}
-          activePhase={{ id: job.phaseId, name: job.phaseName }}
-          tasks={[]}
-          projectColor="#9CA3AF"
-          isTimerRunning={false}
-          isActiveJob={false}
-          elapsed={0}
-          onClockIn={() => {}}
-          onClockOut={() => {}}
-          isCompleted={true}
-          loggedMinutes={job.durationMinutes}
-          userId={user.id}
-          isDimmed={false}
-        />
-      ))}
-
-      {/* Active / idle job cards */}
+      {/* Active / idle job cards (shown first — worker's current focus) */}
       {schedule.map((item, index) => {
         const isActiveJob = isRunning
           && activeProjectId === item.project.id
@@ -181,6 +165,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
               }
             }}
             onClockOut={handleClockOut}
+            isClockingOut={isClockingOut}
             isCompleted={false}
             loggedMinutes={0}
             userId={user.id}
@@ -189,14 +174,35 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
         )
       })}
 
+      {/* Completed jobs (shown after active/idle) */}
+      {completedJobs.map((job) => (
+        <JobCard
+          key={`done-${job.projectId}-${job.phaseId}`}
+          scheduleEntryId=""
+          project={{ id: job.projectId, name: job.projectName, address: null }}
+          activePhase={{ id: job.phaseId, name: job.phaseName }}
+          tasks={[]}
+          projectColor="#9CA3AF"
+          isTimerRunning={false}
+          isActiveJob={false}
+          elapsed={0}
+          onClockIn={() => {}}
+          onClockOut={() => {}}
+          isCompleted={true}
+          loggedMinutes={job.durationMinutes}
+          userId={user.id}
+          isDimmed={false}
+        />
+      ))}
+
       {/* Empty state */}
       {schedule.length === 0 && completedJobs.length === 0 && (
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-          <CalendarDays className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">No jobs scheduled for today.</p>
-          <p className="text-gray-400 text-xs mt-1">
+          <CalendarDays className="w-10 h-10 text-gray-300 mx-auto mb-3" aria-hidden="true" />
+          <p className="text-gray-600 text-sm">No jobs scheduled for today.</p>
+          <p className="text-gray-500 text-xs mt-1">
             Check with your admin or{' '}
-            <a href="/schedule" className="text-[#68BD45] hover:underline">view the full schedule</a>.
+            <a href="/schedule" className="text-[#68BD45] underline hover:text-[#5aa83c]">view the full schedule</a>.
           </p>
         </div>
       )}
@@ -205,9 +211,9 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
       <button
         type="button"
         onClick={() => setShowAddJobModal(true)}
-        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#68BD45] border border-dashed border-[#68BD45]/30 rounded-lg hover:bg-[#68BD45]/5 transition-colors"
+        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#68BD45] border border-dashed border-[#68BD45]/30 rounded-lg hover:bg-[#68BD45]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50"
       >
-        <Plus className="w-4 h-4" />
+        <Plus className="w-4 h-4" aria-hidden="true" />
         Add unscheduled job
       </button>
 

@@ -22,6 +22,7 @@ interface JobCardProps {
   elapsed: number
   onClockIn: () => void
   onClockOut: () => void
+  isClockingOut?: boolean
   // Completed state
   isCompleted: boolean
   loggedMinutes: number
@@ -42,6 +43,7 @@ export function JobCard({
   elapsed,
   onClockIn,
   onClockOut,
+  isClockingOut = false,
   isCompleted,
   loggedMinutes,
   userId,
@@ -116,9 +118,10 @@ export function JobCard({
           <button
             type="button"
             onClick={onClockOut}
-            className="px-4 py-1.5 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            disabled={isClockingOut}
+            className="px-4 py-1.5 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Clock Out
+            {isClockingOut ? 'Saving...' : 'Clock Out'}
           </button>
         </div>
 
