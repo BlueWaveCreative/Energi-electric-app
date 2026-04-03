@@ -6,10 +6,12 @@ import { useSupabase } from '@/hooks/use-supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PhaseListEditor, type PhaseItem } from './phase-list-editor'
-import type { ProjectTemplate, TemplatePhase } from '@/lib/types/database'
+import type { ProjectTemplate, TemplatePhase, TemplateTask } from '@/lib/types/database'
 
 interface TemplateFormProps {
-  template?: ProjectTemplate & { template_phases: TemplatePhase[] }
+  template?: ProjectTemplate & {
+    template_phases: (TemplatePhase & { template_tasks?: TemplateTask[] })[]
+  }
 }
 
 export function TemplateForm({ template }: TemplateFormProps) {
@@ -23,6 +25,13 @@ export function TemplateForm({ template }: TemplateFormProps) {
       name: p.name,
       description: p.description ?? '',
       sort_order: p.sort_order,
+      tasks: (p.template_tasks ?? [])
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((t) => ({
+          id: t.id,
+          title: t.title,
+          sort_order: t.sort_order,
+        })),
     })) ?? []
   )
   const [saving, setSaving] = useState(false)
@@ -37,7 +46,10 @@ export function TemplateForm({ template }: TemplateFormProps) {
     setError('')
 
     try {
+      let templateId: string
+
       if (isEditing) {
+        templateId = template.id
         const { error: updateError } = await supabase
           .from('project_templates')
           .update({ name: name.trim(), description: description.trim() || null })
@@ -45,19 +57,8 @@ export function TemplateForm({ template }: TemplateFormProps) {
 
         if (updateError) throw updateError
 
+        // Delete existing phases (CASCADE deletes their tasks too)
         await supabase.from('template_phases').delete().eq('template_id', template.id)
-
-        if (phases.length > 0) {
-          const { error: phaseError } = await supabase.from('template_phases').insert(
-            phases.map((p) => ({
-              template_id: template.id,
-              name: p.name,
-              description: p.description || null,
-              sort_order: p.sort_order,
-            }))
-          )
-          if (phaseError) throw phaseError
-        }
       } else {
         const { data: { user } } = await supabase.auth.getUser()
 
@@ -74,17 +75,54 @@ export function TemplateForm({ template }: TemplateFormProps) {
           .single()
 
         if (createError) throw createError
+        templateId = newTemplate.id
+      }
 
-        if (phases.length > 0) {
-          const { error: phaseError } = await supabase.from('template_phases').insert(
+      // Insert phases and get back IDs
+      if (phases.length > 0) {
+        const { data: insertedPhases, error: phaseError } = await supabase
+          .from('template_phases')
+          .insert(
             phases.map((p) => ({
-              template_id: newTemplate.id,
+              template_id: templateId,
               name: p.name,
               description: p.description || null,
               sort_order: p.sort_order,
             }))
           )
-          if (phaseError) throw phaseError
+          .select('id, sort_order')
+
+        if (phaseError) throw phaseError
+
+        // Insert tasks for each phase
+        const sortedInserted = (insertedPhases ?? [] as { id: string; sort_order: number }[]).sort(
+          (a: { id: string; sort_order: number }, b: { id: string; sort_order: number }) =>
+            a.sort_order - b.sort_order
+        )
+        const sortedPhases = [...phases].sort((a, b) => a.sort_order - b.sort_order)
+
+        const allTasks: { template_phase_id: string; title: string; sort_order: number }[] = []
+
+        for (let i = 0; i < sortedPhases.length; i++) {
+          const phase = sortedPhases[i]
+          const insertedPhase = sortedInserted[i]
+          if (!insertedPhase) continue
+
+          for (const task of phase.tasks) {
+            allTasks.push({
+              template_phase_id: insertedPhase.id,
+              title: task.title,
+              sort_order: task.sort_order,
+            })
+          }
+        }
+
+        if (allTasks.length > 0) {
+          const { error: taskError } = await supabase
+            .from('template_tasks')
+            .insert(allTasks)
+
+          if (taskError) throw taskError
         }
       }
 

@@ -39,6 +39,37 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(10)
 
+  // Unread detection for admin: compare last activity per project vs last view
+  let unreadProjectIds = new Set<string>()
+  if (isAdmin && projects?.length) {
+    const projectIds = projects.map((p) => p.id)
+
+    const { data: views } = await supabase
+      .from('project_views')
+      .select('project_id, last_viewed_at')
+      .eq('user_id', user.id)
+      .in('project_id', projectIds)
+
+    const viewMap = new Map<string, string>()
+    for (const v of views ?? []) {
+      viewMap.set(v.project_id, v.last_viewed_at)
+    }
+
+    for (const p of projects) {
+      const lastViewed = viewMap.get(p.id) ?? '1970-01-01T00:00:00Z'
+
+      const [notesRes, photosRes, timeRes] = await Promise.all([
+        supabase.from('notes').select('created_at').eq('linked_type', 'project').eq('linked_id', p.id).gt('created_at', lastViewed).limit(1),
+        supabase.from('photos').select('created_at').eq('linked_type', 'project').eq('linked_id', p.id).gt('created_at', lastViewed).limit(1),
+        supabase.from('time_entries').select('start_time').eq('project_id', p.id).gt('start_time', lastViewed).limit(1),
+      ])
+
+      if ((notesRes.data?.length ?? 0) > 0 || (photosRes.data?.length ?? 0) > 0 || (timeRes.data?.length ?? 0) > 0) {
+        unreadProjectIds.add(p.id)
+      }
+    }
+  }
+
   const weekStart = new Date()
   weekStart.setDate(weekStart.getDate() - weekStart.getDay())
   weekStart.setHours(0, 0, 0, 0)
@@ -156,6 +187,7 @@ export default async function DashboardPage() {
                       project={project}
                       phaseCount={phases.length}
                       completedPhases={completedPhases}
+                      hasUnread={unreadProjectIds.has(project.id)}
                     />
                   </Link>
                 )

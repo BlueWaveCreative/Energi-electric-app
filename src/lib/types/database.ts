@@ -141,6 +141,21 @@ export interface Customer {
   created_at: string
 }
 
+export interface TemplateTask {
+  id: string
+  template_phase_id: string
+  title: string
+  sort_order: number
+  created_at: string
+}
+
+export interface ProjectView {
+  id: string
+  user_id: string
+  project_id: string
+  last_viewed_at: string
+}
+
 export interface Expense {
   id: string
   project_id: string
@@ -182,8 +197,12 @@ export interface ProjectWithPhases extends Project {
   phases: Phase[]
 }
 
+export interface TemplatePhaseWithTasks extends TemplatePhase {
+  template_tasks: TemplateTask[]
+}
+
 export interface TemplateWithPhases extends ProjectTemplate {
-  template_phases: TemplatePhase[]
+  template_phases: (TemplatePhase & { template_tasks?: TemplateTask[] })[]
 }
 
 export interface PhaseWithTasks extends Phase {

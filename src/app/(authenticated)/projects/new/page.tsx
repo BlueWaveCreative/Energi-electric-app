@@ -19,7 +19,7 @@ export default async function NewProjectPage() {
   const [templatesResult, customersResult] = await Promise.all([
     supabase
       .from('project_templates')
-      .select('*, template_phases(*)')
+      .select('*, template_phases(*, template_tasks(*))')
       .order('name'),
     supabase
       .from('customers')
