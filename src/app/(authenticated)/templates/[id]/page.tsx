@@ -23,7 +23,7 @@ export default async function EditTemplatePage({
 
   const { data: template } = await supabase
     .from('project_templates')
-    .select('*, template_phases(*)')
+    .select('*, template_phases(*, template_tasks(*))')
     .eq('id', id)
     .single()
 
