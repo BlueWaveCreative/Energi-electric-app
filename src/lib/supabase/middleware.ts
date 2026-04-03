@@ -10,7 +10,10 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll().map(cookie => ({
+            ...cookie,
+            value: cookie.value.replace(/[\r\n\0]/g, ''),
+          }))
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
