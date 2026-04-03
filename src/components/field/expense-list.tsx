@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSupabase } from '@/hooks/use-supabase'
 import { getSignedUrl } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +33,6 @@ function formatCurrency(amount: number): string {
 }
 
 export function ExpenseList({ expenses }: ExpenseListProps) {
-  const supabase = useSupabase()
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -46,7 +44,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
         expensesWithReceipts.map(async (expense) => {
           try {
             const path = expense.receipt_thumbnail ?? expense.receipt_path!
-            const url = await getSignedUrl(supabase, path)
+            const url = await getSignedUrl(path)
             return [expense.id, url] as const
           } catch {
             return [expense.id, ''] as const
@@ -56,7 +54,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
       setThumbnailUrls(Object.fromEntries(entries))
     }
     loadThumbnails()
-  }, [expenses, supabase])
+  }, [expenses])
 
   if (expenses.length === 0) {
     return <p className="text-sm text-gray-500 italic">No expenses yet</p>

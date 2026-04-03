@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { X, Trash2, CheckSquare, Square } from 'lucide-react'
-import { useSupabase } from '@/hooks/use-supabase'
 import { getSignedUrl } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -19,7 +18,6 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGalleryProps) {
-  const supabase = useSupabase()
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithUser | null>(null)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [selectMode, setSelectMode] = useState(false)
@@ -31,7 +29,7 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
         photos.map(async (photo) => {
           try {
             const path = photo.thumbnail_path ?? photo.file_path
-            const url = await getSignedUrl(supabase, path)
+            const url = await getSignedUrl(path)
             return [photo.id, url] as const
           } catch {
             return [photo.id, ''] as const
@@ -41,7 +39,7 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
       setUrls(Object.fromEntries(entries))
     }
     if (photos.length > 0) loadUrls()
-  }, [photos, supabase])
+  }, [photos])
 
   function toggleSelect(id: string) {
     const next = new Set(selectedIds)
@@ -163,13 +161,12 @@ function LightBox({
   onClose: () => void
   onDelete?: () => void
 }) {
-  const supabase = useSupabase()
   const [fullUrl, setFullUrl] = useState<string>('')
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    getSignedUrl(supabase, photo.file_path).then(setFullUrl)
-  }, [photo, supabase])
+    getSignedUrl(photo.file_path).then(setFullUrl)
+  }, [photo])
 
   useEffect(() => {
     overlayRef.current?.focus()

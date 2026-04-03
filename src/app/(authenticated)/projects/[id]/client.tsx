@@ -135,14 +135,15 @@ export function ProjectDetailClient({
 
   async function handlePhotoCapture(file: File) {
     try {
-      const { path, thumbnailPath } = await uploadPhoto(supabase, file, project.id)
-      await supabase.from('photos').insert({
+      const { path, thumbnailPath } = await uploadPhoto(file, project.id)
+      const { error: insertError } = await supabase.from('photos').insert({
         user_id: userId,
         file_path: path,
         thumbnail_path: thumbnailPath,
         linked_type: 'project',
         linked_id: project.id,
       })
+      if (insertError) throw new Error(`Failed to save photo record: ${insertError.message}`)
       sendNotification('new_photo', 'New Photo', `New photo added to ${project.name}`)
       window.location.reload()
     } catch (err) {
