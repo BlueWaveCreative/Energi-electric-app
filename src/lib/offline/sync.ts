@@ -48,24 +48,16 @@ export async function processOperation(
         const db = await getDB()
         const photoRecord = await db.get('photos', op.data.photoId as string)
         if (photoRecord) {
-          // Get presigned URL and upload directly to R2
-          const presignRes = await fetch('/api/storage/presign', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              key: op.data.filePath as string,
-              contentType: 'image/jpeg',
-            }),
-          })
-          if (!presignRes.ok) throw new Error('Failed to get presigned URL')
-          const { uploadUrl } = await presignRes.json()
+          // Upload via API route (same-origin, no CORS issues)
+          const formData = new FormData()
+          formData.append('file', new File([photoRecord.blob], 'photo.jpg', { type: 'image/jpeg' }))
+          formData.append('key', op.data.filePath as string)
 
-          const uploadRes = await fetch(uploadUrl, {
-            method: 'PUT',
-            body: photoRecord.blob,
-            headers: { 'Content-Type': 'image/jpeg' },
+          const uploadRes = await fetch('/api/storage/upload', {
+            method: 'POST',
+            body: formData,
           })
-          if (!uploadRes.ok) throw new Error(`R2 upload failed: ${uploadRes.status}`)
+          if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`)
 
           // Create photo record in DB
           const { error: dbError } = await supabase.from('photos').insert({

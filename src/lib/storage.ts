@@ -1,53 +1,26 @@
 // src/lib/storage.ts
 // Photo & plan storage via Cloudflare R2
-// Uploads: browser gets presigned PUT URL from API route, PUTs directly to R2
-// Reads: browser gets signed GET URL from API route
+// Uploads: POST file to /api/storage/upload (same-origin, no CORS issues)
+// Reads: GET signed URL from /api/storage/signed-url
 
 const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB
-
-async function getPresignedUploadUrl(
-  key: string,
-  contentType: string
-): Promise<string> {
-  const res = await fetch('/api/storage/presign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ key, contentType }),
-  })
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: res.statusText }))
-    throw new Error(body.error ?? `Presign failed: ${res.status}`)
-  }
-  const { uploadUrl } = await res.json()
-  return uploadUrl
-}
 
 async function uploadToR2(
   key: string,
   file: File | Blob,
   contentType: string
 ): Promise<void> {
-  let uploadUrl: string
-  try {
-    uploadUrl = await getPresignedUploadUrl(key, contentType)
-  } catch (err) {
-    throw new Error(`Presign step failed: ${err instanceof Error ? err.message : err}`)
-  }
+  const formData = new FormData()
+  formData.append('file', file instanceof File ? file : new File([file], 'upload', { type: contentType }))
+  formData.append('key', key)
 
-  try {
-    const res = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: { 'Content-Type': contentType },
-    })
-    if (!res.ok) {
-      const text = await res.text().catch(() => '')
-      throw new Error(`R2 upload failed: ${res.status} ${res.statusText} ${text}`)
-    }
-  } catch (err) {
-    if (err instanceof Error && err.message.startsWith('R2 upload failed'))
-      throw err
-    throw new Error(`R2 PUT failed: ${err instanceof Error ? err.message : err}`)
+  const res = await fetch('/api/storage/upload', {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }))
+    throw new Error(body.error ?? `Upload failed: ${res.status}`)
   }
 }
 
