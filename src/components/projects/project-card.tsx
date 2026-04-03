@@ -7,6 +7,7 @@ interface ProjectCardProps {
   project: Project
   phaseCount: number
   completedPhases: number
+  hasUnread?: boolean
 }
 
 const statusVariant = {
@@ -21,17 +22,22 @@ const statusLabel = {
   archived: 'Archived',
 }
 
-export function ProjectCard({ project, phaseCount, completedPhases }: ProjectCardProps) {
+export function ProjectCard({ project, phaseCount, completedPhases, hasUnread }: ProjectCardProps) {
   const progress = phaseCount > 0 ? (completedPhases / phaseCount) * 100 : 0
 
   return (
     <Card hoverable>
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 truncate">{project.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-gray-900 truncate">{project.name}</h3>
+            {hasUnread && (
+              <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" aria-label="New activity" />
+            )}
+          </div>
           {project.address && (
             <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-              <MapPin className="w-3 h-3 flex-shrink-0" />
+              <MapPin className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">{project.address}</span>
             </p>
           )}
