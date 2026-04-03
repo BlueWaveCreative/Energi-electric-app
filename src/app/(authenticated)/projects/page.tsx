@@ -31,27 +31,42 @@ export default async function ProjectsPage() {
   if (isAdmin && projects?.length) {
     const projectIds = projects.map((p) => p.id)
 
-    const { data: views } = await supabase
-      .from('project_views')
-      .select('project_id, last_viewed_at')
-      .eq('user_id', user.id)
-      .in('project_id', projectIds)
+    const [viewsRes, notesRes, photosRes, timeRes] = await Promise.all([
+      supabase
+        .from('project_views')
+        .select('project_id, last_viewed_at')
+        .eq('user_id', user.id)
+        .in('project_id', projectIds),
+      supabase
+        .from('notes')
+        .select('linked_id, created_at')
+        .eq('linked_type', 'project')
+        .in('linked_id', projectIds)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('photos')
+        .select('linked_id, created_at')
+        .eq('linked_type', 'project')
+        .in('linked_id', projectIds)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('time_entries')
+        .select('project_id, start_time')
+        .in('project_id', projectIds)
+        .order('start_time', { ascending: false }),
+    ])
 
     const viewMap = new Map<string, string>()
-    for (const v of views ?? []) {
+    for (const v of viewsRes.data ?? []) {
       viewMap.set(v.project_id, v.last_viewed_at)
     }
 
     for (const p of projects) {
       const lastViewed = viewMap.get(p.id) ?? '1970-01-01T00:00:00Z'
-
-      const [notesRes, photosRes, timeRes] = await Promise.all([
-        supabase.from('notes').select('created_at').eq('linked_type', 'project').eq('linked_id', p.id).gt('created_at', lastViewed).limit(1),
-        supabase.from('photos').select('created_at').eq('linked_type', 'project').eq('linked_id', p.id).gt('created_at', lastViewed).limit(1),
-        supabase.from('time_entries').select('start_time').eq('project_id', p.id).gt('start_time', lastViewed).limit(1),
-      ])
-
-      if ((notesRes.data?.length ?? 0) > 0 || (photosRes.data?.length ?? 0) > 0 || (timeRes.data?.length ?? 0) > 0) {
+      const hasNewNote = (notesRes.data ?? []).some((n) => n.linked_id === p.id && n.created_at > lastViewed)
+      const hasNewPhoto = (photosRes.data ?? []).some((ph) => ph.linked_id === p.id && ph.created_at > lastViewed)
+      const hasNewTime = (timeRes.data ?? []).some((t) => t.project_id === p.id && t.start_time > lastViewed)
+      if (hasNewNote || hasNewPhoto || hasNewTime) {
         unreadProjectIds.add(p.id)
       }
     }

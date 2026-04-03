@@ -1,131 +1,17 @@
-'use client'
-
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { useSupabase } from '@/hooks/use-supabase'
-import { Suspense } from 'react'
-
-function SignupForm() {
-  const supabase = useSupabase()
-  const router = useRouter()
-
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  async function handleSignup(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, role: 'field_worker' },
-      },
-    })
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
-  }
-
-  return (
-    <form onSubmit={handleSignup} className="space-y-4">
-      {error && (
-        <div className="bg-red-900/30 text-red-400 border border-red-800/50 text-sm p-3 rounded-lg" role="alert">
-          {error}
-        </div>
-      )}
-
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-          Full Name
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
-          placeholder="John Smith"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
-          placeholder="you@example.com"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={8}
-          className="w-full px-3 py-2 bg-white/10 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-500"
-          placeholder="Min 8 characters"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-2 px-4 bg-[#68BD45] text-white font-medium rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Creating account...' : 'Create Account'}
-      </button>
-    </form>
-  )
-}
 
 function SignupContent() {
-  const searchParams = useSearchParams()
-  const hasInvite = searchParams.get('role') === 'field_worker'
-
-  if (!hasInvite) {
-    return (
-      <div className="text-center">
-        <p className="text-white text-lg font-medium mb-2">Invite Required</p>
-        <p className="text-gray-400 text-sm mb-6">
-          You need an invite link from your admin to create an account.
-        </p>
-        <Link href="/login" className="text-[#68BD45] text-sm hover:underline">
-          Back to sign in
-        </Link>
-      </div>
-    )
-  }
-
+  // Signup is invite-only — admin creates accounts
   return (
-    <>
-      <p className="text-gray-400 text-center mb-8">Create your account</p>
-      <SignupForm />
-    </>
+    <div className="text-center">
+      <p className="text-white text-lg font-medium mb-2">Invite Required</p>
+      <p className="text-gray-400 text-sm mb-6">
+        Contact your admin to get an account set up.
+      </p>
+      <Link href="/login" className="text-[#68BD45] text-sm hover:underline">
+        Back to sign in
+      </Link>
+    </div>
   )
 }
 
@@ -136,9 +22,7 @@ export default function SignupPage() {
         <div className="flex justify-center mb-6">
           <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-12" />
         </div>
-        <Suspense fallback={<p className="text-gray-400 text-center">Loading...</p>}>
-          <SignupContent />
-        </Suspense>
+        <SignupContent />
       </div>
     </div>
   )

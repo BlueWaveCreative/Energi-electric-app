@@ -47,6 +47,7 @@ export function QuickNoteForm({ projectId, userId, onDone }: {
         placeholder="Quick note..."
         autoFocus
         disabled={saving}
+        aria-label="Quick note"
         className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
         onKeyDown={(e) => {
           if (e.key === 'Escape') onDone()

@@ -53,7 +53,14 @@ export function ProjectCard({ project, phaseCount, completedPhases, hasUnread }:
             <span>{completedPhases}/{phaseCount} phases</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div
+            className="w-full bg-gray-200 rounded-full h-1.5"
+            role="progressbar"
+            aria-valuenow={Math.round(progress)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Phase completion progress"
+          >
             <div
               className="bg-[#68BD45] h-1.5 rounded-full transition-all"
               style={{ width: `${progress}%` }}

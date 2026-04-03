@@ -74,7 +74,7 @@ export function JobCard({
   }
 
   async function handlePhotoCapture(file: File) {
-    await uploadPhoto(file, project.id, userId)
+    await uploadPhoto(file, project.id, 'project', project.id)
     window.location.reload()
   }
 
@@ -119,7 +119,7 @@ export function JobCard({
             type="button"
             onClick={onClockOut}
             disabled={isClockingOut}
-            className="px-4 py-1.5 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isClockingOut ? 'Saving...' : 'Clock Out'}
           </button>
@@ -143,19 +143,19 @@ export function JobCard({
             {localTasks.map((task) => (
               <label
                 key={task.id}
-                className="flex items-center gap-2 py-1.5 cursor-pointer"
+                className="flex items-center gap-2 py-2.5 min-h-[44px] cursor-pointer"
               >
                 <input
                   type="checkbox"
                   checked={task.status === 'complete'}
                   onChange={() => handleTaskToggle(task.id, task.status)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+                  className="w-6 h-6 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
                 />
                 <span
                   className={cn(
                     'text-sm',
                     task.status === 'complete'
-                      ? 'text-gray-400 line-through'
+                      ? 'text-gray-500 line-through'
                       : 'text-gray-700'
                   )}
                 >
@@ -203,6 +203,7 @@ export function JobCard({
             capture="environment"
             onChange={handleFileInput}
             className="hidden"
+            aria-label="Take a photo"
           />
           <input
             ref={fileRef}
@@ -210,31 +211,32 @@ export function JobCard({
             accept="image/*"
             onChange={handleFileInput}
             className="hidden"
+            aria-label="Upload a photo"
           />
           <button
             type="button"
             onClick={() => cameraRef.current?.click()}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors md:hidden"
+            className="flex items-center gap-1 px-4 py-2.5 text-sm min-h-[44px] bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors md:hidden"
           >
             <Camera className="w-3.5 h-3.5" /> Photo
           </button>
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="hidden md:flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+            className="hidden md:flex items-center gap-1 px-4 py-2.5 text-sm min-h-[44px] bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <ImagePlus className="w-3.5 h-3.5" /> Upload
           </button>
           <button
             type="button"
             onClick={() => setShowNoteInput(!showNoteInput)}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-1 px-4 py-2.5 text-sm min-h-[44px] bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <FileText className="w-3.5 h-3.5" /> Note
           </button>
           <a
             href={`/projects/${project.id}`}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-1 px-4 py-2.5 text-sm min-h-[44px] bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" /> Full Project
           </a>
@@ -265,7 +267,7 @@ export function JobCard({
           <button
             type="button"
             onClick={onClockIn}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] transition-colors"
+            className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] transition-colors"
           >
             ▶ Clock In
           </button>
@@ -286,19 +288,19 @@ export function JobCard({
           {localTasks.map((task) => (
             <label
               key={task.id}
-              className="flex items-center gap-2 py-1.5 cursor-pointer"
+              className="flex items-center gap-2 py-2.5 min-h-[44px] cursor-pointer"
             >
               <input
                 type="checkbox"
                 checked={task.status === 'complete'}
                 onChange={() => handleTaskToggle(task.id, task.status)}
-                className="w-4 h-4 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+                className="w-6 h-6 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
               />
               <span
                 className={cn(
                   'text-sm',
                   task.status === 'complete'
-                    ? 'text-gray-400 line-through'
+                    ? 'text-gray-500 line-through'
                     : 'text-gray-700'
                 )}
               >
