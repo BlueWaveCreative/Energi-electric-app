@@ -23,6 +23,7 @@ export function TemplateForm({ template }: TemplateFormProps) {
       name: p.name,
       description: p.description ?? '',
       sort_order: p.sort_order,
+      tasks: [],
     })) ?? []
   )
   const [saving, setSaving] = useState(false)

@@ -79,6 +79,16 @@ export default async function ProjectDetailPage({
 
   const isAdmin = profile?.role === 'admin'
 
+  // Mark project as viewed (for unread dot tracking)
+  if (isAdmin) {
+    await supabase
+      .from('project_views')
+      .upsert(
+        { user_id: user.id, project_id: id, last_viewed_at: new Date().toISOString() },
+        { onConflict: 'user_id,project_id' }
+      )
+  }
+
   return (
     <div>
       <PageHeader
