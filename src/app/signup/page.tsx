@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { useSupabase } from '@/hooks/use-supabase'
+import { Suspense } from 'react'
 
 function SignupForm() {
   const supabase = useSupabase()
@@ -101,6 +103,32 @@ function SignupForm() {
   )
 }
 
+function SignupContent() {
+  const searchParams = useSearchParams()
+  const hasInvite = searchParams.get('role') === 'field_worker'
+
+  if (!hasInvite) {
+    return (
+      <div className="text-center">
+        <p className="text-white text-lg font-medium mb-2">Invite Required</p>
+        <p className="text-gray-400 text-sm mb-6">
+          You need an invite link from your admin to create an account.
+        </p>
+        <Link href="/login" className="text-[#68BD45] text-sm hover:underline">
+          Back to sign in
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <p className="text-gray-400 text-center mb-8">Create your account</p>
+      <SignupForm />
+    </>
+  )
+}
+
 export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#32373C] px-4">
@@ -108,8 +136,9 @@ export default function SignupPage() {
         <div className="flex justify-center mb-6">
           <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-12" />
         </div>
-        <p className="text-gray-400 text-center mb-8">Create your account</p>
-        <SignupForm />
+        <Suspense fallback={<p className="text-gray-400 text-center">Loading...</p>}>
+          <SignupContent />
+        </Suspense>
       </div>
     </div>
   )

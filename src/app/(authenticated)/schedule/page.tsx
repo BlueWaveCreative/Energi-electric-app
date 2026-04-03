@@ -16,9 +16,8 @@ export default async function SchedulePage() {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') redirect('/dashboard')
+  const isAdmin = profile?.role === 'admin'
 
-  // Calculate two-week range: current Monday through Sunday two weeks out
   const now = new Date()
   const dayOfWeek = now.getDay()
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
@@ -73,6 +72,8 @@ export default async function SchedulePage() {
           projects={projects}
           initialEntries={entries}
           rangeStart={startStr}
+          isAdmin={isAdmin}
+          currentUserId={user.id}
         />
       </div>
     </div>

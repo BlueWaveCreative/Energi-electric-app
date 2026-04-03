@@ -17,28 +17,39 @@ export default async function ActivityPage() {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') redirect('/dashboard')
+  const isAdmin = profile?.role === 'admin'
 
-  // Fetch recent activity from multiple tables
+  // Build queries — non-admins only see their own activity
+  let notesQuery = supabase
+    .from('notes')
+    .select('id, created_at, content, user_id, profiles(name), linked_type, linked_id')
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  let photosQuery = supabase
+    .from('photos')
+    .select('id, created_at, caption, user_id, profiles(name), linked_type, linked_id')
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  let timeQuery = supabase
+    .from('time_entries')
+    .select('id, start_time, duration_minutes, method, user_id, profiles!time_entries_user_id_fkey(name), projects(name)')
+    .order('start_time', { ascending: false })
+    .limit(20)
+
+  if (!isAdmin) {
+    notesQuery = notesQuery.eq('user_id', user.id)
+    photosQuery = photosQuery.eq('user_id', user.id)
+    timeQuery = timeQuery.eq('user_id', user.id)
+  }
+
   const [notesResult, photosResult, timeResult] = await Promise.all([
-    supabase
-      .from('notes')
-      .select('id, created_at, content, profiles(name), linked_type, linked_id')
-      .order('created_at', { ascending: false })
-      .limit(20),
-    supabase
-      .from('photos')
-      .select('id, created_at, caption, profiles(name), linked_type, linked_id')
-      .order('created_at', { ascending: false })
-      .limit(20),
-    supabase
-      .from('time_entries')
-      .select('id, start_time, duration_minutes, method, profiles!time_entries_user_id_fkey(name), projects(name)')
-      .order('start_time', { ascending: false })
-      .limit(20),
+    notesQuery,
+    photosQuery,
+    timeQuery,
   ])
 
-  // Merge and sort by timestamp
   const activities: ActivityItem[] = []
 
   for (const note of notesResult.data ?? []) {
@@ -74,12 +85,11 @@ export default async function ActivityPage() {
     })
   }
 
-  // Sort by most recent
   activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 
   return (
     <div>
-      <PageHeader title="Activity" />
+      <PageHeader title={isAdmin ? 'Activity' : 'My Activity'} />
       <div className="p-4 md:p-6">
         <ActivityFeed items={activities} />
       </div>
