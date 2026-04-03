@@ -63,6 +63,7 @@ export function QuickTaskInput({ phaseId, userId, onTaskAdded }: QuickTaskInputP
         placeholder="Task title..."
         autoFocus
         disabled={saving}
+        aria-label="Task title"
         className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
         onKeyDown={(e) => {
           if (e.key === 'Escape') {

@@ -211,7 +211,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
       <button
         type="button"
         onClick={() => setShowAddJobModal(true)}
-        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#68BD45] border border-dashed border-[#68BD45]/30 rounded-lg hover:bg-[#68BD45]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50"
+        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#68BD45] border border-dashed border-[#68BD45]/50 rounded-lg hover:bg-[#68BD45]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50"
       >
         <Plus className="w-4 h-4" aria-hidden="true" />
         Add unscheduled job

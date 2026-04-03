@@ -43,7 +43,7 @@ export function Sidebar({ isAdmin }: SidebarProps) {
         <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-8" />
       </div>
 
-      <nav className="flex-1 p-3 space-y-1">
+      <nav aria-label="Main navigation" className="flex-1 p-3 space-y-1">
         {visibleItems.map((item) => {
           const isActive = pathname.startsWith(item.href)
           return (
