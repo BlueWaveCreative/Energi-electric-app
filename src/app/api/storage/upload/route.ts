@@ -1,15 +1,52 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { uploadToR2 } from '@/lib/r2'
-import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
-  // Use server-side Supabase client (has cookie sanitization built in)
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+/**
+ * Extract user ID and access token from the Supabase auth cookie.
+ *
+ * Bypasses @supabase/ssr entirely — its cookie-to-session pipeline produces
+ * an Authorization header that Node.js undici rejects with "Invalid character
+ * in header content ['authorization']". Decoding the JWT locally avoids the
+ * outbound HTTP call and the broken header construction.
+ */
+async function getAuthFromCookie(): Promise<{ userId: string; accessToken: string } | null> {
+  const cookieStore = await cookies()
+  const authCookie = cookieStore.getAll().find(
+    (c) => c.name.includes('auth-token') && c.name.startsWith('sb-')
+  )
+  if (!authCookie) return null
 
-  if (!user) {
+  try {
+    let value = authCookie.value
+    if (value.startsWith('base64-')) {
+      value = Buffer.from(value.substring(7), 'base64url').toString('utf-8')
+    }
+    const session = JSON.parse(value)
+    const accessToken = session.access_token
+    if (!accessToken) return null
+
+    // JWT payload is the second dot-separated segment
+    const parts = accessToken.split('.')
+    if (parts.length !== 3) return null
+
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'))
+    const userId = payload.sub
+    if (!userId) return null
+
+    return { userId, accessToken }
+  } catch {
+    return null
+  }
+}
+
+export async function POST(request: Request) {
+  const auth = await getAuthFromCookie()
+
+  if (!auth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -18,7 +55,6 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File | null
     const key = formData.get('key') as string | null
 
-    // Optional: create a DB record for the upload (photo or plan)
     const linkedType = formData.get('linkedType') as string | null
     const linkedId = formData.get('linkedId') as string | null
     const thumbnailKey = formData.get('thumbnailKey') as string | null
@@ -27,7 +63,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing file or key' }, { status: 400 })
     }
 
-    // Validate type
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
     }
@@ -39,11 +74,24 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer())
     await uploadToR2(key, buffer, file.type)
 
-    // If linkedType/linkedId provided, create the DB record server-side
-    // This avoids the iOS WebKit cookie bug with browser Supabase client
+    // DB insert — create a Supabase client directly (bypassing @supabase/ssr)
+    // and set the access token manually so it's clean for undici
     if (linkedType && linkedId) {
+      const supabase = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          auth: { persistSession: false },
+          global: {
+            headers: {
+              Authorization: `Bearer ${auth.accessToken}`,
+            },
+          },
+        }
+      )
+
       const { error: dbError } = await supabase.from('photos').insert({
-        user_id: user.id,
+        user_id: auth.userId,
         file_path: key,
         thumbnail_path: thumbnailKey ?? key,
         linked_type: linkedType,
