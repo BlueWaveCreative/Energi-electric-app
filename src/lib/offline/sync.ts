@@ -48,12 +48,24 @@ export async function processOperation(
         const db = await getDB()
         const photoRecord = await db.get('photos', op.data.photoId as string)
         if (photoRecord) {
-          const { error: uploadError } = await supabase.storage
-            .from('project-files')
-            .upload(op.data.filePath as string, photoRecord.blob, {
+          // Get presigned URL and upload directly to R2
+          const presignRes = await fetch('/api/storage/presign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              key: op.data.filePath as string,
               contentType: 'image/jpeg',
-            })
-          if (uploadError) throw uploadError
+            }),
+          })
+          if (!presignRes.ok) throw new Error('Failed to get presigned URL')
+          const { uploadUrl } = await presignRes.json()
+
+          const uploadRes = await fetch(uploadUrl, {
+            method: 'PUT',
+            body: photoRecord.blob,
+            headers: { 'Content-Type': 'image/jpeg' },
+          })
+          if (!uploadRes.ok) throw new Error(`R2 upload failed: ${uploadRes.status}`)
 
           // Create photo record in DB
           const { error: dbError } = await supabase.from('photos').insert({

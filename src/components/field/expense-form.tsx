@@ -43,7 +43,7 @@ export function ExpenseForm({ projectId, userId, onSuccess }: ExpenseFormProps) 
       let receiptThumbnail: string | null = null
 
       if (receiptFile) {
-        const { path, thumbnailPath } = await uploadPhoto(supabase, receiptFile, projectId)
+        const { path, thumbnailPath } = await uploadPhoto(receiptFile, projectId)
         receiptPath = path
         receiptThumbnail = thumbnailPath
       }

@@ -11,9 +11,10 @@ import { uploadPlanFile } from '@/lib/storage'
 
 interface PlanUploadProps {
   projectId: string
+  userId: string
 }
 
-export function PlanUpload({ projectId }: PlanUploadProps) {
+export function PlanUpload({ projectId, userId }: PlanUploadProps) {
   const supabase = useSupabase()
   const router = useRouter()
   const [uploading, setUploading] = useState(false)
@@ -45,14 +46,6 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
     setUploading(true)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        setProgress('Error: Session expired. Please log in again.')
-        setUploading(false)
-        return
-      }
-
       let uploadFile: File | Blob = selectedFile
       let filePath: string
 
@@ -83,7 +76,7 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
         project_id: projectId,
         name: name.trim(),
         file_path: filePath,
-        uploaded_by: user.id,
+        uploaded_by: userId,
       })
 
       if (dbError) throw dbError

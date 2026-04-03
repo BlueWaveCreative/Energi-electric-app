@@ -47,7 +47,7 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
 
     // Load background image first, then annotations
     async function loadBackgroundAndAnnotations() {
-      const url = await getSignedUrl(supabase, filePath)
+      const url = await getSignedUrl(filePath)
       const bgImg = await FabricImage.fromURL(url, { crossOrigin: 'anonymous' })
 
       // Scale image to fit canvas
@@ -141,7 +141,7 @@ export function PlanCanvas({ planId, filePath, annotations, userId }: PlanCanvas
       window.removeEventListener('resize', handleResize)
       canvas.dispose()
     }
-  }, [supabase, filePath, annotations])
+  }, [filePath, annotations])
 
   function saveUndoState(canvas: Canvas) {
     const json = JSON.stringify(canvas.toJSON())

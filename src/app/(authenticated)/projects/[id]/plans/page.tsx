@@ -56,7 +56,7 @@ export default async function PlansPage({
 
       <div className="p-4 md:p-6 space-y-6">
         {/* Upload (admin only) */}
-        {isAdmin && <PlanUpload projectId={id} />}
+        {isAdmin && <PlanUpload projectId={id} userId={user.id} />}
 
         {/* Plans list */}
         <div className="space-y-3">
