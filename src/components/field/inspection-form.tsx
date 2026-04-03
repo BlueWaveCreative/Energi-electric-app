@@ -120,7 +120,7 @@ export function InspectionForm({ projectId, userId, onSuccess }: InspectionFormP
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any details about this inspection..."
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm resize-none placeholder:text-gray-400"
         />
       </div>
 
