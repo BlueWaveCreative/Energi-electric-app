@@ -169,16 +169,23 @@ export function ProjectDetailClient({
     const totalMinutes = entry.hours * 60 + entry.minutes
     const endTime = new Date(startTime.getTime() + totalMinutes * 60000)
 
-    await supabase.from('time_entries').insert({
+    const { error } = await supabase.from('time_entries').insert({
       user_id: userId,
       project_id: project.id,
-      phase_id: entry.phaseId,
+      phase_id: entry.phaseId || null,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       duration_minutes: totalMinutes,
       method: 'manual',
       notes: entry.notes || null,
     })
+
+    if (error) {
+      console.error('Failed to save time entry:', error)
+      alert('Failed to save time entry. Please try again.')
+      return
+    }
+
     setShowTimeModal(false)
     window.location.reload()
   }
