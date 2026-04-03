@@ -13,7 +13,8 @@ export function formatDate(date: Date): string {
   })
 }
 
-export function formatDuration(minutes: number): string {
+export function formatDuration(rawMinutes: number): string {
+  const minutes = Math.round(rawMinutes)
   if (minutes === 0) return '0m'
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
