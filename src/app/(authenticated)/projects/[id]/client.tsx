@@ -50,7 +50,7 @@ export function ProjectDetailClient({
 }: ProjectDetailClientProps) {
   const supabase = useSupabase()
   const router = useRouter()
-  const { isRunning, activeProjectId, elapsed, startTimer, stopTimer } = useTimer()
+  const { isRunning, activeProjectId, elapsed, startTimer, stopTimer, clearTimer } = useTimer()
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [showTimeModal, setShowTimeModal] = useState(false)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
@@ -89,7 +89,6 @@ export function ProjectDetailClient({
     const result = stopTimer()
     if (!result) return
 
-    // Ensure at least 1 minute is logged
     const duration = Math.max(1, result.durationMinutes)
 
     const { error } = await supabase.from('time_entries').insert({
@@ -104,10 +103,12 @@ export function ProjectDetailClient({
 
     if (error) {
       console.error('Failed to save time entry:', error)
-      alert('Failed to save time entry. Please try again.')
-    } else {
-      sendNotification('clock_events', 'Clock Out', `Crew member clocked out at ${project.name}`)
+      alert('Failed to save time entry. Your timer is still running — try again.')
+      return
     }
+
+    clearTimer()
+    sendNotification('clock_events', 'Clock Out', `Crew member clocked out at ${project.name}`)
     window.location.reload()
   }
 
@@ -119,6 +120,18 @@ export function ProjectDetailClient({
       linked_id: project.id,
     })
     setShowNoteModal(false)
+    window.location.reload()
+  }
+
+  async function handleDeleteNote(noteId: string) {
+    if (!confirm('Delete this note?')) return
+    await supabase.from('notes').delete().eq('id', noteId)
+    window.location.reload()
+  }
+
+  async function handleDeleteTimeEntry(entryId: string) {
+    if (!confirm('Delete this time entry?')) return
+    await supabase.from('time_entries').delete().eq('id', entryId)
     window.location.reload()
   }
 
@@ -242,7 +255,7 @@ export function ProjectDetailClient({
       {/* Notes section */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-3">Notes</h2>
-        <NoteList notes={notes} />
+        <NoteList notes={notes} onDelete={isAdmin ? handleDeleteNote : undefined} />
         <div className="mt-3 hidden md:block">
           <NoteForm onSubmit={handleAddNote} />
         </div>
@@ -302,7 +315,7 @@ export function ProjectDetailClient({
             + Manual Entry
           </Button>
         </div>
-        <TimeEntryList entries={timeEntries} />
+        <TimeEntryList entries={timeEntries} onDelete={isAdmin ? handleDeleteTimeEntry : undefined} />
       </div>
 
       {/* Mobile action bar */}
