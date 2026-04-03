@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import { getR2UploadUrl } from '@/lib/r2'
 
 export async function POST(request: Request) {
-  // Simple auth check — verify a Supabase auth cookie exists
-  // We don't call Supabase API (which triggers the header error)
-  // The cookie presence is enough — RLS protects the DB operations
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.getAll().find(c => c.name.includes('auth-token'))
-
-  if (!authCookie) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     const { key, contentType } = await request.json()
 
-    if (!key || !contentType) {
-      return NextResponse.json({ error: 'Missing key or contentType' }, { status: 400 })
+    if (!key || typeof key !== 'string' || key.includes('..') || !key.startsWith('projects/')) {
+      return NextResponse.json({ error: 'Invalid key' }, { status: 400 })
+    }
+
+    if (!contentType) {
+      return NextResponse.json({ error: 'Missing contentType' }, { status: 400 })
     }
 
     // Validate content type

@@ -74,7 +74,7 @@ export function JobCard({
   }
 
   async function handlePhotoCapture(file: File) {
-    await uploadPhoto(file, project.id, userId)
+    await uploadPhoto(file, project.id, 'project', project.id)
     window.location.reload()
   }
 
