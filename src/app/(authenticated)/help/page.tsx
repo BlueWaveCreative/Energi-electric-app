@@ -63,19 +63,90 @@ export default async function HelpPage() {
           </p>
         </div>
 
+        {/* How It All Fits Together */}
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">How It All Fits Together</h3>
+
+        <Section icon={Zap} title="The Workflow">
+          {isAdmin ? (
+            <>
+              <p>Here's the big picture of how projects flow through the system:</p>
+              <Step number={1}><strong>Create a Template</strong> — define the standard phases for a type of job (e.g., "Kitchen Remodel" with Rough In, Trim Out, Final Walk). You only do this once per job type.</Step>
+              <Step number={2}><strong>Create a Project</strong> — give it a name and address, pick a template, and the phases auto-populate. Add tasks under each phase for the specific work items.</Step>
+              <Step number={3}><strong>Schedule your crew</strong> — go to the Schedule board and assign workers to projects for specific days. This tells them where to go.</Step>
+              <Step number={4}><strong>Crew works the job</strong> — when they open the app, they see their Today screen with the day's assignments, the current phase, and a task checklist. They clock in, check off tasks, add notes/photos, and clock out.</Step>
+              <Step number={5}><strong>Track progress</strong> — use Reports to review time logged, the Dashboard for project status, and push notifications for real-time updates.</Step>
+            </>
+          ) : (
+            <>
+              <p>Here's how your day works in the app:</p>
+              <Step number={1}><strong>Open the app</strong> — your Today screen shows the jobs scheduled for you today.</Step>
+              <Step number={2}><strong>Clock In</strong> — tap the green button on your first job. The timer starts and tracks time to that specific phase.</Step>
+              <Step number={3}><strong>Work the job</strong> — check off tasks as you complete them, add notes for anything important, take photos to document the work.</Step>
+              <Step number={4}><strong>Clock Out</strong> — when you're done, tap Clock Out. Your time is saved automatically.</Step>
+              <Step number={5}><strong>Move to the next job</strong> — the next card is ready for you to clock in.</Step>
+            </>
+          )}
+        </Section>
+
         {/* Getting Around */}
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Getting Around</h3>
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Getting Around</h3>
 
         <Section icon={Monitor} title="Navigation">
           <p><strong>On desktop:</strong> Use the sidebar on the left to switch between pages.</p>
           <p><strong>On mobile:</strong> Use the bottom navigation bar. Tap any icon to jump to that section.</p>
         </Section>
 
+        {/* Today View (Field Workers) */}
+        {!isAdmin && (
+          <>
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Your Today Screen</h3>
+
+            <Section icon={CalendarDays} title="Today's Jobs">
+              <p>When you open the app, you see your <strong>Today</strong> screen — the jobs scheduled for you today.</p>
+              <p>Each job card shows the <strong>project name</strong>, <strong>address</strong>, and the <strong>current phase</strong> you're working on (e.g., "Trim Out").</p>
+              <p>The green badge in the top right tracks your <strong>total hours today</strong> — it updates live while you're clocked in.</p>
+            </Section>
+
+            <Section icon={Play} title="Clocking In from Today">
+              <Step number={1}>Tap the green <strong>Clock In</strong> button on a job card.</Step>
+              <Step number={2}>The card expands with a live timer, your task checklist, and quick action buttons.</Step>
+              <Step number={3}>Other jobs dim so you can focus on the active one.</Step>
+              <Step number={4}>When you're done, tap the red <strong>Clock Out</strong> button. Your time is saved to that specific phase.</Step>
+              <p className="text-gray-500 mt-1">You can only be clocked in to one job at a time. The timer keeps running even if you navigate to other pages.</p>
+            </Section>
+
+            <Section icon={CheckSquare} title="Task Checklist">
+              <p>While clocked in, your task checklist expands automatically. Tap checkboxes to mark tasks complete.</p>
+              <p><strong>Add a quick task:</strong> Tap <strong>+ Add task...</strong> at the bottom of the checklist, type a title, and press Enter. It's added to the phase instantly.</p>
+            </Section>
+
+            <Section icon={StickyNote} title="Quick Notes & Photos">
+              <p>While clocked in, you'll see quick action buttons:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li><strong>Photo</strong> — opens your camera (mobile) or file picker (desktop) to capture job site photos</li>
+                <li><strong>Note</strong> — opens a text input to add a quick note to the project</li>
+                <li><strong>Full Project</strong> — opens the full project page for blueprints, expenses, past notes, etc.</li>
+              </ul>
+            </Section>
+
+            <Section icon={Plus} title="Unscheduled Jobs">
+              <p>If your admin calls with an unplanned job, tap <strong>+ Add unscheduled job</strong> at the bottom of the Today screen.</p>
+              <Step number={1}>Pick the project from the dropdown.</Step>
+              <Step number={2}>Enter a name for the job (e.g., "Emergency Service Call").</Step>
+              <Step number={3}>Tap <strong>Add Job</strong> — it appears on your Today screen immediately, ready to clock in.</Step>
+            </Section>
+          </>
+        )}
+
         {/* Projects */}
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Projects</h3>
 
         <Section icon={FolderOpen} title="Viewing Projects">
-          <p>The <strong>Dashboard</strong> shows all active projects at a glance with progress bars. Tap any project to open it.</p>
+          {isAdmin ? (
+            <p>The <strong>Dashboard</strong> shows all active projects at a glance with progress bars. Tap any project to open it.</p>
+          ) : (
+            <p>The <strong>Projects</strong> page shows all projects. Tap any project to see its full details — phases, tasks, notes, photos, and blueprints.</p>
+          )}
           <p>The <strong>Projects</strong> page shows all projects (active, completed, and archived).</p>
         </Section>
 
@@ -99,11 +170,17 @@ export default async function HelpPage() {
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Time Tracking</h3>
 
         <Section icon={Play} title="Clocking In & Out">
+          {!isAdmin ? (
+            <>
+              <p>The easiest way to clock in is from your <strong>Today</strong> screen — tap Clock In on a job card and your time is tracked to that specific phase.</p>
+              <p>You can also clock in from a project detail page:</p>
+            </>
+          ) : null}
           <Step number={1}>Open a project.</Step>
           <Step number={2}>Tap the green <strong>Clock In</strong> button.</Step>
           <Step number={3}>A live timer starts counting. You can navigate to other pages — the timer keeps running.</Step>
           <Step number={4}>When done, return to the project and tap <strong>Clock Out</strong>.</Step>
-          <p className="text-gray-500 mt-1">The time entry is automatically saved with the exact start and end time.</p>
+          <p className="text-gray-500 mt-1">The time entry is automatically saved with the exact start and end time. When clocking in from the Today screen, time is tracked to the specific phase (e.g., "Trim Out").</p>
           <p className="text-gray-500">You can only be clocked in to one project at a time.</p>
         </Section>
 
@@ -143,7 +220,7 @@ export default async function HelpPage() {
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Blueprints</h3>
 
         <Section icon={Map} title="Blueprint Annotation">
-          <p>Open a project and go to <strong>Plans</strong> to view uploaded blueprints.</p>
+          <p>Open a project and tap <strong>Upload Blueprint</strong> (or <strong>View Plans</strong> if blueprints already exist) in the Blueprints section.</p>
           {isAdmin && (
             <>
               <Step number={1}>Tap <strong>Upload Plan</strong> and drag in a PDF, PNG, or JPG blueprint.</Step>
@@ -200,14 +277,17 @@ export default async function HelpPage() {
               <p>The board shows the current week and next week, with crew members down the left and days across the top.</p>
               <Step number={1}>Tap an empty cell to assign a crew member to a project for that day.</Step>
               <Step number={2}>Tap a filled cell to change the assignment or clear it.</Step>
-              <p className="text-gray-500 mt-1">Projects are color-coded so you can see the distribution at a glance. Today's column is highlighted in green. Each crew member can only be assigned to one project per day.</p>
+              <p className="text-gray-500 mt-1">Projects are color-coded so you can see the distribution at a glance. Today's column is highlighted in green.</p>
+              <p className="text-gray-500"><strong>How it connects to the Today screen:</strong> Whatever you assign here is what your crew sees when they open the app. The Today screen shows them the project, the current phase, and a task checklist — so make sure your projects have phases and tasks set up before scheduling.</p>
             </Section>
 
             <Section icon={FileStack} title="Templates">
-              <p>Templates define standard phases for different project types (e.g., "Residential New Build" with Rough-in, Trim-out, Final phases).</p>
+              <p>Templates save you time by pre-building the phases for common job types. Instead of manually adding "Rough In → Trim Out → Final Walk" every time, you create a template once and reuse it.</p>
               <Step number={1}>Go to <strong>Templates</strong> and tap <strong>+ New Template</strong>.</Step>
-              <Step number={2}>Name the template and add phases in order.</Step>
-              <Step number={3}>When creating a new project, select a template to auto-fill its phases.</Step>
+              <Step number={2}>Name it (e.g., "Kitchen Remodel" or "Panel Upgrade").</Step>
+              <Step number={3}>Add phases in the order they'll be done (e.g., Rough In → Trim Out → Final Walk).</Step>
+              <Step number={4}>When creating a new project, pick this template — all phases auto-populate.</Step>
+              <p className="text-gray-500 mt-1">After creating a project from a template, you can still add extra phases or tasks specific to that job. Templates give you the starting point, not a rigid structure.</p>
             </Section>
 
             <Section icon={BarChart3} title="Time Reports">
