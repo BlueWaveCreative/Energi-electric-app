@@ -33,7 +33,7 @@ export default async function ActivityPage() {
       .limit(20),
     supabase
       .from('time_entries')
-      .select('id, start_time, duration_minutes, method, profiles(name), projects(name)')
+      .select('id, start_time, duration_minutes, method, profiles!time_entries_user_id_fkey(name), projects(name)')
       .order('start_time', { ascending: false })
       .limit(20),
   ])

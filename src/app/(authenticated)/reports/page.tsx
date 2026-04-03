@@ -36,7 +36,7 @@ export default async function ReportsPage({
   // Build query with filters
   let query = supabase
     .from('time_entries')
-    .select('*, profiles(name), projects(name), phases(name)')
+    .select('*, profiles!time_entries_user_id_fkey(name), projects(name), phases(name)')
     .order('start_time', { ascending: false })
 
   if (params.start) {

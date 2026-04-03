@@ -46,7 +46,7 @@ export default async function ProjectDetailPage({
       .order('created_at', { ascending: false }),
     supabase
       .from('time_entries')
-      .select('*, profiles(name), phases(name)')
+      .select('*, profiles!time_entries_user_id_fkey(name), phases(name)')
       .eq('project_id', id)
       .order('start_time', { ascending: false }),
     supabase

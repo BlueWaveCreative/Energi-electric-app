@@ -19,7 +19,7 @@ export default async function MyTimePage() {
 
   const { data: entries } = await supabase
     .from('time_entries')
-    .select('*, profiles(name), phases(name)')
+    .select('*, profiles!time_entries_user_id_fkey(name), phases(name)')
     .eq('user_id', user.id)
     .gte('start_time', weekStart.toISOString())
     .order('start_time', { ascending: false })
