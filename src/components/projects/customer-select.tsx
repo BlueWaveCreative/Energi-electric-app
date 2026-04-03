@@ -14,9 +14,11 @@ interface CustomerSelectProps {
   userId: string
 }
 
-export function CustomerSelect({ customers, selectedId, onChange, userId }: CustomerSelectProps) {
+export function CustomerSelect({ customers: initialCustomers, selectedId, onChange, userId }: CustomerSelectProps) {
+  const [customers, setCustomers] = useState(initialCustomers)
   const [showNewForm, setShowNewForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
   const [newPhone, setNewPhone] = useState('')
@@ -42,20 +44,21 @@ export function CustomerSelect({ customers, selectedId, onChange, userId }: Cust
 
     if (error) {
       console.error('Failed to create customer:', error)
-      alert('Failed to create customer. Try again.')
+      setError('Failed to create customer. Try again.')
       setSaving(false)
       return
     }
 
+    // Add new customer to local list and select it (no page reload — preserves form state)
+    setCustomers((prev) => [...prev, data as Customer])
     onChange(data.id)
     setShowNewForm(false)
     setNewName('')
     setNewEmail('')
     setNewPhone('')
     setNewAddress('')
+    setError('')
     setSaving(false)
-
-    window.location.reload()
   }
 
   return (
@@ -88,8 +91,11 @@ export function CustomerSelect({ customers, selectedId, onChange, userId }: Cust
       ) : (
         <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
           <p className="text-sm font-medium text-gray-700 flex items-center gap-1">
-            <User className="w-4 h-4" /> New Customer
+            <User className="w-4 h-4" aria-hidden="true" /> New Customer
           </p>
+          {error && (
+            <div className="bg-red-50 text-red-600 text-sm p-2 rounded-lg" role="alert">{error}</div>
+          )}
           <Input
             id="new-customer-name"
             label="Name"
