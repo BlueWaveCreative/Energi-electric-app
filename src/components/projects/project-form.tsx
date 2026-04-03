@@ -5,18 +5,22 @@ import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/hooks/use-supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { TemplateWithPhases } from '@/lib/types/database'
+import { CustomerSelect } from './customer-select'
+import type { TemplateWithPhases, Customer } from '@/lib/types/database'
 
 interface ProjectFormProps {
   templates: TemplateWithPhases[]
+  customers: Customer[]
+  userId: string
 }
 
-export function ProjectForm({ templates }: ProjectFormProps) {
+export function ProjectForm({ templates, customers, userId }: ProjectFormProps) {
   const supabase = useSupabase()
   const router = useRouter()
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [templateId, setTemplateId] = useState('')
+  const [customerId, setCustomerId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -41,6 +45,7 @@ export function ProjectForm({ templates }: ProjectFormProps) {
           name: name.trim(),
           address: address.trim() || null,
           template_id: templateId || null,
+          customer_id: customerId,
           created_by: user!.id,
         })
         .select()
@@ -92,6 +97,13 @@ export function ProjectForm({ templates }: ProjectFormProps) {
         value={address}
         onChange={(e) => setAddress(e.target.value)}
         placeholder="123 Main St, Wilmington, NC"
+      />
+
+      <CustomerSelect
+        customers={customers}
+        selectedId={customerId}
+        onChange={setCustomerId}
+        userId={userId}
       />
 
       <div>
