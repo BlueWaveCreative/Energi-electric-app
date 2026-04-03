@@ -27,14 +27,27 @@ async function uploadToR2(
   file: File | Blob,
   contentType: string
 ): Promise<void> {
-  const uploadUrl = await getPresignedUploadUrl(key, contentType)
-  const res = await fetch(uploadUrl, {
-    method: 'PUT',
-    body: file,
-    headers: { 'Content-Type': contentType },
-  })
-  if (!res.ok) {
-    throw new Error(`R2 upload failed: ${res.status} ${res.statusText}`)
+  let uploadUrl: string
+  try {
+    uploadUrl = await getPresignedUploadUrl(key, contentType)
+  } catch (err) {
+    throw new Error(`Presign step failed: ${err instanceof Error ? err.message : err}`)
+  }
+
+  try {
+    const res = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': contentType },
+    })
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      throw new Error(`R2 upload failed: ${res.status} ${res.statusText} ${text}`)
+    }
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith('R2 upload failed'))
+      throw err
+    throw new Error(`R2 PUT failed: ${err instanceof Error ? err.message : err}`)
   }
 }
 
