@@ -56,15 +56,54 @@ export function ProjectForm({ templates, customers, userId }: ProjectFormProps) 
       if (templateId) {
         const selectedTemplate = templates.find((t) => t.id === templateId)
         if (selectedTemplate?.template_phases?.length) {
-          const { error: phaseError } = await supabase.from('phases').insert(
-            selectedTemplate.template_phases.map((tp) => ({
-              project_id: project.id,
-              name: tp.name,
-              description: tp.description,
-              sort_order: tp.sort_order,
-            }))
-          )
+          // Insert phases and get back IDs
+          const { data: insertedPhases, error: phaseError } = await supabase
+            .from('phases')
+            .insert(
+              selectedTemplate.template_phases
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((tp) => ({
+                  project_id: project.id,
+                  name: tp.name,
+                  description: tp.description,
+                  sort_order: tp.sort_order,
+                }))
+            )
+            .select('id, sort_order')
+
           if (phaseError) throw phaseError
+
+          // Copy template tasks to the new phases
+          const sortedTemplatePhases = [...selectedTemplate.template_phases].sort(
+            (a, b) => a.sort_order - b.sort_order
+          )
+          const sortedInserted = (insertedPhases ?? [] as { id: string; sort_order: number }[]).sort(
+            (a: { id: string; sort_order: number }, b: { id: string; sort_order: number }) =>
+              a.sort_order - b.sort_order
+          )
+
+          const allTasks: { phase_id: string; title: string; status: string; sort_order: number }[] = []
+
+          for (let i = 0; i < sortedTemplatePhases.length; i++) {
+            const tp = sortedTemplatePhases[i]
+            const insertedPhase = sortedInserted[i]
+            if (!insertedPhase) continue
+
+            const templateTasks = (tp as any).template_tasks ?? []
+            for (const tt of templateTasks) {
+              allTasks.push({
+                phase_id: insertedPhase.id,
+                title: tt.title,
+                status: 'pending',
+                sort_order: tt.sort_order,
+              })
+            }
+          }
+
+          if (allTasks.length > 0) {
+            const { error: taskError } = await supabase.from('tasks').insert(allTasks)
+            if (taskError) throw taskError
+          }
         }
       }
 

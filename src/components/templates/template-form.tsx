@@ -95,7 +95,10 @@ export function TemplateForm({ template }: TemplateFormProps) {
         if (phaseError) throw phaseError
 
         // Insert tasks for each phase
-        const sortedInserted = (insertedPhases ?? []).sort((a, b) => a.sort_order - b.sort_order)
+        const sortedInserted = (insertedPhases ?? [] as { id: string; sort_order: number }[]).sort(
+          (a: { id: string; sort_order: number }, b: { id: string; sort_order: number }) =>
+            a.sort_order - b.sort_order
+        )
         const sortedPhases = [...phases].sort((a, b) => a.sort_order - b.sort_order)
 
         const allTasks: { template_phase_id: string; title: string; sort_order: number }[] = []
