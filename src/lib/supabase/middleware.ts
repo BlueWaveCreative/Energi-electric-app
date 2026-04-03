@@ -32,11 +32,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Redirect unauthenticated users to login (except public routes)
   const publicRoutes = ['/login', '/signup', '/auth/callback', '/forgot-password', '/reset-password']
   const isPublicRoute = publicRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   )
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
@@ -44,7 +44,22 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from login
+  // Block inactive users — redirect to login with error
+  if (user && !isPublicRoute && !isApiRoute) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('status')
+      .eq('id', user.id)
+      .single()
+
+    if (profile && profile.status !== 'active') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('error', 'deactivated')
+      return NextResponse.redirect(url)
+    }
+  }
+
   if (user && request.nextUrl.pathname === '/login') {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
