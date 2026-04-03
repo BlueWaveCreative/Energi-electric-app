@@ -1,27 +1,18 @@
-// Photo & plan storage via Cloudflare R2
-// Uploads go through /api/storage/upload (server-side, auth-gated)
-// Signed URLs via /api/storage/signed-url (server-side, auth-gated)
+// Photo & plan storage
+// Uses Supabase Storage for uploads (browser client handles auth via
+// in-memory session token, avoiding the iOS Safari cookie header bug)
+// Signed URLs fetched via Supabase Storage client
 
-// Accept any image/* MIME type — covers JPEG, PNG, GIF, WebP, HEIC, HEIF, BMP, TIFF, etc.
-// Android/iPhone cameras all produce image/* types
-const ALLOWED_MIMES_PREFIX = 'image/'
-const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB (iPhone photos can be large)
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-const MIME_TO_EXT: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/gif': 'gif',
-  'image/webp': 'webp',
-  'image/heic': 'heic',
-  'image/heif': 'heif',
-}
+const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB
 
 export async function uploadPhoto(
-  _supabase: unknown, // kept for API compatibility — not used
+  supabase: SupabaseClient,
   file: File,
   projectId: string
 ): Promise<{ path: string; thumbnailPath: string }> {
-  if (!file.type.startsWith(ALLOWED_MIMES_PREFIX)) {
+  if (!file.type.startsWith('image/')) {
     throw new Error(`File type "${file.type}" is not allowed. Only image files are accepted.`)
   }
   if (file.size > MAX_PHOTO_SIZE) {
@@ -33,8 +24,6 @@ export async function uploadPhoto(
   const thumbnailPath = `projects/${projectId}/photos/thumb_${timestamp}.jpg`
 
   // Compress the photo client-side before uploading
-  // Vercel has a ~4.5MB body limit on serverless functions
-  // iPhone photos are often 5-15MB, so we resize to max 2048px and compress as JPEG
   let uploadFile: File | Blob = file
   try {
     uploadFile = await compressImage(file, 2048, 0.85)
@@ -42,13 +31,27 @@ export async function uploadPhoto(
     // If compression fails (HEIC on some browsers), upload original
   }
 
-  // Upload compressed photo to R2
-  await uploadToR2(path, uploadFile)
+  // Upload directly to Supabase Storage using the browser client
+  // The browser Supabase client uses an in-memory session token,
+  // NOT cookies, so it avoids the iOS Safari header bug
+  const { error: uploadError } = await supabase.storage
+    .from('project-files')
+    .upload(path, uploadFile, {
+      contentType: 'image/jpeg',
+      upsert: false,
+    })
+
+  if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
   // Create and upload thumbnail (best-effort)
   try {
     const thumbnailBlob = await createThumbnail(file, 300)
-    await uploadToR2(thumbnailPath, thumbnailBlob)
+    await supabase.storage
+      .from('project-files')
+      .upload(thumbnailPath, thumbnailBlob, {
+        contentType: 'image/jpeg',
+        upsert: false,
+      })
     return { path, thumbnailPath }
   } catch {
     return { path, thumbnailPath: path }
@@ -56,41 +59,32 @@ export async function uploadPhoto(
 }
 
 export async function uploadPlanFile(
+  supabase: SupabaseClient,
   file: File | Blob,
   key: string
 ): Promise<void> {
-  await uploadToR2(key, file)
-}
+  const contentType = file instanceof File ? file.type : 'image/png'
+  const { error } = await supabase.storage
+    .from('project-files')
+    .upload(key, file, { contentType, upsert: false })
 
-async function uploadToR2(key: string, file: File | Blob): Promise<void> {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('key', key)
-
-  const res = await fetch('/api/storage/upload', {
-    method: 'POST',
-    body: formData,
-  })
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({ error: 'Upload failed' }))
-    throw new Error(data.error ?? 'Upload failed')
-  }
+  if (error) throw new Error(`Plan upload failed: ${error.message}`)
 }
 
 export async function getSignedUrl(
-  _supabase: unknown, // kept for API compatibility — not used
-  path: string
+  supabase: SupabaseClient,
+  path: string,
+  expiresIn = 3600
 ): Promise<string> {
-  const res = await fetch(`/api/storage/signed-url?key=${encodeURIComponent(path)}`)
-  if (!res.ok) {
-    throw new Error('Failed to get signed URL')
-  }
-  const data = await res.json()
-  return data.url
+  const { data, error } = await supabase.storage
+    .from('project-files')
+    .createSignedUrl(path, expiresIn)
+
+  if (error) throw error
+  return data.signedUrl
 }
 
-async function createThumbnail(file: File, maxSize: number): Promise<Blob> {
+async function createThumbnail(file: File | Blob, maxSize: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     const url = URL.createObjectURL(file)
@@ -120,7 +114,7 @@ async function createThumbnail(file: File, maxSize: number): Promise<Blob> {
 
       canvas.toBlob(
         (blob) => (blob ? resolve(blob) : reject(new Error('Failed to create thumbnail'))),
-        file.type,
+        'image/jpeg',
         0.7
       )
     }

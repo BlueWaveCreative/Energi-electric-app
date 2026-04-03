@@ -75,7 +75,7 @@ export function PlanUpload({ projectId }: PlanUploadProps) {
       }
 
       setProgress('Uploading...')
-      await uploadPlanFile(uploadFile, filePath)
+      await uploadPlanFile(supabase, uploadFile, filePath)
 
       setProgress('Saving...')
 
