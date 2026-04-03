@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { formatDate, formatDuration, formatTime } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import type { TimeEntry, Profile, Phase } from '@/lib/types/database'
@@ -10,9 +11,10 @@ interface TimeEntryWithRelations extends TimeEntry {
 interface TimeEntryListProps {
   entries: TimeEntryWithRelations[]
   showUser?: boolean
+  onDelete?: (entryId: string) => void
 }
 
-export function TimeEntryList({ entries, showUser = true }: TimeEntryListProps) {
+export function TimeEntryList({ entries, showUser = true, onDelete }: TimeEntryListProps) {
   if (entries.length === 0) {
     return <p className="text-sm text-gray-500 italic">No time entries</p>
   }
@@ -47,14 +49,25 @@ export function TimeEntryList({ entries, showUser = true }: TimeEntryListProps) 
               <p className="text-xs text-gray-500 mt-0.5 truncate">{entry.notes}</p>
             )}
           </div>
-          <div className="text-right ml-3 flex-shrink-0">
-            <p className="text-sm font-medium text-gray-900">{formatDuration(entry.duration_minutes ?? 0)}</p>
-            {entry.method === 'clock' && entry.end_time && (
-              <p className="text-xs text-gray-600">
-                {formatTime(new Date(entry.start_time))} - {formatTime(new Date(entry.end_time))} ET
-              </p>
+          <div className="flex items-center gap-2 ml-3 flex-shrink-0">
+            <div className="text-right">
+              <p className="text-sm font-medium text-gray-900">{formatDuration(entry.duration_minutes ?? 0)}</p>
+              {entry.method === 'clock' && entry.end_time && (
+                <p className="text-xs text-gray-600">
+                  {formatTime(new Date(entry.start_time))} - {formatTime(new Date(entry.end_time))} ET
+                </p>
+              )}
+              <p className="text-xs text-gray-500">{formatDate(new Date(entry.start_time))}</p>
+            </div>
+            {onDelete && (
+              <button
+                onClick={() => onDelete(entry.id)}
+                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                aria-label="Delete time entry"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
             )}
-            <p className="text-xs text-gray-500">{formatDate(new Date(entry.start_time))}</p>
           </div>
         </div>
       ))}

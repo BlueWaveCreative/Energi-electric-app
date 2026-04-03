@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { X, Trash2, CheckSquare, Square } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { X, Trash2, CheckSquare, Square, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSignedUrl } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,7 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGalleryProps) {
-  const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithUser | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -103,14 +103,14 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
       )}
 
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
-        {photos.map((photo) => (
+        {photos.map((photo, index) => (
           <button
             key={photo.id}
             onClick={() => {
               if (selectMode) {
                 toggleSelect(photo.id)
               } else {
-                setSelectedPhoto(photo)
+                setSelectedIndex(index)
               }
             }}
             className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity"
@@ -138,13 +138,15 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
         ))}
       </div>
 
-      {selectedPhoto && (
+      {selectedIndex !== null && (
         <LightBox
-          photo={selectedPhoto}
-          onClose={() => setSelectedPhoto(null)}
-          onDelete={onDelete ? () => {
-            onDelete(selectedPhoto.id)
-            setSelectedPhoto(null)
+          photos={photos}
+          currentIndex={selectedIndex}
+          onClose={() => setSelectedIndex(null)}
+          onNavigate={setSelectedIndex}
+          onDelete={onDelete ? (id) => {
+            onDelete(id)
+            setSelectedIndex(null)
           } : undefined}
         />
       )}
@@ -153,18 +155,27 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
 }
 
 function LightBox({
-  photo,
+  photos,
+  currentIndex,
   onClose,
+  onNavigate,
   onDelete,
 }: {
-  photo: PhotoWithUser
+  photos: PhotoWithUser[]
+  currentIndex: number
   onClose: () => void
-  onDelete?: () => void
+  onNavigate: (index: number) => void
+  onDelete?: (photoId: string) => void
 }) {
+  const photo = photos[currentIndex]
   const [fullUrl, setFullUrl] = useState<string>('')
   const overlayRef = useRef<HTMLDivElement>(null)
 
+  const hasPrev = currentIndex > 0
+  const hasNext = currentIndex < photos.length - 1
+
   useEffect(() => {
+    setFullUrl('')
     getSignedUrl(photo.file_path).then(setFullUrl)
   }, [photo])
 
@@ -172,12 +183,18 @@ function LightBox({
     overlayRef.current?.focus()
   }, [])
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') onClose()
+    if (e.key === 'ArrowLeft' && hasPrev) onNavigate(currentIndex - 1)
+    if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1)
+  }, [onClose, onNavigate, currentIndex, hasPrev, hasNext])
+
   return (
     <div
       ref={overlayRef}
       className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
       onClick={onClose}
-      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      onKeyDown={handleKeyDown}
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
@@ -185,11 +202,38 @@ function LightBox({
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-full"
+        className="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-full z-10"
         aria-label="Close"
       >
         <X className="w-6 h-6" />
       </button>
+
+      {/* Counter */}
+      <div className="absolute top-4 left-4 text-white/70 text-sm z-10">
+        {currentIndex + 1} / {photos.length}
+      </div>
+
+      {/* Previous button */}
+      {hasPrev && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex - 1) }}
+          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-2 text-white/70 hover:text-white hover:bg-white/20 rounded-full z-10"
+          aria-label="Previous photo"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+      )}
+
+      {/* Next button */}
+      {hasNext && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex + 1) }}
+          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-2 text-white/70 hover:text-white hover:bg-white/20 rounded-full z-10"
+          aria-label="Next photo"
+        >
+          <ChevronRight className="w-8 h-8" />
+        </button>
+      )}
 
       <div className="max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
         {fullUrl ? (
@@ -208,7 +252,7 @@ function LightBox({
           </p>
           {onDelete && (
             <button
-              onClick={onDelete}
+              onClick={() => onDelete(photo.id)}
               className="mt-3 inline-flex items-center gap-1 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors"
               aria-label="Delete photo"
             >

@@ -77,10 +77,14 @@ export function useTimer() {
       durationMinutes,
     }
 
-    setTimerState(null)
-    localStorage.removeItem(TIMER_KEY)
+    // Don't clear state here — caller must call clearTimer() after successful save
     return result
   }, [timerState])
+
+  const clearTimer = useCallback(() => {
+    setTimerState(null)
+    localStorage.removeItem(TIMER_KEY)
+  }, [])
 
   return {
     isRunning: !!timerState,
@@ -89,6 +93,7 @@ export function useTimer() {
     elapsed,
     startTimer,
     stopTimer,
+    clearTimer,
   }
 }
 
