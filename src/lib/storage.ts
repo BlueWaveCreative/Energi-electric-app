@@ -5,14 +5,22 @@
 
 const MAX_PHOTO_SIZE = 20 * 1024 * 1024 // 20MB
 
-async function uploadToR2(
+async function sendToR2(
   key: string,
   file: File | Blob,
-  contentType: string
+  contentType: string,
+  metadata?: { linkedType: string; linkedId: string; thumbnailKey?: string }
 ): Promise<void> {
   const formData = new FormData()
   formData.append('file', file instanceof File ? file : new File([file], 'upload', { type: contentType }))
   formData.append('key', key)
+
+  // Pass metadata so the server handles the DB insert too
+  if (metadata) {
+    formData.append('linkedType', metadata.linkedType)
+    formData.append('linkedId', metadata.linkedId)
+    if (metadata.thumbnailKey) formData.append('thumbnailKey', metadata.thumbnailKey)
+  }
 
   const res = await fetch('/api/storage/upload', {
     method: 'POST',
@@ -26,7 +34,9 @@ async function uploadToR2(
 
 export async function uploadPhoto(
   file: File,
-  projectId: string
+  projectId: string,
+  linkedType?: string,
+  linkedId?: string
 ): Promise<{ path: string; thumbnailPath: string }> {
   if (!file.type.startsWith('image/')) {
     throw new Error(`File type "${file.type}" is not allowed. Only image files are accepted.`)
@@ -47,12 +57,15 @@ export async function uploadPhoto(
     // If compression fails (HEIC on some browsers), upload original
   }
 
-  await uploadToR2(path, uploadFile, 'image/jpeg')
+  // Upload photo — server handles R2 upload AND DB insert if metadata provided
+  await sendToR2(path, uploadFile, 'image/jpeg',
+    linkedType && linkedId ? { linkedType, linkedId, thumbnailKey: thumbnailPath } : undefined
+  )
 
-  // Create and upload thumbnail (best-effort)
+  // Create and upload thumbnail (best-effort, no DB record needed)
   try {
     const thumbnailBlob = await createThumbnail(file, 300)
-    await uploadToR2(thumbnailPath, thumbnailBlob, 'image/jpeg')
+    await sendToR2(thumbnailPath, thumbnailBlob, 'image/jpeg')
     return { path, thumbnailPath }
   } catch {
     return { path, thumbnailPath: path }
@@ -64,7 +77,7 @@ export async function uploadPlanFile(
   key: string
 ): Promise<void> {
   const contentType = file instanceof File ? file.type : 'image/png'
-  await uploadToR2(key, file, contentType)
+  await sendToR2(key, file, contentType)
 }
 
 export async function getSignedUrl(
