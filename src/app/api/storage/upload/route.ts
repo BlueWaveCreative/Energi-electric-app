@@ -1,52 +1,14 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { uploadToR2 } from '@/lib/r2'
+import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 30
 
-/**
- * Extract user ID and access token from the Supabase auth cookie.
- *
- * Bypasses @supabase/ssr entirely — its cookie-to-session pipeline produces
- * an Authorization header that Node.js undici rejects with "Invalid character
- * in header content ['authorization']". Decoding the JWT locally avoids the
- * outbound HTTP call and the broken header construction.
- */
-async function getAuthFromCookie(): Promise<{ userId: string; accessToken: string } | null> {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.getAll().find(
-    (c) => c.name.includes('auth-token') && c.name.startsWith('sb-')
-  )
-  if (!authCookie) return null
-
-  try {
-    let value = authCookie.value
-    if (value.startsWith('base64-')) {
-      value = Buffer.from(value.substring(7), 'base64url').toString('utf-8')
-    }
-    const session = JSON.parse(value)
-    const accessToken = session.access_token
-    if (!accessToken) return null
-
-    // JWT payload is the second dot-separated segment
-    const parts = accessToken.split('.')
-    if (parts.length !== 3) return null
-
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'))
-    const userId = payload.sub
-    if (!userId) return null
-
-    return { userId, accessToken }
-  } catch {
-    return null
-  }
-}
-
 export async function POST(request: Request) {
-  const auth = await getAuthFromCookie()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!auth) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -74,24 +36,10 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer())
     await uploadToR2(key, buffer, file.type)
 
-    // DB insert — create a Supabase client directly (bypassing @supabase/ssr)
-    // and set the access token manually so it's clean for undici
+    // Create DB record server-side if metadata provided
     if (linkedType && linkedId) {
-      const supabase = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          auth: { persistSession: false },
-          global: {
-            headers: {
-              Authorization: `Bearer ${auth.accessToken}`,
-            },
-          },
-        }
-      )
-
       const { error: dbError } = await supabase.from('photos').insert({
-        user_id: auth.userId,
+        user_id: user.id,
         file_path: key,
         thumbnail_path: thumbnailKey ?? key,
         linked_type: linkedType,
