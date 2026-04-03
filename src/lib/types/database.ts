@@ -39,6 +39,7 @@ export interface Project {
   address: string | null
   status: ProjectStatus
   template_id: string | null
+  customer_id: string | null
   created_by: string
   created_at: string
 }
@@ -124,6 +125,17 @@ export interface ScheduleEntry {
   user_id: string
   project_id: string
   date: string
+  notes: string | null
+  created_by: string
+  created_at: string
+}
+
+export interface Customer {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  address: string | null
   notes: string | null
   created_by: string
   created_at: string

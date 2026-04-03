@@ -36,9 +36,9 @@ export function AddJobModal({ open, onClose, userId, excludeProjectIds }: AddJob
       .select('id, name, address')
       .eq('status', 'active')
       .order('name')
-      .then(({ data }) => {
+      .then(({ data }: { data: ProjectOption[] | null }) => {
         const available = (data ?? []).filter(
-          (p) => !excludeProjectIds.includes(p.id)
+          (p: ProjectOption) => !excludeProjectIds.includes(p.id)
         )
         setProjects(available)
         setLoading(false)
@@ -84,7 +84,7 @@ export function AddJobModal({ open, onClose, userId, excludeProjectIds }: AddJob
       project_id: selectedProjectId,
       date: today,
       created_by: userId,
-    }).then(({ error }) => {
+    }).then(({ error }: { error: { message: string } | null }) => {
       // Ignore unique constraint violation — means entry already exists
       if (error && !error.message.includes('duplicate key')) {
         console.error('Failed to create schedule entry:', error)

@@ -30,6 +30,17 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound()
 
+  // Fetch customer if project has one
+  let customer = null
+  if (project.customer_id) {
+    const { data } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('id', project.customer_id)
+      .single()
+    customer = data
+  }
+
   // Fetch notes, photos, time entries, plans count, expenses, and inspections in parallel
   const [notesResult, photosResult, timeResult, plansResult, expensesResult, inspectionsResult] = await Promise.all([
     supabase
@@ -84,6 +95,7 @@ export default async function ProjectDetailPage({
       <div className="p-4 md:p-6">
         <ProjectDetailClient
           project={project}
+          customer={customer}
           notes={notesResult.data ?? []}
           photos={photosResult.data ?? []}
           timeEntries={timeResult.data ?? []}

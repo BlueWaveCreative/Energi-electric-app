@@ -1,7 +1,12 @@
 import { createBrowserClient } from '@supabase/ssr'
 
+let clientInstance: ReturnType<typeof createBrowserClient> | null = null
+
 export function createClient() {
-  return createBrowserClient(
+  // Return cached instance if available (prevents multiple session refreshes)
+  if (clientInstance) return clientInstance
+
+  const client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -9,18 +14,23 @@ export function createClient() {
         getAll() {
           // Sanitize cookie values — iOS WebKit produces auth cookies
           // with \r\n characters that break HTTP Authorization headers.
-          // This must strip those chars BEFORE the Supabase client
-          // reassembles the JWT from cookie chunks.
           return document.cookie
             .split(';')
             .filter((c) => c.trim())
             .map((c) => {
               const eqIndex = c.indexOf('=')
               if (eqIndex === -1) return { name: c.trim(), value: '' }
-              return {
-                name: c.substring(0, eqIndex).trim(),
-                value: c.substring(eqIndex + 1).replace(/[\r\n\0]/g, ''),
+              const name = c.substring(0, eqIndex).trim()
+              const rawValue = c.substring(eqIndex + 1)
+              const cleanValue = rawValue.replace(/[\r\n\0]/g, '')
+
+              // If cookie was corrupted, rewrite the clean value back to storage
+              // so the Supabase client's internal cache also gets clean values
+              if (cleanValue !== rawValue) {
+                document.cookie = `${name}=${cleanValue}; path=/; max-age=31536000; samesite=lax`
               }
+
+              return { name, value: cleanValue }
             })
         },
         setAll(cookies) {
@@ -35,4 +45,13 @@ export function createClient() {
       },
     }
   )
+
+  // iOS WebKit: force session refresh to replace any corrupted stored tokens
+  // getSession() triggers a token refresh → writes clean cookies via setAll()
+  if (typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+    client.auth.getSession().catch(() => {})
+  }
+
+  clientInstance = client
+  return client
 }

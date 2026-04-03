@@ -21,12 +21,14 @@ import { InspectionList } from '@/components/field/inspection-list'
 import { ActionBar } from '@/components/field/action-bar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import type { Project, Phase, Task, Note, Photo, TimeEntry, Expense, Inspection, Profile, PhaseStatus } from '@/lib/types/database'
+import { Card } from '@/components/ui/card'
+import type { Project, Phase, Task, Note, Photo, TimeEntry, Expense, Inspection, Profile, PhaseStatus, Customer } from '@/lib/types/database'
 
 interface ProjectDetailClientProps {
   project: Project & {
     phases: (Phase & { tasks: Task[] })[]
   }
+  customer: Customer | null
   notes: (Note & { profiles: Pick<Profile, 'name'> })[]
   photos: (Photo & { profiles: Pick<Profile, 'name'> })[]
   timeEntries: (TimeEntry & { profiles: Pick<Profile, 'name'>; phases?: Pick<Phase, 'name'> | null })[]
@@ -39,6 +41,7 @@ interface ProjectDetailClientProps {
 
 export function ProjectDetailClient({
   project,
+  customer,
   notes,
   photos,
   timeEntries,
@@ -267,6 +270,36 @@ export function ProjectDetailClient({
           <NoteForm onSubmit={handleAddNote} />
         </div>
       </div>
+
+      {/* Customer section (admin only) */}
+      {isAdmin && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Customer</h2>
+          {customer ? (
+            <Card>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-900">{customer.name}</p>
+                {customer.email && (
+                  <p className="text-sm text-gray-600">
+                    <a href={`mailto:${customer.email}`} className="text-[#68BD45] hover:underline">{customer.email}</a>
+                  </p>
+                )}
+                {customer.phone && (
+                  <p className="text-sm text-gray-600">
+                    <a href={`tel:${customer.phone}`} className="text-[#68BD45] hover:underline">{customer.phone}</a>
+                  </p>
+                )}
+                {customer.address && <p className="text-sm text-gray-500">{customer.address}</p>}
+                {customer.notes && <p className="text-sm text-gray-400 italic">{customer.notes}</p>}
+              </div>
+            </Card>
+          ) : (
+            <Card>
+              <p className="text-sm text-gray-500">No customer assigned to this project.</p>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Blueprints section */}
       <div>

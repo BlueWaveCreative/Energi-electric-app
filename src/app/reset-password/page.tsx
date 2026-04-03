@@ -15,7 +15,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     // Supabase handles the token exchange from the URL hash automatically
-    supabase.auth.onAuthStateChange((event) => {
+    supabase.auth.onAuthStateChange((event: string) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }

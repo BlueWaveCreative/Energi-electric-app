@@ -9,6 +9,7 @@ describe('ProjectCard', () => {
     address: '123 Main St',
     status: 'active' as const,
     template_id: null,
+    customer_id: null,
     created_by: 'user-1',
     created_at: '2026-04-01T00:00:00Z',
   }

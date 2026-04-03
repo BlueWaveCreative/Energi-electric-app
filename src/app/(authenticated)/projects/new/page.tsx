@@ -16,16 +16,26 @@ export default async function NewProjectPage() {
 
   if (profile?.role !== 'admin') redirect('/dashboard')
 
-  const { data: templates } = await supabase
-    .from('project_templates')
-    .select('*, template_phases(*)')
-    .order('name')
+  const [templatesResult, customersResult] = await Promise.all([
+    supabase
+      .from('project_templates')
+      .select('*, template_phases(*)')
+      .order('name'),
+    supabase
+      .from('customers')
+      .select('*')
+      .order('name'),
+  ])
 
   return (
     <div>
       <PageHeader title="New Project" />
       <div className="p-4 md:p-6">
-        <ProjectForm templates={templates ?? []} />
+        <ProjectForm
+          templates={templatesResult.data ?? []}
+          customers={customersResult.data ?? []}
+          userId={user.id}
+        />
       </div>
     </div>
   )
