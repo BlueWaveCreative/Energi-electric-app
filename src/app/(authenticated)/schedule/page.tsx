@@ -45,7 +45,7 @@ export default async function SchedulePage() {
       .order('name'),
     supabase
       .from('schedule_entries')
-      .select('id, user_id, project_id, date, notes, created_by, created_at, profiles(name), projects(name)')
+      .select('id, user_id, project_id, date, notes, created_by, created_at, projects(name)')
       .gte('date', startStr)
       .lte('date', endStr),
   ])
