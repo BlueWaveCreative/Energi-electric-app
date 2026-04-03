@@ -26,6 +26,12 @@ export default async function DashboardPage() {
 
   const isAdmin = profile?.role === 'admin'
 
+  // Field workers see the Today view instead of the admin dashboard
+  if (profile?.role === 'field_worker') {
+    const { TodayView } = await import('./today-view')
+    return <TodayView userId={user.id} userName={profile.name ?? 'there'} />
+  }
+
   const { data: projects } = await supabase
     .from('projects')
     .select('*, phases(id, status)')
