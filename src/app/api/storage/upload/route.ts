@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 export const maxDuration = 30
 
 export async function POST(request: Request) {
-  // Use server-side Supabase client (has cookie sanitization built in)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -18,7 +17,6 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File | null
     const key = formData.get('key') as string | null
 
-    // Optional: create a DB record for the upload (photo or plan)
     const linkedType = formData.get('linkedType') as string | null
     const linkedId = formData.get('linkedId') as string | null
     const thumbnailKey = formData.get('thumbnailKey') as string | null
@@ -27,7 +25,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing file or key' }, { status: 400 })
     }
 
-    // Validate type
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
     }
@@ -39,8 +36,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer())
     await uploadToR2(key, buffer, file.type)
 
-    // If linkedType/linkedId provided, create the DB record server-side
-    // This avoids the iOS WebKit cookie bug with browser Supabase client
+    // Create DB record server-side if metadata provided
     if (linkedType && linkedId) {
       const { error: dbError } = await supabase.from('photos').insert({
         user_id: user.id,
