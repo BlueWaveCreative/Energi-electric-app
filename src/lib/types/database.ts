@@ -137,6 +137,8 @@ export interface Customer {
   phone: string | null
   address: string | null
   notes: string | null
+  portal_token: string
+  portal_active: boolean
   created_by: string
   created_at: string
 }
@@ -207,4 +209,52 @@ export interface TemplateWithPhases extends ProjectTemplate {
 
 export interface PhaseWithTasks extends Phase {
   tasks: Task[]
+}
+
+export type InvoiceStatus = 'draft' | 'sent' | 'paid'
+
+export interface Invoice {
+  id: string
+  customer_id: string
+  project_id: string | null
+  invoice_number: number
+  title: string
+  status: InvoiceStatus
+  tax_amount: number
+  notes: string | null
+  issued_date: string
+  due_date: string | null
+  notified_at: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface InvoiceLineItem {
+  id: string
+  invoice_id: string
+  description: string
+  quantity: number
+  unit_price: number
+  sort_order: number
+  created_at: string
+}
+
+export interface LineItemPreset {
+  id: string
+  name: string
+  default_unit_price: number | null
+  sort_order: number
+  created_by: string
+  created_at: string
+}
+
+// Joined types
+export interface InvoiceWithLineItems extends Invoice {
+  invoice_line_items: InvoiceLineItem[]
+}
+
+export interface InvoiceWithCustomer extends Invoice {
+  customers: { name: string; email: string | null }
+  projects: { name: string } | null
 }
