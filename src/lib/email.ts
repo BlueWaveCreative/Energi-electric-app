@@ -1,10 +1,20 @@
-// src/lib/resend.ts
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
-
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'noreply@blueshoresnc.com'
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://blue-shores-pm.vercel.app'
+
+function createTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT ?? '587'),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  })
+}
+
+const FROM = process.env.SMTP_FROM ?? 'noreply@blueshoresnc.com'
 
 export async function sendPortalShareEmail({
   to,
@@ -16,8 +26,9 @@ export async function sendPortalShareEmail({
   portalToken: string
 }) {
   const portalUrl = `${BASE_URL}/portal/${portalToken}`
+  const transporter = createTransporter()
 
-  return resend.emails.send({
+  return transporter.sendMail({
     from: FROM,
     to,
     subject: 'Your Blue Shores Electric Project Portal',
@@ -25,7 +36,6 @@ export async function sendPortalShareEmail({
       <!DOCTYPE html>
       <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #32373C;">
-          <img src="${BASE_URL}/brand/logo-horizontal.svg" alt="Blue Shores Electric" style="height: 40px; margin-bottom: 24px;" />
           <h1 style="font-size: 22px; color: #32373C;">Hi ${customerName},</h1>
           <p style="font-size: 16px; line-height: 1.6;">
             Blue Shores Electric has set up a portal for you to view your project status and invoices.
@@ -69,8 +79,9 @@ export async function sendInvoiceNotificationEmail({
   const formattedDue = dueDate
     ? new Date(dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : null
+  const transporter = createTransporter()
 
-  return resend.emails.send({
+  return transporter.sendMail({
     from: FROM,
     to,
     subject: `Invoice #${invoiceNumber} from Blue Shores Electric`,
@@ -78,7 +89,6 @@ export async function sendInvoiceNotificationEmail({
       <!DOCTYPE html>
       <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #32373C;">
-          <img src="${BASE_URL}/brand/logo-horizontal.svg" alt="Blue Shores Electric" style="height: 40px; margin-bottom: 24px;" />
           <h1 style="font-size: 22px; color: #32373C;">Hi ${customerName},</h1>
           <p style="font-size: 16px; line-height: 1.6;">
             You have a new invoice from Blue Shores Electric.

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { sendPortalShareEmail } from '@/lib/resend'
+import { sendPortalShareEmail } from '@/lib/email'
 
 export async function POST(
   _request: Request,
