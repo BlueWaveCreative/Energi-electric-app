@@ -41,8 +41,8 @@ export default async function ProjectDetailPage({
     customer = data
   }
 
-  // Fetch notes, photos, time entries, plans count, expenses, and inspections in parallel
-  const [notesResult, photosResult, timeResult, plansResult, expensesResult, inspectionsResult] = await Promise.all([
+  // Fetch notes, photos, time entries, plans count, expenses, inspections, and invoices in parallel
+  const [notesResult, photosResult, timeResult, plansResult, expensesResult, inspectionsResult, invoicesResult] = await Promise.all([
     supabase
       .from('notes')
       .select('*, profiles(name)')
@@ -73,6 +73,11 @@ export default async function ProjectDetailPage({
     supabase
       .from('inspections')
       .select('*, profiles:created_by(name)')
+      .eq('project_id', id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('invoices')
+      .select('id, invoice_number, title, status, tax_amount, due_date, invoice_line_items(quantity, unit_price)')
       .eq('project_id', id)
       .order('created_at', { ascending: false }),
   ])
@@ -111,6 +116,7 @@ export default async function ProjectDetailPage({
           timeEntries={timeResult.data ?? []}
           expenses={expensesResult.data ?? []}
           inspections={inspectionsResult.data ?? []}
+          invoices={isAdmin ? (invoicesResult.data ?? []) : []}
           isAdmin={isAdmin}
           userId={user.id}
           hasPlans={(plansResult.data?.length ?? 0) > 0}

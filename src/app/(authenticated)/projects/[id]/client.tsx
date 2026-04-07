@@ -24,6 +24,16 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { Project, Phase, Task, Note, Photo, TimeEntry, Expense, Inspection, Profile, PhaseStatus, Customer } from '@/lib/types/database'
 
+interface InvoiceSummary {
+  id: string
+  invoice_number: number
+  title: string
+  status: 'draft' | 'sent' | 'paid'
+  tax_amount: number
+  due_date: string | null
+  invoice_line_items: { quantity: number; unit_price: number }[]
+}
+
 interface ProjectDetailClientProps {
   project: Project & {
     phases: (Phase & { tasks: Task[] })[]
@@ -34,6 +44,7 @@ interface ProjectDetailClientProps {
   timeEntries: (TimeEntry & { profiles: Pick<Profile, 'name'>; phases?: Pick<Phase, 'name'> | null })[]
   expenses: (Expense & { profiles: Pick<Profile, 'name'> })[]
   inspections: (Inspection & { profiles: Pick<Profile, 'name'> })[]
+  invoices?: InvoiceSummary[]
   isAdmin: boolean
   userId: string
   hasPlans: boolean
@@ -47,6 +58,7 @@ export function ProjectDetailClient({
   timeEntries,
   expenses,
   inspections,
+  invoices,
   isAdmin,
   userId,
   hasPlans,
@@ -298,6 +310,41 @@ export function ProjectDetailClient({
               <p className="text-sm text-gray-500">No customer assigned to this project.</p>
             </Card>
           )}
+        </div>
+      )}
+
+      {/* Invoices section (admin only) */}
+      {isAdmin && invoices && invoices.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-2">Invoices</h3>
+          <div className="space-y-2">
+            {invoices.map(inv => {
+              const subtotal = inv.invoice_line_items.reduce((s, i) => s + i.quantity * i.unit_price, 0)
+              const total = subtotal + inv.tax_amount
+              return (
+                <a key={inv.id} href={`/invoices/${inv.id}`} className="block">
+                  <div className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 hover:bg-gray-100 transition-colors">
+                    <div>
+                      <span className="text-xs text-gray-400 font-mono mr-2">#{inv.invoice_number}</span>
+                      <span className="text-sm text-gray-700">{inv.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">
+                        {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total)}
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        inv.status === 'paid' ? 'bg-green-100 text-green-700' :
+                        inv.status === 'sent' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-gray-100 text-gray-500'
+                      }`}>
+                        {inv.status === 'paid' ? 'Paid' : inv.status === 'sent' ? 'Payment Due' : 'Draft'}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
         </div>
       )}
 

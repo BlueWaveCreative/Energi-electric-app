@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/layout/page-header'
 import { SettingsClient } from './client'
-import type { NotificationPreference } from '@/lib/types/database'
+import type { NotificationPreference, LineItemPreset } from '@/lib/types/database'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -30,6 +30,16 @@ export default async function SettingsPage() {
     .eq('user_id', user.id)
     .single()
 
+  const { data: customers } = await supabase
+    .from('customers')
+    .select('id, name, email, phone, portal_token, portal_active')
+    .order('name')
+
+  const { data: presets } = await supabase
+    .from('line_item_presets')
+    .select('*')
+    .order('sort_order')
+
   return (
     <div>
       <PageHeader title="Settings" />
@@ -38,6 +48,8 @@ export default async function SettingsPage() {
           users={users ?? []}
           notificationPreferences={(notificationPrefs as NotificationPreference) ?? null}
           userId={user.id}
+          customers={customers ?? []}
+          presets={(presets as LineItemPreset[]) ?? []}
         />
       </div>
     </div>
