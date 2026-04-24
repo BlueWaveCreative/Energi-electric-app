@@ -114,7 +114,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#32373C] px-4">
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-6">
-          <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-12" />
+          <img src="/brand/energi-logo-horizontal.png" alt="Energi Electric" className="h-12" />
         </div>
         <p className="text-gray-400 text-center mb-8">Sign in to your account</p>
         <Suspense fallback={<p className="text-gray-400 text-center">Loading...</p>}>

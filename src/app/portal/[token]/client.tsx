@@ -57,7 +57,7 @@ export function PortalClient({ customerName, portalToken, projects, invoices }: 
       {/* Header */}
       <header className="bg-[#32373C] text-white px-4 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
-          <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-8" />
+          <img src="/brand/energi-logo-horizontal.png" alt="Energi Electric" className="h-8" />
           <a href="tel:9106192000" className="text-sm text-[#68BD45] font-medium">(910) 619-2000</a>
         </div>
       </header>
