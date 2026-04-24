@@ -7,6 +7,11 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Exclude Next.js internals, API routes, and common static assets
+    // (images, favicon, manifest.json, service worker, robots/sitemap).
+    // Without these exclusions, Supabase auth middleware intercepts
+    // /manifest.json and /sw.js and returns HTML instead of the expected
+    // JSON/JS — breaking PWA install + push notifications.
+    '/((?!_next|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|js|txt|xml|webmanifest)$).*)',
   ],
 }
