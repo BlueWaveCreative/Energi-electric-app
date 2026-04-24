@@ -37,18 +37,31 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blue Shores PM",
-  description: "Project management for Blue Shores Electric",
+  title: "Energi Electric",
+  description: "Business management for Energi Electric",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/brand/favicon.ico", sizes: "any" },
+      { url: "/brand/icon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/brand/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: { url: "/brand/apple-touch-icon.png", sizes: "180x180" },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Blue Shores PM",
+    title: "Energi",
+  },
+  openGraph: {
+    title: "Energi Electric",
+    description: "Reliable protection. Safer homes.",
+    images: [{ url: "/brand/energi-logo-horizontal.png" }],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#68BD45",
+  themeColor: "#045815",
   width: "device-width",
   initialScale: 1,
 };

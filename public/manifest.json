@@ -1,28 +1,33 @@
 {
-  "name": "Blue Shores PM",
-  "short_name": "Blue Shores",
-  "description": "Project management for Blue Shores Electric",
+  "name": "Energi Electric",
+  "short_name": "Energi",
+  "description": "Business management for Energi Electric",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#32373C",
-  "theme_color": "#68BD45",
+  "background_color": "#ffffff",
+  "theme_color": "#045815",
   "orientation": "any",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/brand/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/brand/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-maskable.png",
+      "src": "/brand/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/brand/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ]
 }
