@@ -1,7 +1,12 @@
 # Energi Electric App — Product Brief v1
 
-**Status:** Draft — based on partial discovery transcript (Joe–Kenny 2026-04-24). Dinner follow-up pending to close Open Questions.
-**Source of truth:** This file. Mirrored in ChatPRD (uuid `eac959a6-cf89-4505-ac87-9874cd3dc694`).
+**Status:** Draft v1.1 — based on two Joe–Kenny transcripts (2026-04-24). Dinner follow-up pending to close remaining Open Questions.
+**Source of truth:** This file. ChatPRD mirror (uuid `eac959a6-cf89-4505-ac87-9874cd3dc694`) is now stale — re-sync manually if needed.
+
+**Changelog:**
+- v1.0 (2026-04-24): Initial draft from first transcript
+- v1.1 (2026-04-24): Incorporated second transcript — materials DB is internal (not customer-facing itemization), quote → invoice workflow confirmed, customer-facing invoice format simplified to "Provided material and labor for [description]"
+- v1.2 (2026-04-24): Joe's materials prototype source code received + archived at `docs/joe-materials-prototype.tsx`. Concrete data model, 59 seed materials, exact calc formula, markup/tax/labor rules pulled from prototype and codified. Corrected brand green to `#045815`. Kenny resolved: go-live date (ASAP), crew size (3-4), domain (keep Vercel URL), per-line markup (global only), invoice reminders (deferred to V2).
 
 ---
 
@@ -15,7 +20,8 @@ Energi Electric App is a business management platform for electrical contractors
 
 ### Business Goals
 
-- Migrate 100% of active Energi Electric jobs and billing from Jobber to Energi Electric App before the next builder project start date.
+- **Ship V1 ASAP.** Joe's target is "as soon as possible" — every blocker is urgent. Milestone 1 (rebrand) ships first because it has the fewest dependencies.
+- Migrate 100% of active Energi Electric jobs and billing from Jobber to Energi Electric App.
 - Reduce platform subscription costs by >45% (from $140/mo Jobber Bold plan to $75/mo on Energi Electric App).
 - Process the first customer payment via the new app within 7 days of cutover.
 - Zero Blue Shores branding present in production, invoices, or customer-facing portals at go-live.
@@ -32,6 +38,21 @@ Energi Electric App is a business management platform for electrical contractors
 - No multi-company management (Fortify Solutions to remain separate).
 - No advanced analytics, SMS, or "on my way" features in V1.
 - No custom domain at initial launch (energi-electric-app.vercel.app is sufficient for V1).
+- **Customer-facing material itemization.** Customers never see materials broken out by line — invoices show a single summary line ("Provided material and labor for [description]"). Materials DB is a Joe-only internal quoting tool.
+- **"Energi Logic Pro" service-load-calculator app.** Separate product idea Joe mentioned — a potential App Store product ($2–$3.99) for electricians. Not in scope for this PRD. Captured as a future BWC product opportunity (see `project_energi_logic_pro.md` in Dex memory).
+- **Per-line markup override.** V1 uses global markup only (matches Joe's prototype). Add per-line override as V2 if Joe asks.
+- **Custom domain.** V1 stays on `energi-electric-app.vercel.app`. Custom domain is a V2 / post-launch concern.
+
+### Deferred to V2 (explicit post-V1 work)
+
+These are confirmed wants, just not V1:
+
+- **Invoice reminder emails.** Joe wants automated reminders for unpaid invoices. Ship after V1 is stable. Cadence TBD (suggest: reminder at 7 days past due, another at 14, another at 30).
+- **SMS customer texting** (existing Issue #32 on app repo).
+- **"On my way" button** with timer + customer email (existing Issue #31).
+- **Per-line markup override** if Joe asks for it.
+- **Custom domain** (e.g., app.energi-electric.com once domain is registered).
+- **Stripe Connect / advanced payment features** if Joe wants subscription billing or multi-party payouts.
 
 ---
 
@@ -67,7 +88,7 @@ Energi Electric App is a business management platform for electrical contractors
 
 **Rebrand (P0)**
 
-- Logo, color palette (#2E9640 / white), typography (Barlow Condensed), invoice/email branding, manifest/OG tags.
+- Logo, color palette (#045815 / white), typography (Barlow Condensed), invoice/email branding, manifest/OG tags.
 
 **Invoicing & Payments (P0)**
 
@@ -76,14 +97,65 @@ Energi Electric App is a business management platform for electrical contractors
 - Save payment method with explicit consent.
 - Admin dashboard: view fee breakdown, payment status; initiate charges to saved methods (with consent).
 - Payment status reflected in invoice and customer list.
+- **Customer-facing invoice format:** A single summary line — "Provided material and labor for [Joe's free-text description]" — plus total. No itemized breakdown shown to customer. (Joe's words: "the customers they never see the price of the material; they don't see it broken down.")
 
-**Materials & Pricing Database (P0)**
+**Quotes (P0)**
 
-- CRUD materials: name, SKU/code, unit, price, category, notes, active/inactive.
-- Autocomplete picker in invoice/quote line-item UI.
-- Line-item snapshotting (no retroactive price update).
-- CSV import/export for bulk management.
-- Markup/margin logic: field for "markup %" per line item (pending Joe's confirmation).
+- Joe builds quotes internally using the Materials DB (below) to calculate totals.
+- Quote → Invoice conversion: once a quote is approved, generate a customer-facing invoice with the summary line above — materials and markup are **collapsed into the total**, not shown to the customer.
+- Quotes have job-type categorization (Rough-in, Trim-out, Service) per Joe's prototype.
+- Quote line items are snapshotted — editing a material's price in the DB later does not change historical quotes or invoices.
+
+**Materials & Pricing Database (P0) — INTERNAL ONLY**
+
+Joe's own words clarified this is **NOT customer-facing**. It's his quoting/estimating tool.
+
+Joe has a working prototype built in Claude — source preserved at `docs/joe-materials-prototype.tsx`. The data model below is lifted from that prototype.
+
+**Categories (he calls them "phases"):**
+1. Rough-In
+2. Trim-Out
+3. Service/Panel
+4. Temporary Power
+5. Misc/Other
+
+**Material schema:**
+- `id` (int)
+- `name` (string)
+- `unit` (string — `ft`, `ea`, `box`, `bag`, `set`)
+- `price` (number, USD per unit)
+- `qty` (int, per-quote — not stored on the material itself, lives on the quote line)
+- `phase` (foreign key → phase)
+
+**Prototype ships with 59 default materials** across the 5 categories — use as the seed dataset for Joe's Energi Electric account on first launch.
+
+**Global per-quote settings** (not per material):
+- Markup % (toggle ON/OFF, default 20%) — applies only to materials, NOT labor
+- Sales Tax % (toggle ON/OFF, default 8.5%) — applies to EVERYTHING after markup + labor
+- Labor Rate $/hr (default $85/hr)
+- Labor Hours (default 0)
+- Flat Fee $ (toggle ON/OFF, default $0) — for service call / trip charges
+
+**Calculation formula (from prototype, exactly):**
+```
+phaseSubtotal = sum(price × qty) per phase
+materialsTotal = sum of all phaseSubtotals
+markupAmt = markupOn ? materialsTotal × (markup/100) : 0
+laborAmt = laborRate × laborHours          ← labor is NOT marked up
+subtotalBeforeTax = materialsTotal + markupAmt + laborAmt + (flatOn ? flatFee : 0)
+taxAmt = taxOn ? subtotalBeforeTax × (tax/100) : 0    ← tax applied to EVERYTHING
+grandTotal = subtotalBeforeTax + taxAmt
+```
+
+**V1 behavior requirements:**
+- CRUD materials — Joe can add/edit/delete in the Materials admin page
+- **Auto-grow:** adding a new line item inline on a quote (via the "+ Add" flow) persists it to the DB for future quotes
+- **Price editable over time** — updates do NOT retroactively affect existing quotes/invoices (line-item snapshotting required)
+- CSV import/export for bulk management
+- Markup is GLOBAL per quote, not per-line-item (matches prototype; confirm with Joe if per-line override wanted)
+- Labor-exempt-from-markup and tax-on-everything are both confirmed from prototype behavior — not assumptions
+
+**Brand note:** Joe's prototype uses orange (#c8390a) as accent. Production version must use Energi green (#045815). Fonts are already Barlow Condensed + IBM Plex Mono + Barlow — aligns with Energi brand guide.
 
 **Jobber Data Migration (P0)**
 
@@ -130,8 +202,10 @@ Energi Electric App is a business management platform for electrical contractors
 1. Logs in at energi-electric-app.vercel.app (Energi Electric green/white branding).
 2. Imports existing customers/invoices (CSV upload, map columns).
 3. Creates/edits jobs, assigns crew, sets up materials DB via Materials tab or bulk import.
-4. Generates invoice → selects materials from picker → sends to customer.
-5. Monitors status, views paid/unpaid stats, charges saved cards if needed.
+4. Builds a **quote** internally — adds line items from Materials DB, sets labor rate + hours + markup. Total calculates automatically.
+5. Converts quote to **invoice** — customer-facing invoice shows a single summary line ("Provided material and labor for [description]") + total. Materials are NOT itemized to the customer.
+6. Sends invoice to customer via email with magic-link portal access.
+7. Monitors status, views paid/unpaid stats, charges saved cards if needed.
 
 **Field Crew**
 
@@ -244,27 +318,45 @@ Energi Electric App is a business management platform for electrical contractors
 
 ## Open Questions (Must Answer Before Build)
 
+### Still open
+
 - **Payment processor:** Stripe recommended, not confirmed. Kenny to research fees. Joe said "whatever will be easiest."
 - **ACH implementation:** Stripe's ACH may require Plaid UX and costs. Simpler alternative?
 - **Partial payments:** Allowed or not? Joe has not stated.
 - **Saved card charges:** Admin-initiated only, or customer-scheduled recurring? Joe described admin-initiated.
 - **Refund flow:** Who can issue, UI, time window?
 - **Failed payment retry:** Automatic or manual?
-- **Markup on materials:** Per material / per invoice / manual override? Joe's pricing model unknown.
-- **Quote → Invoice conversion:** In V1? Joe mentioned quotes, didn't specify conversion flow.
 - **Jobber export format:** CSV? JSON? Other? Confirmation needed.
 - **Customer data volume:** How many customers and active invoices to migrate?
-- **Go-live date:** "Before the next builder job starts" — what's the actual date?
-- **Crew size:** How many field users at launch?
-- **$75/mo pricing:** Still correct post-rebrand? Seat model (unlimited or per-seat)?
-- **Energi Electric logo files:** Where stored? What variants needed?
-- **Domain:** energi-electric.com registered? Subdomain for app?
+- **$75/mo pricing:** Still correct post-rebrand?
 - **License transfer:** When does Joe's electrical license formally transfer to Energi?
 - **Customer payment methods in Jobber:** Portable? (Assume no.)
-- **Invoice reminder emails:** Want them? Cadence? Not discussed with Joe.
+
+### Resolved
+
+**v1.1 (from 2nd transcript 2026-04-24):**
+- ✅ **Customer-facing invoice format:** Single summary line ("Provided material and labor for X"), no itemized breakdown.
+- ✅ **Quote → Invoice conversion:** Yes, in V1. Quote is built internally with materials; invoice is the customer-facing output.
+- ✅ **Energi Electric logo files:** Received from Joe, staged in `public/brand/`.
+- ✅ **Tagline:** "Reliable protection. Safer homes." (correction from prior "Smarter power. Safer homes.")
+- ✅ **Brand green:** `#045815` (dark forest green, sampled from final logo), NOT `#2E9640` (mockup stage color).
+- ✅ **Materials DB data model:** Prototype source code in `docs/joe-materials-prototype.tsx`. 5 categories, 59 seed materials, schema + calc formula documented in Materials & Pricing Database section.
+- ✅ **Markup model:** Global per-quote markup % (20% default). Applies to materials only, not labor.
+- ✅ **Tax model:** Applied to materials + markup + labor + flat fee (everything). 8.5% default.
+
+**v1.2 (2026-04-24 Kenny answers):**
+- ✅ **Go-live date:** ASAP — treat all V1 blockers as urgent. No hard date. (Cesar timeline is Joe's business problem, not ours.)
+- ✅ **Crew size at launch:** 3-4 field workers + Joe (admin). Small team — seat model can be permissive/unlimited.
+- ✅ **Custom domain for V1:** Not needed. Keep `energi-electric-app.vercel.app`. Domain swap can happen post-V1 as a separate issue if/when Joe decides.
+- ✅ **Per-line markup override:** Going with global-only (matches Joe's prototype). Can add per-line override as V2 if Joe asks for it later.
+- ✅ **Invoice reminder emails:** **Yes, but deferred to V2.** See "Deferred to V2" section below.
 
 ---
 
 ## Reference
 
-*Source: Joe–Kenny call, 2026-04-24 (partial transcript — cuts off mid-discussion of materials DB). Dinner follow-up planned to close Open Questions.*
+- **Source transcripts (both 2026-04-24, Joe ↔ Kenny):**
+  - Call 1 (partial): brand pivot, "main four" features (login, time, jobs, invoices), online payment model, materials DB concept introduced.
+  - Call 2: materials DB clarified as internal-only, customer invoice format confirmed as summary-line, Joe's materials prototype referenced (link TBD), "Energi Logic Pro" App Store side-product pitched (separate scope).
+- **Joe's materials prototype:** [Claude artifact](https://claude.ai/public/artifacts/51be6aef-32e5-4034-8250-77086d5fa788) — source preserved locally at `docs/joe-materials-prototype.tsx` in case artifact expires.
+- Dinner follow-up still planned to close remaining Open Questions.
