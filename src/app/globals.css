@@ -10,6 +10,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Energi Electric brand tokens.
+     Colors generate Tailwind utilities: bg-energi-primary, text-energi-primary, border-energi-primary, etc.
+     Fonts generate: font-heading, font-body, font-display-mono. */
+  --color-energi-primary: #045815;
+  --color-energi-primary-dark: #023510;
+  --color-energi-primary-light: #0a7a21;
+  --color-energi-white: #ffffff;
+
+  --font-heading: var(--font-barlow-condensed);
+  --font-body: var(--font-barlow);
+  --font-display-mono: var(--font-plex-mono);
 }
 
 
