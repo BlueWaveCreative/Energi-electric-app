@@ -53,12 +53,12 @@ export default async function HelpPage() {
 
   return (
     <div>
-      <PageHeader title="How to Use Blue Shores PM" />
+      <PageHeader title="How to Use Energi Electric" />
       <div className="p-4 md:p-6 max-w-3xl">
 
         <div className="mb-6">
           <p className="text-gray-600">
-            Blue Shores PM helps you track projects, log time, capture photos, and annotate blueprints.
+            Energi Electric helps you track projects, log time, capture photos, and annotate blueprints.
             {isAdmin ? ' As an admin, you can also manage templates, users, and view reports.' : ''}
           </p>
         </div>
@@ -330,7 +330,7 @@ export default async function HelpPage() {
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-8">Tips</h3>
 
         <Section icon={Smartphone} title="Install as an App">
-          <p>On your phone, you can install Blue Shores PM as an app for quick access:</p>
+          <p>On your phone, you can install Energi Electric as an app for quick access:</p>
           <p><strong>iPhone:</strong> In Safari, tap the share button (square with arrow) → <strong>Add to Home Screen</strong>.</p>
           <p><strong>Android:</strong> In Chrome, tap the menu (three dots) → <strong>Add to Home Screen</strong>.</p>
           <p>The app works even with spotty signal — actions queue up and sync when you're back online.</p>

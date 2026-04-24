@@ -31,7 +31,7 @@ function CustomerPortalRow({
   const [copying, setCopying] = useState(false)
   const [toggling, setToggling] = useState(false)
 
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://blue-shores-pm.vercel.app'
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://energi-electric-app.vercel.app'
   const portalUrl = `${baseUrl}/portal/${customer.portal_token}`
 
   async function handleToggle() {
@@ -48,7 +48,7 @@ function CustomerPortalRow({
   }
 
   const phone = customer.phone?.replace(/\D/g, '') ?? ''
-  const smsBody = encodeURIComponent(`Hi ${customer.name}, here's your Blue Shores Electric project portal: ${portalUrl}`)
+  const smsBody = encodeURIComponent(`Hi ${customer.name}, here's your Energi Electric project portal: ${portalUrl}`)
   const smsHref = phone ? `sms:${phone}?&body=${smsBody}` : null
 
   return (
