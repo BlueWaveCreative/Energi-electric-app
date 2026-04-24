@@ -1,5 +1,5 @@
 self.addEventListener('push', function (event) {
-  var data = { title: 'Blue Shores PM', body: '' }
+  var data = { title: 'Energi Electric', body: '' }
   try {
     data = event.data.json()
   } catch (e) {
@@ -9,8 +9,8 @@ self.addEventListener('push', function (event) {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
+      icon: '/brand/icon-192.png',
+      badge: '/brand/icon-192.png',
     })
   )
 })

@@ -33,7 +33,7 @@ export function CSVExport({ entries }: CSVExportProps) {
 
     const csv = generateCSV(headers, rows)
     const date = new Date().toISOString().split('T')[0]
-    downloadCSV(csv, `blue-shores-time-report-${date}.csv`)
+    downloadCSV(csv, `energi-electric-time-report-${date}.csv`)
   }
 
   return (
