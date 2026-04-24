@@ -41,7 +41,7 @@ export function Sidebar({ isAdmin }: SidebarProps) {
   return (
     <aside className="hidden md:flex md:flex-col md:w-64 bg-[#32373C] h-screen sticky top-0">
       <div className="p-4 border-b border-white/10">
-        <img src="/brand/logo-horizontal.svg" alt="Blue Shores Electric" className="h-8" />
+        <img src="/brand/energi-logo-horizontal.png" alt="Energi Electric" className="h-8" />
       </div>
 
       <nav aria-label="Main navigation" className="flex-1 p-3 space-y-1">
