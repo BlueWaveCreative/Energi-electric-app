@@ -1,11 +1,13 @@
-# Blue Shores PM
+# Energi Electric App
 
 ## Project Context
-Custom project management app for Blue Shores Electric (Joe Lopez).
-- **Live:** https://blue-shores-pm.vercel.app
+Custom business management app for Energi Electric (Joe Lopez). Pivoted from the original Blue Shores PM build on 2026-04-24.
+- **Live:** https://energi-electric-app.vercel.app
 - **Stack:** Next.js 16 + Supabase + Cloudflare R2 + Vercel
 - **Supabase project:** jhznaijckdrokjpglwpp (us-east-1)
-- **R2 bucket:** blue-shores
+- **R2 bucket:** `blue-shores` (kept — renaming would invalidate every existing photo URL; see `docs/rebrand-inventory.md` Bucket F)
+- **PRD:** `docs/PRD.md`
+- **Brand:** Energi green `#045815`, Barlow Condensed (headings) + Barlow (body) + IBM Plex Mono (numbers). Tagline: "Reliable protection. Safer homes."
 
 ## Git Workflow
 - **Never push directly to main.** Always create a feature branch, push it, create a PR, and wait for Kenny's approval before merging.
@@ -20,8 +22,8 @@ Custom project management app for Blue Shores Electric (Joe Lopez).
 - All env vars must be set for both `production` AND `preview` environments
 
 ## Code Standards
-- Brand color: `#68BD45` (green) — no blue anywhere in the app
-- Dark sidebar/login: `#32373C`
+- Brand color: `#045815` (Energi forest green). Use Tailwind utility `bg-energi-primary` / `text-energi-primary` / `border-energi-primary` (defined in `globals.css`).
+- Legacy Blue Shores green `#68BD45` and dark sidebar `#32373C` still appear on some pages — being phased out in M1 issues #8, #9, #10, #11.
 - All text on light backgrounds must be `text-gray-500` minimum — never use `text-gray-300` or `text-gray-400` on white/gray-50 backgrounds
 - All headings must have explicit `text-gray-900`
 - All pages must have `export const dynamic = 'force-dynamic'` to prevent stale data
