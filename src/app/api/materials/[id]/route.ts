@@ -1,25 +1,19 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/api/admin'
 
 const VALID_UNITS = ['ft', 'ea', 'box', 'bag', 'set'] as const
 
-async function requireAdmin() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+function parsePrice(raw: unknown): number | null {
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) && raw >= 0 ? raw : null
   }
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (profile?.role !== 'admin') {
-    return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim()
+    if (!trimmed) return null
+    const n = Number(trimmed)
+    return Number.isFinite(n) && n >= 0 ? n : null
   }
-  return { supabase }
+  return null
 }
 
 export async function PATCH(
@@ -27,6 +21,10 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  }
+
   const auth = await requireAdmin()
   if ('error' in auth) return auth.error
   const { supabase } = auth
@@ -58,8 +56,8 @@ export async function PATCH(
     updates.unit = unit
   }
   if (price !== undefined) {
-    const priceNum = Number(price)
-    if (!Number.isFinite(priceNum) || priceNum < 0) {
+    const priceNum = parsePrice(price)
+    if (priceNum === null) {
       return NextResponse.json({ error: 'Price must be a number ≥ 0' }, { status: 400 })
     }
     updates.price = priceNum
@@ -82,11 +80,15 @@ export async function PATCH(
     .select()
     .single()
 
-  if (error || !data) {
-    return NextResponse.json(
-      { error: error?.message ?? 'Failed to update material' },
-      { status: 500 },
-    )
+  if (error) {
+    // PostgREST returns PGRST116 when .single() finds zero rows.
+    if (error.code === 'PGRST116') {
+      return NextResponse.json({ error: 'Material not found' }, { status: 404 })
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+  if (!data) {
+    return NextResponse.json({ error: 'Material not found' }, { status: 404 })
   }
 
   return NextResponse.json({ material: data })
@@ -97,18 +99,31 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  }
+
   const auth = await requireAdmin()
   if ('error' in auth) return auth.error
   const { supabase } = auth
 
   // Soft delete — preserves snapshots on existing quote line items.
-  const { error } = await supabase
+  // Use .select().single() so an unknown id returns 404 instead of silent 200.
+  const { data, error } = await supabase
     .from('materials')
     .update({ active: false })
     .eq('id', id)
+    .select('id')
+    .single()
 
   if (error) {
+    if (error.code === 'PGRST116') {
+      return NextResponse.json({ error: 'Material not found' }, { status: 404 })
+    }
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+  if (!data) {
+    return NextResponse.json({ error: 'Material not found' }, { status: 404 })
   }
 
   return NextResponse.json({ ok: true })

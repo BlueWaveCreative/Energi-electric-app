@@ -289,7 +289,7 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
 
       <Modal
         open={formOpen}
-        onClose={closeForm}
+        onClose={() => !submitting && closeForm()}
         title={form?.id ? 'Edit material' : 'New material'}
       >
         {form && (
