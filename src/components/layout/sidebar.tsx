@@ -43,10 +43,10 @@ export function Sidebar({ isAdmin }: SidebarProps) {
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/40',
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/70',
                 isActive
                   ? 'bg-[#045815] text-white shadow-sm'
-                  : 'text-gray-300 hover:bg-white/5 hover:text-white',
+                  : 'text-gray-300 hover:bg-white/10 hover:text-white',
               )}
             >
               <item.icon className="w-5 h-5" />
@@ -59,7 +59,7 @@ export function Sidebar({ isAdmin }: SidebarProps) {
       <div className="p-3 border-t border-white/10">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors w-full focus:outline-none focus:ring-2 focus:ring-white/40"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors w-full focus:outline-none focus:ring-2 focus:ring-white/70"
         >
           <LogOut className="w-5 h-5" />
           Log Out

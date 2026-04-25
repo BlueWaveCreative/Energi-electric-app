@@ -18,7 +18,7 @@ export function NavShell({ isAdmin, children }: NavShellProps) {
       </a>
       <Sidebar isAdmin={isAdmin} />
       <MobileMenuDrawer isAdmin={isAdmin} />
-      <main id="main-content" className="flex-1 min-w-0 pb-20 md:pb-0">
+      <main id="main-content" className="flex-1 min-w-0 pt-14 md:pt-0 pb-20 md:pb-0">
         {children}
       </main>
       <BottomNav isAdmin={isAdmin} />

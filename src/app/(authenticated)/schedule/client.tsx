@@ -207,7 +207,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
         key={date}
         className={cn(
           'relative px-1 py-1 border-t border-gray-100 text-center min-w-[90px]',
-          isToday && 'bg-[#045815]/5',
+          isToday && 'bg-[#045815]/10 ring-1 ring-[#045815]/20',
           weekend && 'bg-gray-50/50',
           extraClassName
         )}
@@ -270,7 +270,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   onClick={() => handleAssign(userId, date, p.id)}
                   className={cn(
                     'w-full text-left px-3 py-2 text-xs hover:bg-gray-50 transition-colors flex items-center gap-2',
-                    isSelected && 'bg-[#045815]/5 font-medium'
+                    isSelected && 'bg-[#045815]/10 ring-1 ring-[#045815]/20 font-medium'
                   )}
                   role="option"
                   aria-selected={isSelected}
@@ -343,7 +343,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   key={date}
                   className={cn(
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
-                    date === today && 'bg-[#045815]/5',
+                    date === today && 'bg-[#045815]/10 ring-1 ring-[#045815]/20',
                     isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >
@@ -356,7 +356,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   className={cn(
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
                     i === 0 && 'border-l border-gray-200',
-                    date === today && 'bg-[#045815]/5',
+                    date === today && 'bg-[#045815]/10 ring-1 ring-[#045815]/20',
                     isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >

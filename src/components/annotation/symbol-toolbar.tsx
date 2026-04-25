@@ -28,7 +28,7 @@ export function SymbolToolbar({ onSelectSymbol, activeColor, onColorChange }: Sy
             className={cn(
               'px-2 py-1 text-xs rounded-md font-medium transition-colors',
               activeCategory === cat.name
-                ? 'bg-[#045815]/10 text-[#045815]'
+                ? 'bg-[#045815]/15 text-[#023510]'
                 : 'text-gray-500 hover:bg-gray-100'
             )}
           >

@@ -73,7 +73,7 @@ export function PhaseCard({
                   className={cn(
                     'px-3 py-2 text-sm rounded-md border transition-colors',
                     phase.status === status
-                      ? 'border-[#045815] bg-[#045815]/10 text-[#045815]'
+                      ? 'border-[#045815] bg-[#045815]/15 text-[#023510]'
                       : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   )}
                 >
