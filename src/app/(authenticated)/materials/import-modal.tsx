@@ -230,7 +230,7 @@ export function ImportModal({
             <label
               htmlFor="csv-file"
               aria-describedby="csv-help"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] cursor-pointer focus-within:ring-2 focus-within:ring-[#68BD45] focus-within:ring-offset-2"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-[#045815] text-white hover:bg-[#023510] cursor-pointer focus-within:ring-2 focus-within:ring-[#045815] focus-within:ring-offset-2"
             >
               <FileText className="w-4 h-4" />
               Choose CSV file

@@ -40,14 +40,14 @@ export async function sendPortalShareEmail({
           <p style="font-size: 16px; line-height: 1.6;">
             Blue Shores Electric has set up a portal for you to view your project status and invoices.
           </p>
-          <a href="${portalUrl}" style="display: inline-block; background-color: #68BD45; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 16px 0;">
+          <a href="${portalUrl}" style="display: inline-block; background-color: #045815; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 16px 0;">
             View My Portal
           </a>
           <p style="font-size: 14px; color: #666; margin-top: 24px;">
             Bookmark this link — you can use it anytime to check on your project and view invoices.
           </p>
           <p style="font-size: 14px; color: #666;">
-            Questions? Call us at <a href="tel:9106192000" style="color: #68BD45;">(910) 619-2000</a>
+            Questions? Call us at <a href="tel:9106192000" style="color: #045815;">(910) 619-2000</a>
           </p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
           <p style="font-size: 12px; color: #999;">Blue Shores Electric · Wilmington, NC</p>
@@ -96,14 +96,14 @@ export async function sendInvoiceNotificationEmail({
           <div style="background: #f9f9f9; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <p style="margin: 0 0 8px; font-size: 14px; color: #666;">Invoice #${invoiceNumber}</p>
             <p style="margin: 0 0 8px; font-size: 18px; font-weight: bold; color: #32373C;">${invoiceTitle}</p>
-            <p style="margin: 0 0 8px; font-size: 24px; font-weight: bold; color: #68BD45;">${formattedTotal}</p>
+            <p style="margin: 0 0 8px; font-size: 24px; font-weight: bold; color: #045815;">${formattedTotal}</p>
             ${formattedDue ? `<p style="margin: 0; font-size: 14px; color: #666;">Due: ${formattedDue}</p>` : ''}
           </div>
-          <a href="${portalUrl}" style="display: inline-block; background-color: #68BD45; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 16px 0;">
+          <a href="${portalUrl}" style="display: inline-block; background-color: #045815; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 16px 0;">
             View Invoice
           </a>
           <p style="font-size: 14px; color: #666; margin-top: 24px;">
-            Questions? Call us at <a href="tel:9106192000" style="color: #68BD45;">(910) 619-2000</a>
+            Questions? Call us at <a href="tel:9106192000" style="color: #045815;">(910) 619-2000</a>
           </p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
           <p style="font-size: 12px; color: #999;">Blue Shores Electric · Wilmington, NC</p>

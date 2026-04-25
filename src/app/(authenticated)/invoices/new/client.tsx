@@ -131,7 +131,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
             <select
               value={customerId}
               onChange={e => { setCustomerId(e.target.value); setProjectId('') }}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815]"
             >
               <option value="">Select customer...</option>
               {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -143,7 +143,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
             <select
               value={projectId}
               onChange={e => setProjectId(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815]"
             >
               <option value="">No project</option>
               {filteredProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -172,7 +172,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
               value={notes}
               onChange={e => setNotes(e.target.value)}
               rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45] placeholder:text-gray-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815] placeholder:text-gray-400"
               placeholder="Any notes for the customer..."
             />
           </div>
@@ -187,7 +187,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
               <div className="flex gap-2">
                 <select
                   onChange={e => { applyPreset(idx, e.target.value); e.target.value = '' }}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45]"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815]"
                   defaultValue=""
                 >
                   <option value="">Pick a preset or type below...</option>
@@ -233,7 +233,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
 
         <button
           onClick={addLineItem}
-          className="mt-3 flex items-center gap-1 text-sm text-[#68BD45] hover:text-green-700 font-medium"
+          className="mt-3 flex items-center gap-1 text-sm text-[#045815] hover:text-green-700 font-medium"
         >
           <Plus className="w-4 h-4" /> Add line item
         </button>
@@ -253,7 +253,7 @@ export function NewInvoiceClient({ customers, projects, presets }: NewInvoiceCli
                 placeholder="0.00"
                 min="0"
                 step="0.01"
-                className="w-24 border border-gray-300 rounded px-2 py-1 text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#68BD45]"
+                className="w-24 border border-gray-300 rounded px-2 py-1 text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#045815]"
               />
             </div>
           </div>

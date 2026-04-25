@@ -48,7 +48,7 @@ export function InvoicesClient({ invoices }: InvoicesClientProps) {
 
   return (
     <div className="space-y-4 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
           {STATUS_TABS.map(tab => (
             <button
@@ -56,7 +56,7 @@ export function InvoicesClient({ invoices }: InvoicesClientProps) {
               onClick={() => setActiveTab(tab.value)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 activeTab === tab.value
-                  ? 'bg-[#68BD45] text-white'
+                  ? 'bg-[#045815] text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -66,7 +66,7 @@ export function InvoicesClient({ invoices }: InvoicesClientProps) {
         </div>
         <Link
           href="/invoices/new"
-          className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] transition-colors shadow-sm hover:shadow-md"
+          className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#045815] text-white hover:bg-[#023510] transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#045815] focus:ring-offset-2"
         >
           <Plus className="w-4 h-4 mr-2" /> New Invoice
         </Link>
@@ -74,7 +74,21 @@ export function InvoicesClient({ invoices }: InvoicesClientProps) {
 
       {filtered.length === 0 ? (
         <Card>
-          <p className="text-gray-500 text-sm text-center py-4">No invoices yet.</p>
+          <div className="text-center py-6 space-y-3">
+            <p className="text-gray-500 text-sm">
+              {invoices.length === 0
+                ? 'No invoices yet. Create one to bill a customer.'
+                : `No ${activeTab} invoices.`}
+            </p>
+            {invoices.length === 0 && (
+              <Link
+                href="/invoices/new"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#045815] text-white hover:bg-[#023510] focus:outline-none focus:ring-2 focus:ring-[#045815] focus:ring-offset-2"
+              >
+                <Plus className="w-4 h-4 mr-1" /> New invoice
+              </Link>
+            )}
+          </div>
         </Card>
       ) : (
         <div className="space-y-2">

@@ -257,7 +257,7 @@ export function ProjectDetailClient({
                           await supabase.from('tasks').update({ status: newStatus }).eq('id', task.id)
                           window.location.reload()
                         }}
-                        className="w-5 h-5 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+                        className="w-5 h-5 rounded border-gray-300 text-[#045815] focus:ring-[#045815]"
                         aria-label={`Mark "${task.title}" as ${task.status === 'complete' ? 'incomplete' : 'complete'}`}
                       />
                       <span className={task.status === 'complete' ? 'line-through text-gray-500' : 'text-gray-700'}>
@@ -293,12 +293,12 @@ export function ProjectDetailClient({
                 <p className="font-medium text-gray-900">{customer.name}</p>
                 {customer.email && (
                   <p className="text-sm text-gray-600">
-                    <a href={`mailto:${customer.email}`} className="text-[#68BD45] hover:underline">{customer.email}</a>
+                    <a href={`mailto:${customer.email}`} className="text-[#045815] hover:underline">{customer.email}</a>
                   </p>
                 )}
                 {customer.phone && (
                   <p className="text-sm text-gray-600">
-                    <a href={`tel:${customer.phone}`} className="text-[#68BD45] hover:underline">{customer.phone}</a>
+                    <a href={`tel:${customer.phone}`} className="text-[#045815] hover:underline">{customer.phone}</a>
                   </p>
                 )}
                 {customer.address && <p className="text-sm text-gray-500">{customer.address}</p>}
@@ -354,7 +354,7 @@ export function ProjectDetailClient({
           <h2 className="text-lg font-semibold text-gray-900">Blueprints</h2>
           <a
             href={`/projects/${project.id}/plans`}
-            className="text-sm text-[#68BD45] hover:underline"
+            className="text-sm text-[#045815] hover:underline"
           >
             {hasPlans ? 'View Plans' : 'Upload Blueprint'}
           </a>
@@ -364,7 +364,7 @@ export function ProjectDetailClient({
             <p className="text-gray-500 text-sm">No blueprints uploaded yet.</p>
             <a
               href={`/projects/${project.id}/plans`}
-              className="text-[#68BD45] text-sm hover:underline mt-1 inline-block"
+              className="text-[#045815] text-sm hover:underline mt-1 inline-block"
             >
               Upload one now
             </a>

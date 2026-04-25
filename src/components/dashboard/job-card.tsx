@@ -100,7 +100,7 @@ export function JobCard({
               </p>
             </div>
           </div>
-          <Check className="w-5 h-5 text-[#68BD45]" />
+          <Check className="w-5 h-5 text-[#045815]" />
         </div>
       </div>
     )
@@ -109,10 +109,10 @@ export function JobCard({
   // --- ACTIVE STATE (clocked in) ---
   if (isActiveJob) {
     return (
-      <div className="bg-[#f0faf0] rounded-lg border-2 border-[#68BD45]/30 shadow-sm p-4">
+      <div className="bg-[#f0faf0] rounded-lg border-2 border-[#045815]/30 shadow-sm p-4">
         {/* Timer banner */}
-        <div className="flex items-center justify-between mb-3 px-3 py-2 bg-[#68BD45]/10 rounded-lg">
-          <span className="text-xl font-bold text-[#68BD45] tabular-nums">
+        <div className="flex items-center justify-between mb-3 px-3 py-2 bg-[#045815]/10 rounded-lg">
+          <span className="text-xl font-bold text-[#045815] tabular-nums">
             {formatElapsed(elapsed)}
           </span>
           <button
@@ -133,13 +133,13 @@ export function JobCard({
             {project.address && (
               <p className="text-xs text-gray-500">{project.address}</p>
             )}
-            <p className="text-xs text-[#68BD45] font-medium">{activePhase?.name} · clocked in</p>
+            <p className="text-xs text-[#045815] font-medium">{activePhase?.name} · clocked in</p>
           </div>
         </div>
 
         {/* Task checklist */}
         {localTasks.length > 0 && (
-          <div className="border-t border-[#68BD45]/20 pt-3 mb-3">
+          <div className="border-t border-[#045815]/20 pt-3 mb-3">
             {localTasks.map((task) => (
               <label
                 key={task.id}
@@ -149,7 +149,7 @@ export function JobCard({
                   type="checkbox"
                   checked={task.status === 'complete'}
                   onChange={() => handleTaskToggle(task.id, task.status)}
-                  className="w-6 h-6 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+                  className="w-6 h-6 rounded border-gray-300 text-[#045815] focus:ring-[#045815]"
                 />
                 <span
                   className={cn(
@@ -172,7 +172,7 @@ export function JobCard({
         )}
 
         {localTasks.length === 0 && activePhase && (
-          <div className="border-t border-[#68BD45]/20 pt-3 mb-3">
+          <div className="border-t border-[#045815]/20 pt-3 mb-3">
             <p className="text-xs text-gray-400 mb-2">No tasks yet</p>
             <QuickTaskInput
               phaseId={activePhase.id}
@@ -267,7 +267,7 @@ export function JobCard({
           <button
             type="button"
             onClick={onClockIn}
-            className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] transition-colors"
+            className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold bg-[#045815] text-white rounded-lg hover:bg-[#023510] transition-colors"
           >
             ▶ Clock In
           </button>
@@ -294,7 +294,7 @@ export function JobCard({
                 type="checkbox"
                 checked={task.status === 'complete'}
                 onChange={() => handleTaskToggle(task.id, task.status)}
-                className="w-6 h-6 rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+                className="w-6 h-6 rounded border-gray-300 text-[#045815] focus:ring-[#045815]"
               />
               <span
                 className={cn(

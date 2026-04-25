@@ -13,7 +13,7 @@ export function Card({ children, className, onClick, hoverable }: CardProps) {
     <div
       className={cn(
         'bg-white rounded-lg border border-gray-200 shadow-sm p-4',
-        hoverable && 'hover:shadow-md hover:border-[#68BD45]/30 transition-all cursor-pointer',
+        hoverable && 'hover:shadow-md hover:border-[#045815]/30 transition-all cursor-pointer',
         onClick && 'cursor-pointer',
         className
       )}

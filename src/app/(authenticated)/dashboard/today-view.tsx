@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { TodayClient, type ScheduleItem, type CompletedJob } from '@/components/dashboard/today-client'
 
 const PROJECT_COLORS = [
-  '#68BD45', '#3B82F6', '#F59E0B', '#EF4444',
+  '#045815', '#3B82F6', '#F59E0B', '#EF4444',
   '#8B5CF6', '#EC4899', '#14B8A6', '#F97316',
 ]
 

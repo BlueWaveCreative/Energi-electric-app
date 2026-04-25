@@ -48,7 +48,7 @@ export function QuickNoteForm({ projectId, userId, onDone }: {
         autoFocus
         disabled={saving}
         aria-label="Quick note"
-        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
+        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent placeholder:text-gray-400"
         onKeyDown={(e) => {
           if (e.key === 'Escape') onDone()
         }}
@@ -56,7 +56,7 @@ export function QuickNoteForm({ projectId, userId, onDone }: {
       <button
         type="submit"
         disabled={!content.trim() || saving}
-        className="p-1.5 bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-1.5 bg-[#045815] text-white rounded-lg hover:bg-[#023510] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Send className="w-4 h-4" />
       </button>

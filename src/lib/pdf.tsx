@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   totalsLabel: { fontSize: 11, color: '#6b7280', width: 120, textAlign: 'right', paddingRight: 12 },
   totalsValue: { fontSize: 11, color: '#374151', width: 80, textAlign: 'right' },
   grandLabel: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#32373C', width: 120, textAlign: 'right', paddingRight: 12 },
-  grandValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#68BD45', width: 80, textAlign: 'right' },
+  grandValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#045815', width: 80, textAlign: 'right' },
   notes: { marginTop: 20, fontSize: 10, color: '#555', backgroundColor: '#f9fafb', padding: 10, borderRadius: 4 },
   notesLabel: { fontSize: 9, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   footer: { position: 'absolute', bottom: 32, left: 40, right: 40, textAlign: 'center', fontSize: 9, color: '#9ca3af' },

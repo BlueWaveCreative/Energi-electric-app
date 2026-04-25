@@ -16,7 +16,7 @@ export function TimeReportSummary({
   uniqueWorkers,
 }: TimeReportSummaryProps) {
   const stats = [
-    { label: 'Total Hours', value: formatDuration(totalMinutes), icon: Clock, color: 'text-[#68BD45]' },
+    { label: 'Total Hours', value: formatDuration(totalMinutes), icon: Clock, color: 'text-[#045815]' },
     { label: 'Entries', value: String(entryCount), icon: FileText, color: 'text-green-500' },
     { label: 'Projects', value: String(uniqueProjects), icon: FolderOpen, color: 'text-purple-500' },
     { label: 'Workers', value: String(uniqueWorkers), icon: Users, color: 'text-orange-500' },

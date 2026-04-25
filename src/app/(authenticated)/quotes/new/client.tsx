@@ -85,10 +85,15 @@ export function NewQuoteClient({ customers, projects }: NewQuoteClientProps) {
     return (
       <Card>
         <p className="text-sm text-gray-600 text-center py-6">
-          Add a customer before creating a quote.{' '}
-          <Link href="/customers" className="text-[#68BD45] hover:underline">
-            Go to Customers →
-          </Link>
+          You don&rsquo;t have any customers yet. Customers are created during
+          project setup —{' '}
+          <Link
+            href="/projects"
+            className="text-[#045815] font-medium hover:underline"
+          >
+            start a project
+          </Link>{' '}
+          to add one.
         </p>
       </Card>
     )
@@ -112,7 +117,7 @@ export function NewQuoteClient({ customers, projects }: NewQuoteClientProps) {
               setProjectId('')
             }}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           >
             <option value="">Select customer…</option>
             {customers.map((c) => (
@@ -135,7 +140,7 @@ export function NewQuoteClient({ customers, projects }: NewQuoteClientProps) {
               id="project"
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
             >
               <option value="">No project</option>
               {filteredProjects.map((p) => (
@@ -169,7 +174,7 @@ export function NewQuoteClient({ customers, projects }: NewQuoteClientProps) {
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="Will appear as: Provided material and labor for [your description]"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           />
         </div>
 
@@ -185,7 +190,7 @@ export function NewQuoteClient({ customers, projects }: NewQuoteClientProps) {
             value={jobType}
             onChange={(e) => setJobType(e.target.value as QuoteJobType)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           >
             {JOB_TYPES.map((j) => (
               <option key={j.value} value={j.value}>

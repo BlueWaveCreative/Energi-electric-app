@@ -129,7 +129,7 @@ export function InvoiceDetailClient({ invoice }: InvoiceDetailClientProps) {
         <div className="text-sm text-gray-500 mb-4">
           Issued {formatDate(invoice.issued_date)}
           {notifiedAt && (
-            <span className="ml-3 text-[#68BD45]">
+            <span className="ml-3 text-[#045815]">
               · Notified {new Date(notifiedAt).toLocaleDateString()}
             </span>
           )}

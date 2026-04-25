@@ -114,7 +114,7 @@ export function AddJobModal({ open, onClose, userId, excludeProjectIds }: AddJob
               id="project-select"
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#68BD45] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#045815] focus:border-transparent"
             >
               <option value="">Select a project...</option>
               {projects.map((p) => (
@@ -136,7 +136,7 @@ export function AddJobModal({ open, onClose, userId, excludeProjectIds }: AddJob
             value={phaseName}
             onChange={(e) => setPhaseName(e.target.value)}
             placeholder="e.g., Emergency Service Call"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#045815] focus:border-transparent placeholder:text-gray-400"
           />
         </div>
 

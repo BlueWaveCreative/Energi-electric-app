@@ -159,7 +159,7 @@ export function TemplateForm({ template }: TemplateFormProps) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="What type of project is this template for?"
           rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm placeholder:text-gray-400"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm placeholder:text-gray-400"
         />
       </div>
 

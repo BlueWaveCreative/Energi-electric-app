@@ -65,7 +65,7 @@ export function TimeReportFilters({ projects, workers }: TimeReportFiltersProps)
             id="project-filter"
             value={currentProject}
             onChange={(e) => updateFilter('project', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           >
             <option value="">All Projects</option>
             {projects.map((p) => (
@@ -82,7 +82,7 @@ export function TimeReportFilters({ projects, workers }: TimeReportFiltersProps)
             id="worker-filter"
             value={currentWorker}
             onChange={(e) => updateFilter('worker', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           >
             <option value="">All Workers</option>
             {workers.map((w) => (

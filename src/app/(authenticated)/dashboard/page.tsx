@@ -157,7 +157,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <Card>
             <div className="flex items-center gap-3">
-              <FolderOpen className="w-8 h-8 text-[#68BD45]" />
+              <FolderOpen className="w-8 h-8 text-[#045815]" />
               <div>
                 <p className="text-2xl font-bold text-gray-900">{projects?.length ?? 0}</p>
                 <p className="text-xs text-gray-600">Active Projects</p>
@@ -180,7 +180,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-gray-900">Active Projects</h2>
-            <Link href="/projects" className="text-sm text-[#68BD45] hover:underline">
+            <Link href="/projects" className="text-sm text-[#045815] hover:underline">
               View all
             </Link>
           </div>
@@ -215,7 +215,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
             {isAdmin && (
-              <Link href="/activity" className="text-sm text-[#68BD45] hover:underline">
+              <Link href="/activity" className="text-sm text-[#045815] hover:underline">
                 View all
               </Link>
             )}

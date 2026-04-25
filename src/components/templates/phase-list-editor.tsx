@@ -114,7 +114,7 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
                 onClick={() => setExpandedPhaseId(expandedPhaseId === phase.id ? null : phase.id)}
                 aria-expanded={expandedPhaseId === phase.id}
                 aria-label={`${phase.name}, ${phase.tasks.length} task${phase.tasks.length !== 1 ? 's' : ''}, ${expandedPhaseId === phase.id ? 'collapse' : 'expand'}`}
-                className="flex-1 text-left text-sm font-medium text-gray-900 hover:text-[#68BD45] transition-colors flex items-center gap-1 cursor-pointer"
+                className="flex-1 text-left text-sm font-medium text-gray-900 hover:text-[#045815] transition-colors flex items-center gap-1 cursor-pointer"
               >
                 {phase.name}
                 <span className="text-xs text-gray-500 font-normal">
@@ -188,7 +188,7 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
                       setNewTaskTitles((prev) => ({ ...prev, [phase.id]: e.target.value }))
                     }
                     placeholder="Task title..."
-                    className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
+                    className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent placeholder:text-gray-400"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault()
@@ -200,7 +200,7 @@ export function PhaseListEditor({ phases, onChange }: PhaseListEditorProps) {
                     type="button"
                     onClick={() => addTask(phase.id)}
                     disabled={!newTaskTitles[phase.id]?.trim()}
-                    className="px-3 py-1 min-h-[44px] text-xs bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="px-3 py-1 min-h-[44px] text-xs bg-[#045815] text-white rounded-lg hover:bg-[#023510] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     aria-label={`Add task to ${phase.name}`}
                   >
                     Add
