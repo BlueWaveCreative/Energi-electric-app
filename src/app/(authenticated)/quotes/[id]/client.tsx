@@ -231,8 +231,17 @@ export function QuoteBuilderClient({
         method: 'POST',
       })
       const data = await res.json()
+      // Both 201 (success) and 409 (already converted) carry an invoice_id
+      // we can route to. So does the partial-failure 500 where invoice was
+      // created but the quote pointer didn't get set — open the real invoice
+      // rather than leaving the user stranded.
+      if (data.invoice_id) {
+        router.push(`/invoices/${data.invoice_id}`)
+        return
+      }
       if (!res.ok) throw new Error(data.error ?? 'Conversion failed')
-      router.push(`/invoices/${data.invoice_id}`)
+      // Should not happen — success path always returns invoice_id.
+      throw new Error('Conversion succeeded but no invoice id returned')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Conversion failed')
       setConverting(false)
