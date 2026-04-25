@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity, CalendarDays, HelpCircle, LogOut, Receipt } from 'lucide-react'
+import { LayoutDashboard, FolderOpen, FileStack, Settings, Clock, BarChart3, Activity, CalendarDays, HelpCircle, LogOut, Receipt, Package } from 'lucide-react'
 import { useSupabase } from '@/hooks/use-supabase'
 import { cn } from '@/lib/utils'
 
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/schedule', label: 'Schedule', icon: CalendarDays, adminOnly: false },
   { href: '/reports', label: 'Reports', icon: BarChart3, adminOnly: true },
   { href: '/invoices', label: 'Invoices', icon: Receipt, adminOnly: true },
+  { href: '/materials', label: 'Materials', icon: Package, adminOnly: true },
   { href: '/activity', label: 'Activity', icon: Activity, adminOnly: false },
   { href: '/templates', label: 'Templates', icon: FileStack, adminOnly: true },
   { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
