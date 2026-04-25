@@ -258,3 +258,108 @@ export interface InvoiceWithCustomer extends Invoice {
   customers: { name: string; email: string | null }
   projects: { name: string } | null
 }
+
+// =============================================================
+// Materials & Quotes (Milestone 3)
+// =============================================================
+
+export type MaterialUnit = 'ft' | 'ea' | 'box' | 'bag' | 'set'
+
+export interface MaterialCategory {
+  id: string
+  name: string
+  sort_order: number
+  created_at: string
+}
+
+export interface Material {
+  id: string
+  name: string
+  unit: MaterialUnit
+  price: number
+  category_id: string
+  sort_order: number
+  active: boolean
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface MaterialWithCategory extends Material {
+  material_categories: { name: string; sort_order: number }
+}
+
+export type QuoteStatus =
+  | 'draft'
+  | 'sent'
+  | 'accepted'
+  | 'declined'
+  | 'expired'
+  | 'converted'
+
+export type QuoteJobType = 'rough_in' | 'trim_out' | 'service'
+
+export interface Quote {
+  id: string
+  quote_number: number
+  customer_id: string
+  project_id: string | null
+  title: string
+  description: string
+  job_type: QuoteJobType
+  status: QuoteStatus
+  markup_enabled: boolean
+  markup_percent: number
+  tax_enabled: boolean
+  tax_percent: number
+  labor_rate: number
+  labor_hours: number
+  flat_fee_enabled: boolean
+  flat_fee: number
+  issued_date: string
+  valid_until: string | null
+  sent_at: string | null
+  converted_at: string | null
+  converted_to_invoice_id: string | null
+  notes: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface QuoteLineItem {
+  id: string
+  quote_id: string
+  material_id: string | null
+  material_name: string
+  unit: string
+  unit_price: number
+  quantity: number
+  phase: string
+  sort_order: number
+  created_at: string
+}
+
+export interface QuoteWithLineItems extends Quote {
+  quote_line_items: QuoteLineItem[]
+}
+
+export interface QuoteWithCustomer extends Quote {
+  customers: { name: string; email: string | null }
+  projects: { name: string } | null
+}
+
+/**
+ * Quote totals computed from line items + pricing knobs.
+ * Formula matches docs/joe-materials-prototype.tsx — labor is NOT marked up,
+ * tax is applied to materials + markup + labor + flat fee.
+ */
+export interface QuoteTotals {
+  materialsTotal: number
+  markupAmount: number
+  laborAmount: number
+  flatFeeAmount: number
+  subtotalBeforeTax: number
+  taxAmount: number
+  grandTotal: number
+}
