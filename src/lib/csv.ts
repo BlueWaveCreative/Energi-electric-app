@@ -3,7 +3,7 @@ function escapeCSVValue(value: string): string {
   if (/^[=+\-@\t\r]/.test(value)) {
     value = `'${value}`
   }
-  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes("'")) {
+  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
     return `"${value.replace(/"/g, '""')}"`
   }
   return value

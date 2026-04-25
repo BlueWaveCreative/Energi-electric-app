@@ -6,8 +6,10 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Modal } from '@/components/ui/modal'
-import { Plus, Pencil, Trash2, Search, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, AlertCircle, Download, Upload } from 'lucide-react'
 import type { Material, MaterialCategory, MaterialUnit } from '@/lib/types/database'
+import { generateCSV, downloadCSV } from '@/lib/csv'
+import { ImportModal } from './import-modal'
 
 const UNIT_OPTIONS: MaterialUnit[] = ['ft', 'ea', 'box', 'bag', 'set']
 
@@ -54,6 +56,7 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
   const [deleting, setDeleting] = useState(false)
 
   const [pageError, setPageError] = useState<string | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
 
   const filtered = useMemo(() => {
     if (!search.trim()) return materials
@@ -164,6 +167,20 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
     }
   }
 
+  function handleExport() {
+    const categoryById = new Map(categories.map((c) => [c.id, c.name]))
+    const headers = ['name', 'unit', 'price', 'category']
+    const rows = materials.map((m) => [
+      m.name,
+      m.unit,
+      m.price.toString(),
+      categoryById.get(m.category_id) ?? '',
+    ])
+    const csv = generateCSV(headers, rows)
+    const date = new Date().toISOString().slice(0, 10)
+    downloadCSV(csv, `energi-materials-${date}.csv`)
+  }
+
   if (categories.length === 0) {
     return (
       <Card>
@@ -211,6 +228,25 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
         <p className="text-sm text-gray-500" aria-live="polite">
           {filtered.length} of {materials.length}
         </p>
+        <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleExport}
+            disabled={materials.length === 0}
+            className="flex-1 sm:flex-none"
+          >
+            <Download className="w-4 h-4 mr-1" /> Export
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setImportOpen(true)}
+            className="flex-1 sm:flex-none"
+          >
+            <Upload className="w-4 h-4 mr-1" /> Import
+          </Button>
+        </div>
       </div>
 
       {noSearchMatches && (
@@ -374,6 +410,13 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
           </form>
         )}
       </Modal>
+
+      <ImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onSuccess={() => router.refresh()}
+        validCategoryNames={categories.map((c) => c.name)}
+      />
 
       <Modal
         open={deleteTarget !== null}
