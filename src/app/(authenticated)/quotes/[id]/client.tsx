@@ -14,6 +14,7 @@ import {
   Send,
   ArrowLeft,
   Lock,
+  FileCheck,
 } from 'lucide-react'
 import { computeQuoteTotals } from '@/lib/quotes/calc'
 import type {
@@ -77,6 +78,8 @@ export function QuoteBuilderClient({
   const [busy, setBusy] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [sendConfirmOpen, setSendConfirmOpen] = useState(false)
+  const [convertConfirmOpen, setConvertConfirmOpen] = useState(false)
+  const [converting, setConverting] = useState(false)
 
   // Sync local state with server props (covers router.refresh() flows)
   useEffect(() => {
@@ -220,6 +223,23 @@ export function QuoteBuilderClient({
     await patchQuote({ status: 'sent' })
   }
 
+  async function confirmConvert() {
+    setConverting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/quotes/${quote.id}/convert`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Conversion failed')
+      router.push(`/invoices/${data.invoice_id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Conversion failed')
+      setConverting(false)
+      setConvertConfirmOpen(false)
+    }
+  }
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -229,18 +249,37 @@ export function QuoteBuilderClient({
         >
           <ArrowLeft className="w-4 h-4 mr-1" /> All quotes
         </Link>
-        {!readOnly && quote.status === 'draft' && (
-          <Button
-            onClick={() => setSendConfirmOpen(true)}
-            disabled={busy || lineItems.length === 0}
-            title={
-              lineItems.length === 0
-                ? 'Add at least one line item before sending'
-                : undefined
-            }
-          >
-            <Send className="w-4 h-4 mr-1" /> Mark as sent
-          </Button>
+        {!readOnly && (
+          <div className="flex gap-2">
+            {quote.status === 'draft' && (
+              <Button
+                onClick={() => setSendConfirmOpen(true)}
+                disabled={busy || lineItems.length === 0}
+                title={
+                  lineItems.length === 0
+                    ? 'Add at least one line item before sending'
+                    : undefined
+                }
+              >
+                <Send className="w-4 h-4 mr-1" /> Mark as sent
+              </Button>
+            )}
+            {(quote.status === 'draft' ||
+              quote.status === 'sent' ||
+              quote.status === 'accepted') && (
+              <Button
+                onClick={() => setConvertConfirmOpen(true)}
+                disabled={busy || converting || lineItems.length === 0}
+                title={
+                  lineItems.length === 0
+                    ? 'Add at least one line item first'
+                    : undefined
+                }
+              >
+                <FileCheck className="w-4 h-4 mr-1" /> Convert to invoice
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
@@ -250,10 +289,18 @@ export function QuoteBuilderClient({
           className="flex items-start gap-2 px-3 py-2 rounded-lg bg-yellow-50 border border-yellow-200 text-sm text-yellow-800"
         >
           <Lock className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>
+          <span className="flex-1">
             This quote is locked because it was converted to an invoice. Line items
             and pricing can&rsquo;t be edited.
           </span>
+          {quote.converted_to_invoice_id && (
+            <Link
+              href={`/invoices/${quote.converted_to_invoice_id}`}
+              className="font-medium text-yellow-900 hover:underline shrink-0"
+            >
+              View invoice →
+            </Link>
+          )}
         </div>
       )}
 
@@ -450,6 +497,48 @@ export function QuoteBuilderClient({
         materials={materials}
         onAdd={addLineItem}
       />
+
+      <Modal
+        open={convertConfirmOpen}
+        onClose={() => !converting && setConvertConfirmOpen(false)}
+        title="Convert this quote to an invoice?"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">
+            This creates a draft invoice for{' '}
+            <span className="font-semibold">
+              {formatCurrency(totals.grandTotal)}
+            </span>{' '}
+            with a single summary line:
+          </p>
+          <p className="text-sm text-gray-600 italic bg-gray-50 px-3 py-2 rounded">
+            Provided material and labor for{' '}
+            {(quote.description?.trim() || quote.title) ?? '—'}
+          </p>
+          <p className="text-sm text-gray-700">
+            Materials are <span className="font-semibold">not</span> itemized to the
+            customer. Once converted, this quote is locked and you can&rsquo;t edit
+            line items or pricing.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setConvertConfirmOpen(false)}
+              disabled={converting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmConvert}
+              disabled={converting}
+            >
+              {converting ? 'Converting…' : 'Yes, create invoice'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         open={sendConfirmOpen}
