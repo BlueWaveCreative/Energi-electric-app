@@ -126,7 +126,7 @@ export function MaterialPickerModal({
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               autoFocus
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm tabular-nums"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm tabular-nums"
             />
           </div>
           {error && (
@@ -166,7 +166,7 @@ export function MaterialPickerModal({
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
               aria-label="Search materials"
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
             />
           </div>
 
@@ -174,7 +174,7 @@ export function MaterialPickerModal({
             {categories.length === 0 || materials.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-8">
                 No materials available. Add materials in the{' '}
-                <a href="/materials" className="text-[#68BD45] hover:underline">
+                <a href="/materials" className="text-[#045815] hover:underline">
                   Materials
                 </a>{' '}
                 page first.
@@ -195,7 +195,7 @@ export function MaterialPickerModal({
                             <button
                               type="button"
                               onClick={() => setSelected(m)}
-                              className="w-full flex items-center gap-3 px-3 py-3 min-h-[44px] text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-100 focus:ring-2 focus:ring-[#68BD45] focus:ring-inset"
+                              className="w-full flex items-center gap-3 px-3 py-3 min-h-[44px] text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-100 focus:ring-2 focus:ring-[#045815] focus:ring-inset"
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-gray-900 truncate">

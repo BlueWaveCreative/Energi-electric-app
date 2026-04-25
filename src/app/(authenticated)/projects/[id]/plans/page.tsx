@@ -73,7 +73,7 @@ export default async function PlansPage({
                 <Card hoverable className="mb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <FileImage className="w-8 h-8 text-[#68BD45]" />
+                      <FileImage className="w-8 h-8 text-[#045815]" />
                       <div>
                         <h3 className="font-medium text-gray-900">{plan.name}</h3>
                         <p className="text-xs text-gray-500">

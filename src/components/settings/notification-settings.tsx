@@ -105,7 +105,7 @@ export function NotificationSettings({ preferences, userId }: NotificationSettin
   return (
     <Card>
       <div className="flex items-center gap-2 mb-4">
-        <Bell className="w-5 h-5 text-[#68BD45]" />
+        <Bell className="w-5 h-5 text-[#045815]" />
         <h2 className="font-semibold text-gray-900">Notifications</h2>
       </div>
 
@@ -117,7 +117,7 @@ export function NotificationSettings({ preferences, userId }: NotificationSettin
           <button
             onClick={handleEnablePush}
             disabled={subscribing}
-            className="px-4 py-2 text-sm font-medium text-white bg-[#68BD45] rounded-lg hover:bg-[#5aa93d] transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-white bg-[#045815] rounded-lg hover:bg-[#5aa93d] transition-colors disabled:opacity-50"
           >
             {subscribing ? 'Enabling...' : 'Enable Push Notifications'}
           </button>
@@ -134,7 +134,7 @@ export function NotificationSettings({ preferences, userId }: NotificationSettin
             <button
               onClick={() => handleToggle(key)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                prefs?.[key] !== false ? 'bg-[#68BD45]' : 'bg-gray-300'
+                prefs?.[key] !== false ? 'bg-[#045815]' : 'bg-gray-300'
               }`}
               role="switch"
               aria-checked={prefs?.[key] !== false}

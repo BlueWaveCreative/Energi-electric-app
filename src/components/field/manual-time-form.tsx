@@ -92,7 +92,7 @@ export function ManualTimeForm({ projectId, onSubmit, phases }: ManualTimeFormPr
             id="phase"
             value={phaseId}
             onChange={(e) => setPhaseId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           >
             <option value="">General</option>
             {phases.map((p) => (

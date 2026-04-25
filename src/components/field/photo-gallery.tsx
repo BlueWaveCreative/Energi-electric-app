@@ -128,7 +128,7 @@ export function PhotoGallery({ photos, onDelete, onDeleteMultiple }: PhotoGaller
             {selectMode && (
               <div className="absolute top-1 left-1">
                 {selectedIds.has(photo.id) ? (
-                  <CheckSquare className="w-6 h-6 text-[#68BD45] drop-shadow-md" />
+                  <CheckSquare className="w-6 h-6 text-[#045815] drop-shadow-md" />
                 ) : (
                   <Square className="w-6 h-6 text-white drop-shadow-md" />
                 )}

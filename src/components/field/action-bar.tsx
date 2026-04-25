@@ -68,7 +68,7 @@ export function ActionBar({
         {/* Add Note */}
         <button
           onClick={onAddNote}
-          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#68BD45]"
+          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#045815]"
         >
           <StickyNote className="w-6 h-6" />
           Note
@@ -77,7 +77,7 @@ export function ActionBar({
         {/* Take Photo */}
         <button
           onClick={onTakePhoto}
-          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#68BD45]"
+          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#045815]"
         >
           <Camera className="w-6 h-6" />
           Photo
@@ -86,7 +86,7 @@ export function ActionBar({
         {/* Log Time */}
         <button
           onClick={onLogTime}
-          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#68BD45]"
+          className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#045815]"
         >
           <Clock className="w-6 h-6" />
           Log Time
@@ -96,7 +96,7 @@ export function ActionBar({
         {hasPlans && (
           <button
             onClick={onViewPlans}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#68BD45]"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-[#045815]"
           >
             <Map className="w-6 h-6" />
             Plans

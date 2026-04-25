@@ -16,7 +16,7 @@ interface ActivityFeedProps {
 }
 
 const typeConfig = {
-  note: { icon: StickyNote, color: 'text-[#68BD45]', bg: 'bg-[#68BD45]/10' },
+  note: { icon: StickyNote, color: 'text-[#045815]', bg: 'bg-[#045815]/10' },
   photo: { icon: Camera, color: 'text-purple-500', bg: 'bg-purple-100' },
   time_entry: { icon: Clock, color: 'text-green-500', bg: 'bg-green-100' },
   phase_change: { icon: CheckCircle, color: 'text-orange-500', bg: 'bg-orange-100' },

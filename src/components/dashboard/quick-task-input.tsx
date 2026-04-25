@@ -46,7 +46,7 @@ export function QuickTaskInput({ phaseId, userId, onTaskAdded }: QuickTaskInputP
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 py-2 text-sm text-[#68BD45] hover:text-[#5aa83c] transition-colors w-full"
+        className="flex items-center gap-2 py-2 text-sm text-[#045815] hover:text-[#023510] transition-colors w-full"
       >
         <Plus className="w-4 h-4" />
         <span>Add task...</span>
@@ -64,7 +64,7 @@ export function QuickTaskInput({ phaseId, userId, onTaskAdded }: QuickTaskInputP
         autoFocus
         disabled={saving}
         aria-label="Task title"
-        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent placeholder:text-gray-400"
+        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent placeholder:text-gray-400"
         onKeyDown={(e) => {
           if (e.key === 'Escape') {
             setTitle('')
@@ -75,7 +75,7 @@ export function QuickTaskInput({ phaseId, userId, onTaskAdded }: QuickTaskInputP
       <button
         type="submit"
         disabled={!title.trim() || saving}
-        className="px-3 py-1.5 text-sm bg-[#68BD45] text-white rounded-lg hover:bg-[#5aa83c] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-3 py-1.5 text-sm bg-[#045815] text-white rounded-lg hover:bg-[#023510] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Add
       </button>

@@ -35,7 +35,7 @@ interface ScheduleBoardProps {
 }
 
 const PROJECT_COLORS = [
-  '#68BD45', // brand green
+  '#045815', // brand green
   '#3B82F6', // blue
   '#F59E0B', // amber
   '#EF4444', // red
@@ -207,7 +207,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
         key={date}
         className={cn(
           'relative px-1 py-1 border-t border-gray-100 text-center min-w-[90px]',
-          isToday && 'bg-[#68BD45]/5',
+          isToday && 'bg-[#045815]/5',
           weekend && 'bg-gray-50/50',
           extraClassName
         )}
@@ -217,7 +217,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
           onClick={() => canEdit && setActiveCell(isActive ? null : { userId, date })}
           disabled={saving || !canEdit}
           className={cn(
-            'w-full rounded-md px-1.5 py-1 text-xs font-medium transition-colors min-h-[32px] focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50',
+            'w-full rounded-md px-1.5 py-1 text-xs font-medium transition-colors min-h-[32px] focus:outline-none focus:ring-2 focus:ring-[#045815]/50',
             entry
               ? 'bg-gray-50 hover:bg-gray-100 text-gray-700'
               : 'hover:bg-gray-50 text-gray-500 hover:text-gray-600 group'
@@ -270,7 +270,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   onClick={() => handleAssign(userId, date, p.id)}
                   className={cn(
                     'w-full text-left px-3 py-2 text-xs hover:bg-gray-50 transition-colors flex items-center gap-2',
-                    isSelected && 'bg-[#68BD45]/5 font-medium'
+                    isSelected && 'bg-[#045815]/5 font-medium'
                   )}
                   role="option"
                   aria-selected={isSelected}
@@ -298,7 +298,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
   const legendProjects = projects.filter((p) => usedProjectIds.has(p.id))
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 min-w-0">
       {legendProjects.length > 0 && (
         <div className="flex flex-wrap gap-3 text-xs text-gray-600">
           {legendProjects.map((p) => (
@@ -343,7 +343,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   key={date}
                   className={cn(
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
-                    date === today && 'bg-[#68BD45]/5',
+                    date === today && 'bg-[#045815]/5',
                     isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >
@@ -356,7 +356,7 @@ export function ScheduleBoard({ crew, projects, initialEntries, rangeStart, isAd
                   className={cn(
                     'px-1 py-2 text-xs font-medium text-center whitespace-nowrap min-w-[90px]',
                     i === 0 && 'border-l border-gray-200',
-                    date === today && 'bg-[#68BD45]/5',
+                    date === today && 'bg-[#045815]/5',
                     isWeekend(date) ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >

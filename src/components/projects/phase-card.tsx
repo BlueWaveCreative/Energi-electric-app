@@ -38,7 +38,7 @@ export function PhaseCard({
   return (
     <div className={cn(
       'border rounded-lg overflow-hidden',
-      phase.status === 'in_progress' ? 'border-[#68BD45]/30 bg-[#68BD45]/5' : 'border-gray-200 bg-white'
+      phase.status === 'in_progress' ? 'border-[#045815]/30 bg-[#045815]/5' : 'border-gray-200 bg-white'
     )}>
       <button
         onClick={() => setExpanded(!expanded)}
@@ -73,7 +73,7 @@ export function PhaseCard({
                   className={cn(
                     'px-3 py-2 text-sm rounded-md border transition-colors',
                     phase.status === status
-                      ? 'border-[#68BD45] bg-[#68BD45]/10 text-[#68BD45]'
+                      ? 'border-[#045815] bg-[#045815]/10 text-[#045815]'
                       : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   )}
                 >

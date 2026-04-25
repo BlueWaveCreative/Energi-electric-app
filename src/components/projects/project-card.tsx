@@ -62,7 +62,7 @@ export function ProjectCard({ project, phaseCount, completedPhases, hasUnread }:
             aria-label="Phase completion progress"
           >
             <div
-              className="bg-[#68BD45] h-1.5 rounded-full transition-all"
+              className="bg-[#045815] h-1.5 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>

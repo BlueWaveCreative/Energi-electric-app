@@ -33,7 +33,7 @@ interface TodayClientProps {
 }
 
 const PROJECT_COLORS = [
-  '#68BD45', '#3B82F6', '#F59E0B', '#EF4444',
+  '#045815', '#3B82F6', '#F59E0B', '#EF4444',
   '#8B5CF6', '#EC4899', '#14B8A6', '#F97316',
 ]
 
@@ -129,7 +129,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
         </div>
         <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
           totalMinutes > 0 || isRunning
-            ? 'bg-[#68BD45] text-white'
+            ? 'bg-[#045815] text-white'
             : 'bg-gray-200 text-gray-500'
         }`}>
           {formatDuration(totalMinutes + (isRunning ? Math.round(elapsed / 60) : 0))} today
@@ -202,7 +202,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
           <p className="text-gray-600 text-sm">No jobs scheduled for today.</p>
           <p className="text-gray-500 text-xs mt-1">
             Check with your admin or{' '}
-            <a href="/schedule" className="text-[#68BD45] underline hover:text-[#5aa83c]">view the full schedule</a>.
+            <a href="/schedule" className="text-[#045815] underline hover:text-[#023510]">view the full schedule</a>.
           </p>
         </div>
       )}
@@ -211,7 +211,7 @@ export function TodayClient({ user, schedule, totalMinutes, completedJobs }: Tod
       <button
         type="button"
         onClick={() => setShowAddJobModal(true)}
-        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#68BD45] border border-dashed border-[#68BD45]/50 rounded-lg hover:bg-[#68BD45]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#68BD45]/50"
+        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[#045815] border border-dashed border-[#045815]/50 rounded-lg hover:bg-[#045815]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#045815]/50"
       >
         <Plus className="w-4 h-4" aria-hidden="true" />
         Add unscheduled job

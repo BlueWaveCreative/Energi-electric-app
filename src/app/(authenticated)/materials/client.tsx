@@ -41,7 +41,7 @@ function formatCurrency(amount: number) {
 }
 
 const ICON_BUTTON_BASE =
-  'inline-flex items-center justify-center w-11 h-11 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#68BD45]'
+  'inline-flex items-center justify-center w-11 h-11 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#045815]'
 
 export function MaterialsClient({ categories, materials }: MaterialsClientProps) {
   const router = useRouter()
@@ -222,7 +222,7 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search materials"
-            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
           />
         </div>
         <p className="text-sm text-gray-500" aria-live="polite">
@@ -352,7 +352,7 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
                   onChange={(e) =>
                     setForm({ ...form, unit: e.target.value as MaterialUnit })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
                 >
                   {UNIT_OPTIONS.map((u) => (
                     <option key={u} value={u}>
@@ -385,7 +385,7 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
                 onChange={(e) =>
                   setForm({ ...form, category_id: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>

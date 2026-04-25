@@ -91,7 +91,7 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
               onClick={() => setActiveTab(tab.value)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 activeTab === tab.value
-                  ? 'bg-[#68BD45] text-white'
+                  ? 'bg-[#045815] text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -101,7 +101,7 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
         </div>
         <Link
           href="/quotes/new"
-          className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:ring-offset-2"
+          className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#045815] text-white hover:bg-[#023510] transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#045815] focus:ring-offset-2"
         >
           <Plus className="w-4 h-4 mr-2" /> New Quote
         </Link>
@@ -118,7 +118,7 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
             {quotes.length === 0 && (
               <Link
                 href="/quotes/new"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:ring-offset-2"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#045815] text-white hover:bg-[#023510] focus:outline-none focus:ring-2 focus:ring-[#045815] focus:ring-offset-2"
               >
                 <Plus className="w-4 h-4 mr-1" /> New quote
               </Link>
@@ -143,7 +143,7 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
                 key={q.id}
                 href={`/quotes/${q.id}`}
                 aria-label={`Open quote #${q.quote_number}: ${q.title}`}
-                className="block focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:ring-offset-2 rounded-xl"
+                className="block focus:outline-none focus:ring-2 focus:ring-[#045815] focus:ring-offset-2 rounded-xl"
               >
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex items-center justify-between gap-4">

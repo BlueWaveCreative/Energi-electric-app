@@ -78,7 +78,7 @@ export function InspectionForm({ projectId, userId, onSuccess }: InspectionFormP
           id="inspection-type"
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
         >
           {TYPES.map((t) => (
             <option key={t.value} value={t.value}>{t.label}</option>
@@ -94,7 +94,7 @@ export function InspectionForm({ projectId, userId, onSuccess }: InspectionFormP
           id="inspection-status"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm"
         >
           {STATUSES.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
@@ -120,7 +120,7 @@ export function InspectionForm({ projectId, userId, onSuccess }: InspectionFormP
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any details about this inspection..."
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#68BD45] focus:border-transparent text-sm resize-none placeholder:text-gray-400"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#045815] focus:border-transparent text-sm resize-none placeholder:text-gray-400"
         />
       </div>
 

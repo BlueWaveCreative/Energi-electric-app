@@ -28,7 +28,7 @@ export function WeatherCard({ forecast }: WeatherCardProps) {
   return (
     <Card>
       <div className="flex items-center gap-2 mb-3">
-        <Sun className="w-4 h-4 text-[#68BD45]" />
+        <Sun className="w-4 h-4 text-[#045815]" />
         <h3 className="text-sm font-semibold text-gray-900">Wilmington Weather</h3>
       </div>
       <div className="grid grid-cols-3 gap-3">

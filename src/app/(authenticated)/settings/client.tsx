@@ -62,7 +62,7 @@ function CustomerPortalRow({
           onClick={handleToggle}
           disabled={toggling}
           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-            active ? 'bg-[#68BD45]' : 'bg-gray-300'
+            active ? 'bg-[#045815]' : 'bg-gray-300'
           }`}
           role="switch"
           aria-checked={active}
@@ -82,7 +82,7 @@ function CustomerPortalRow({
           {customer.email && (
             <button
               onClick={() => onSendEmail(customer.id)}
-              className="text-xs px-3 py-1.5 rounded-full border border-[#68BD45] text-[#68BD45] hover:bg-green-50"
+              className="text-xs px-3 py-1.5 rounded-full border border-[#045815] text-[#045815] hover:bg-green-50"
             >
               Send Email
             </button>
@@ -171,21 +171,21 @@ function LineItemPresetsSection({
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="Preset name (e.g. Labor)"
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45] placeholder:text-gray-400"
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815] placeholder:text-gray-400"
         />
         <input
           type="number"
           value={newPrice}
           onChange={e => setNewPrice(e.target.value)}
           placeholder="Default price"
-          className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#68BD45] placeholder:text-gray-400"
+          className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045815] placeholder:text-gray-400"
           min="0"
           step="0.01"
         />
         <button
           onClick={addPreset}
           disabled={saving || !newName.trim()}
-          className="px-4 py-2 bg-[#68BD45] text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-green-600 transition-colors"
+          className="px-4 py-2 bg-[#045815] text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-green-600 transition-colors"
         >
           Add
         </button>
@@ -253,7 +253,7 @@ export function SettingsClient({ users, notificationPreferences, userId, custome
                   <button
                     onClick={() => toggleUserStatus(u.id, u.status)}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      u.status === 'active' ? 'bg-[#68BD45]' : 'bg-gray-300'
+                      u.status === 'active' ? 'bg-[#045815]' : 'bg-gray-300'
                     }`}
                     role="switch"
                     aria-checked={u.status === 'active'}

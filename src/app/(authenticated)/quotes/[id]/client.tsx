@@ -254,7 +254,7 @@ export function QuoteBuilderClient({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link
           href="/quotes"
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#68BD45] rounded"
+          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#045815] rounded"
         >
           <ArrowLeft className="w-4 h-4 mr-1" /> All quotes
         </Link>
@@ -638,7 +638,7 @@ function LineItemRow({
         }}
         disabled={readOnly}
         aria-label={`Quantity for ${item.material_name}`}
-        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
       />
       <p className="text-sm font-semibold text-gray-900 tabular-nums w-24 text-right shrink-0">
         {formatCurrency(Number(item.unit_price) * Number(item.quantity))}
@@ -647,7 +647,7 @@ function LineItemRow({
         <button
           type="button"
           onClick={onDelete}
-          className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#68BD45]"
+          className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#045815]"
           aria-label={`Remove ${item.material_name}`}
         >
           <Trash2 className="w-4 h-4" />
@@ -698,7 +698,7 @@ function ToggleNumber({
           checked={enabled}
           disabled={disabled}
           onChange={(e) => onChange(e.target.checked, value)}
-          className="rounded border-gray-300 text-[#68BD45] focus:ring-[#68BD45]"
+          className="rounded border-gray-300 text-[#045815] focus:ring-[#045815]"
         />
         <span>{label}</span>
         {!enabled && (
@@ -726,7 +726,7 @@ function ToggleNumber({
           }}
           disabled={disabled || !enabled}
           aria-label={label}
-          className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400"
+          className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400"
         />
         {suffix && <span className="text-gray-500">{suffix}</span>}
       </div>
@@ -789,7 +789,7 @@ function NumberInput({
           }}
           disabled={disabled}
           aria-label={label}
-          className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400"
+          className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-[#045815] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400"
         />
         {suffix && <span className="text-gray-500">{suffix}</span>}
       </div>

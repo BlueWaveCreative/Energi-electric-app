@@ -15,8 +15,8 @@ function Section({ icon: Icon, title, children }: { icon: React.ElementType; tit
   return (
     <Card className="mb-4">
       <div className="flex items-start gap-3">
-        <div className="p-2 bg-[#68BD45]/10 rounded-lg flex-shrink-0">
-          <Icon className="w-5 h-5 text-[#68BD45]" />
+        <div className="p-2 bg-[#045815]/10 rounded-lg flex-shrink-0">
+          <Icon className="w-5 h-5 text-[#045815]" />
         </div>
         <div className="flex-1">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">{title}</h2>
@@ -30,7 +30,7 @@ function Section({ icon: Icon, title, children }: { icon: React.ElementType; tit
 function Step({ number, children }: { number: number; children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#68BD45] text-white text-xs font-bold flex items-center justify-center mt-0.5">
+      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#045815] text-white text-xs font-bold flex items-center justify-center mt-0.5">
         {number}
       </span>
       <p>{children}</p>
