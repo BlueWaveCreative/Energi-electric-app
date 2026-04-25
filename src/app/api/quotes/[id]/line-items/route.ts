@@ -96,6 +96,11 @@ export async function POST(
     }
     const cat = material.material_categories as { name: string } | { name: string }[] | null
     const phaseName = Array.isArray(cat) ? cat[0]?.name : cat?.name
+    if (!phaseName) {
+      console.warn(
+        `[line-items] Material ${material.id} (${material.name}) has no resolvable category; falling back to Misc/Other`,
+      )
+    }
     snapshot = {
       material_id: material.id,
       material_name: material.name,
@@ -132,7 +137,11 @@ export async function POST(
     }
   }
 
-  // Compute next sort_order within this quote
+  // Compute next sort_order within this quote.
+  // Race window is real (read-then-insert isn't atomic) but the app is single-
+  // admin; two concurrent line-item adds within the same ms are functionally
+  // unreachable. Worst-case impact is two rows sharing a sort_order and
+  // displaying in arbitrary order — no data corruption.
   const { data: existing } = await supabase
     .from('quote_line_items')
     .select('sort_order')

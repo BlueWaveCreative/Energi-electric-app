@@ -11,6 +11,26 @@ const VALID_STATUSES = new Set([
 ])
 const VALID_JOB_TYPES = new Set(['rough_in', 'trim_out', 'service'])
 
+// Once a quote is converted to an invoice, only the status can change (and
+// only by a server-internal flow, not via this PATCH route). Everything else
+// — title, knobs, notes, dates — is locked so historical invoice data stays
+// referentially consistent with the source quote.
+const LOCKED_WHEN_CONVERTED = new Set([
+  'title',
+  'description',
+  'notes',
+  'job_type',
+  'valid_until',
+  'markup_enabled',
+  'markup_percent',
+  'tax_enabled',
+  'tax_percent',
+  'labor_rate',
+  'labor_hours',
+  'flat_fee_enabled',
+  'flat_fee',
+])
+
 function parseNumber(raw: unknown, opts: { min?: number } = {}): number | null {
   if (typeof raw === 'number') {
     return Number.isFinite(raw) && (opts.min === undefined || raw >= opts.min)
@@ -44,9 +64,40 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  // Load current state so we can reason about transitions and locked fields.
+  const { data: current, error: loadError } = await supabase
+    .from('quotes')
+    .select('id, status, sent_at')
+    .eq('id', id)
+    .maybeSingle()
+  if (loadError) {
+    return NextResponse.json({ error: loadError.message }, { status: 500 })
+  }
+  if (!current) {
+    return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
+  }
+
+  // Once converted, lock the quote down. Status cannot leave 'converted'
+  // and editable fields are off-limits.
+  if (current.status === 'converted') {
+    if ('status' in body && body.status !== 'converted') {
+      return NextResponse.json(
+        { error: 'Converted quotes cannot change status' },
+        { status: 409 },
+      )
+    }
+    for (const key of LOCKED_WHEN_CONVERTED) {
+      if (key in body) {
+        return NextResponse.json(
+          { error: `Cannot edit "${key}" on a converted quote` },
+          { status: 409 },
+        )
+      }
+    }
+  }
+
   const updates: Record<string, unknown> = {}
 
-  // String fields
   if ('title' in body) {
     if (typeof body.title !== 'string' || !body.title.trim()) {
       return NextResponse.json({ error: 'Title must be non-empty' }, { status: 400 })
@@ -76,7 +127,8 @@ export async function PATCH(
       )
     }
     updates.status = body.status
-    if (body.status === 'sent') {
+    // Stamp sent_at only on the first transition into 'sent' — never re-stamp.
+    if (body.status === 'sent' && !current.sent_at) {
       updates.sent_at = new Date().toISOString()
     }
   }
@@ -90,16 +142,26 @@ export async function PATCH(
     updates.job_type = body.job_type
   }
   if ('valid_until' in body) {
-    if (body.valid_until !== null && typeof body.valid_until !== 'string') {
-      return NextResponse.json(
-        { error: 'valid_until must be an ISO date string or null' },
-        { status: 400 },
-      )
+    if (body.valid_until === null) {
+      updates.valid_until = null
+    } else {
+      if (typeof body.valid_until !== 'string') {
+        return NextResponse.json(
+          { error: 'valid_until must be an ISO date string or null' },
+          { status: 400 },
+        )
+      }
+      const ts = Date.parse(body.valid_until)
+      if (Number.isNaN(ts)) {
+        return NextResponse.json(
+          { error: 'valid_until must parse as a date (YYYY-MM-DD)' },
+          { status: 400 },
+        )
+      }
+      updates.valid_until = body.valid_until
     }
-    updates.valid_until = body.valid_until
   }
 
-  // Boolean toggles
   for (const flag of [
     'markup_enabled',
     'tax_enabled',
@@ -116,7 +178,6 @@ export async function PATCH(
     }
   }
 
-  // Numeric fields
   const numericFields: { key: string; min: number }[] = [
     { key: 'markup_percent', min: 0 },
     { key: 'tax_percent', min: 0 },

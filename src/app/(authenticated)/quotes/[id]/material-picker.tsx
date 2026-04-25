@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { Search, Plus } from 'lucide-react'
@@ -66,9 +66,13 @@ export function MaterialPickerModal({
     setError(null)
   }
 
+  // Reset state any time the modal becomes hidden, regardless of close path.
+  useEffect(() => {
+    if (!open) reset()
+  }, [open])
+
   function handleClose() {
     if (submitting) return
-    reset()
     onClose()
   }
 
@@ -166,7 +170,7 @@ export function MaterialPickerModal({
             />
           </div>
 
-          <div className="border border-gray-200 rounded-lg max-h-[400px] overflow-y-auto">
+          <div className="border border-gray-200 rounded-lg max-h-[min(400px,60vh)] overflow-y-auto">
             {categories.length === 0 || materials.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-8">
                 No materials available. Add materials in the{' '}
@@ -191,7 +195,7 @@ export function MaterialPickerModal({
                             <button
                               type="button"
                               onClick={() => setSelected(m)}
-                              className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-100"
+                              className="w-full flex items-center gap-3 px-3 py-3 min-h-[44px] text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-100 focus:ring-2 focus:ring-[#68BD45] focus:ring-inset"
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-gray-900 truncate">

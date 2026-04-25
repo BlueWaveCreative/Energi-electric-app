@@ -56,11 +56,15 @@ function statusBadge(status: QuoteStatus) {
     case 'accepted':
       return <Badge variant="success">Accepted</Badge>
     case 'declined':
-      return <Badge variant="default">Declined</Badge>
+      return <Badge variant="danger">Declined</Badge>
     case 'expired':
-      return <Badge variant="default">Expired</Badge>
+      return (
+        <Badge variant="default" className="line-through">
+          Expired
+        </Badge>
+      )
     case 'converted':
-      return <Badge variant="success">Converted</Badge>
+      return <Badge variant="info">Converted</Badge>
   }
 }
 
@@ -105,11 +109,21 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
 
       {filtered.length === 0 ? (
         <Card>
-          <p className="text-gray-500 text-sm text-center py-4">
-            {quotes.length === 0
-              ? 'No quotes yet. Create one to get started.'
-              : `No ${activeTab} quotes.`}
-          </p>
+          <div className="text-center py-6 space-y-3">
+            <p className="text-gray-500 text-sm">
+              {quotes.length === 0
+                ? 'No quotes yet. Create one to get started.'
+                : `No ${activeTab} quotes.`}
+            </p>
+            {quotes.length === 0 && (
+              <Link
+                href="/quotes/new"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:ring-offset-2"
+              >
+                <Plus className="w-4 h-4 mr-1" /> New quote
+              </Link>
+            )}
+          </div>
         </Card>
       ) : (
         <div className="space-y-2">
@@ -125,7 +139,12 @@ export function QuotesClient({ quotes }: QuotesClientProps) {
               flat_fee: q.flat_fee,
             })
             return (
-              <Link key={q.id} href={`/quotes/${q.id}`}>
+              <Link
+                key={q.id}
+                href={`/quotes/${q.id}`}
+                aria-label={`Open quote #${q.quote_number}: ${q.title}`}
+                className="block focus:outline-none focus:ring-2 focus:ring-[#68BD45] focus:ring-offset-2 rounded-xl"
+              >
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
