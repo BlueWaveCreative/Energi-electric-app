@@ -3,11 +3,16 @@
  * - Quoted fields with embedded commas, quotes (escaped as ""), and newlines
  * - Trailing newline
  * - Both \n and \r\n line endings
+ * - BOM stripping
+ * - Format-injection round-trip: a field that begins with `'` followed by
+ *   `=+-@\t\r` (the prefix our exporter adds to neutralize Excel formulas)
+ *   has the leading `'` stripped on parse
+ *
+ * Throws on:
+ * - Unescaped `"` in the middle of a quoted field
+ * - Unterminated quoted field (file ends while inside quotes)
  *
  * Returns rows as arrays of strings. Header detection is the caller's job.
- *
- * NOT a full RFC 4180 implementation — sufficient for materials import where
- * the source is Joe's Excel/Google Sheets export, not arbitrary CSV.
  */
 export function parseCSV(text: string): string[][] {
   const rows: string[][] = []
@@ -25,13 +30,24 @@ export function parseCSV(text: string): string[][] {
     if (inQuotes) {
       if (ch === '"') {
         if (text[i + 1] === '"') {
-          // Escaped quote
           field += '"'
           i += 2
           continue
         }
         inQuotes = false
         i++
+        const next = text[i]
+        if (
+          next !== undefined &&
+          next !== ',' &&
+          next !== '\r' &&
+          next !== '\n'
+        ) {
+          throw new Error(
+            `Unescaped quote in quoted field near offset ${i} ` +
+              `(got "${next}" — use "" inside quoted fields)`,
+          )
+        }
         continue
       }
       field += ch
@@ -40,27 +56,33 @@ export function parseCSV(text: string): string[][] {
     }
 
     if (ch === '"') {
+      if (field.length > 0) {
+        // Quote in the middle of an unquoted field — append literally rather
+        // than starting a new quoted region.
+        field += ch
+        i++
+        continue
+      }
       inQuotes = true
       i++
       continue
     }
     if (ch === ',') {
-      row.push(field)
+      row.push(unprefix(field))
       field = ''
       i++
       continue
     }
     if (ch === '\r') {
-      // Swallow \r in \r\n
       if (text[i + 1] === '\n') {
-        row.push(field)
+        row.push(unprefix(field))
         rows.push(row)
         row = []
         field = ''
         i += 2
         continue
       }
-      row.push(field)
+      row.push(unprefix(field))
       rows.push(row)
       row = []
       field = ''
@@ -68,7 +90,7 @@ export function parseCSV(text: string): string[][] {
       continue
     }
     if (ch === '\n') {
-      row.push(field)
+      row.push(unprefix(field))
       rows.push(row)
       row = []
       field = ''
@@ -79,17 +101,31 @@ export function parseCSV(text: string): string[][] {
     i++
   }
 
-  // Flush trailing field/row if non-empty
+  if (inQuotes) {
+    throw new Error('Unterminated quoted field at end of input')
+  }
+
   if (field.length > 0 || row.length > 0) {
-    row.push(field)
+    row.push(unprefix(field))
     rows.push(row)
   }
 
-  // Drop a trailing fully-empty row (typical when file ends with newline)
   if (rows.length > 0) {
     const last = rows[rows.length - 1]
     if (last.length === 1 && last[0] === '') rows.pop()
   }
 
   return rows
+}
+
+/**
+ * Reverse the formula-injection prefix our exporter adds.
+ * If a field is `'=foo` / `'+foo` / `'-foo` / `'@foo` / `'\t...` / `'\r...`,
+ * strip the leading `'`. This makes export → import round-trip stable.
+ */
+function unprefix(value: string): string {
+  if (value.length >= 2 && value[0] === "'" && /[=+\-@\t\r]/.test(value[1])) {
+    return value.slice(1)
+  }
+  return value
 }

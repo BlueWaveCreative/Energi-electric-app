@@ -55,4 +55,22 @@ describe('parseCSV', () => {
   it('returns empty array for empty input', () => {
     expect(parseCSV('')).toEqual([])
   })
+
+  it('throws on unescaped quote inside a quoted field', () => {
+    expect(() => parseCSV('a\n"Wire 12"AWG"')).toThrow(/Unescaped quote/)
+  })
+
+  it('throws on unterminated quoted field', () => {
+    expect(() => parseCSV('a,b\n"unterminated')).toThrow(/Unterminated/)
+  })
+
+  it('strips formula-injection prefix on round-trip', () => {
+    // Exporter writes `'=Total` to neutralize; parser strips the leading '.
+    expect(parseCSV("name\n'=Total")).toEqual([['name'], ['=Total']])
+    expect(parseCSV("name\n'-Discount")).toEqual([['name'], ['-Discount']])
+  })
+
+  it('does not strip leading apostrophe from regular text', () => {
+    expect(parseCSV("name\n'Lowes")).toEqual([['name'], ["'Lowes"]])
+  })
 })

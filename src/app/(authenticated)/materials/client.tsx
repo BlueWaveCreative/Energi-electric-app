@@ -228,16 +228,22 @@ export function MaterialsClient({ categories, materials }: MaterialsClientProps)
         <p className="text-sm text-gray-500" aria-live="polite">
           {filtered.length} of {materials.length}
         </p>
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
           <Button
             size="sm"
             variant="secondary"
             onClick={handleExport}
             disabled={materials.length === 0}
+            className="flex-1 sm:flex-none"
           >
             <Download className="w-4 h-4 mr-1" /> Export
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => setImportOpen(true)}>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setImportOpen(true)}
+            className="flex-1 sm:flex-none"
+          >
             <Upload className="w-4 h-4 mr-1" /> Import
           </Button>
         </div>

@@ -49,18 +49,23 @@ export async function POST(request: Request) {
 
   const trimmedName = name.trim()
 
-  // If a soft-deleted material with the same name + category exists, reactivate
-  // it instead of creating a duplicate row. Quote line items snapshot their
-  // material data, so reactivation is safe.
+  // Look up any existing material with the same name + category. If active,
+  // reject as a duplicate (so user gets a clear message instead of a 500).
+  // If soft-deleted, reactivate it. Same pattern as the import route.
   const { data: existing } = await supabase
     .from('materials')
-    .select('id')
+    .select('id, active')
     .eq('name', trimmedName)
     .eq('category_id', category_id)
-    .eq('active', false)
     .maybeSingle()
 
   if (existing) {
+    if (existing.active) {
+      return NextResponse.json(
+        { error: 'A material with this name already exists in that category' },
+        { status: 409 },
+      )
+    }
     const { data, error } = await supabase
       .from('materials')
       .update({ active: true, unit, price: priceNum })

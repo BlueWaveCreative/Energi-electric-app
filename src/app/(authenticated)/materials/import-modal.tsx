@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, Fragment } from 'react'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import { AlertCircle, CheckCircle2, FileText } from 'lucide-react'
+import { AlertCircle, CheckCircle2, FileText, Info } from 'lucide-react'
 import { parseCSV } from '@/lib/csv-parse'
 
 const REQUIRED_HEADERS = ['name', 'unit', 'price', 'category']
 const VALID_UNITS = new Set(['ft', 'ea', 'box', 'bag', 'set'])
+const MAX_FILE_BYTES = 2_000_000 // ~2 MB
+const MAX_ROWS = 1000
 
 interface ImportModalProps {
   open: boolean
@@ -69,6 +71,18 @@ export function ImportModal({
   async function handleFile(file: File) {
     setFilename(file.name)
     setParseError(null)
+
+    if (file.size === 0) {
+      setParseError('File is empty.')
+      return
+    }
+    if (file.size > MAX_FILE_BYTES) {
+      setParseError(
+        `File is too large (${Math.round(file.size / 1024)}KB, max ${Math.round(MAX_FILE_BYTES / 1024)}KB). Split it and try again.`,
+      )
+      return
+    }
+
     let text: string
     try {
       text = await file.text()
@@ -77,9 +91,26 @@ export function ImportModal({
       return
     }
 
-    const rows = parseCSV(text)
-    if (rows.length < 2) {
-      setParseError('CSV must have a header row and at least one data row.')
+    let rows: string[][]
+    try {
+      rows = parseCSV(text)
+    } catch (err) {
+      setParseError(err instanceof Error ? err.message : 'CSV parse error')
+      return
+    }
+
+    if (rows.length === 0) {
+      setParseError('File is empty.')
+      return
+    }
+    if (rows.length === 1) {
+      setParseError('No data rows found below the header.')
+      return
+    }
+    if (rows.length - 1 > MAX_ROWS) {
+      setParseError(
+        `Too many rows (${rows.length - 1}, max ${MAX_ROWS}). Split the file and try again.`,
+      )
       return
     }
 
@@ -99,7 +130,10 @@ export function ImportModal({
     const parsed: PreviewRow[] = rows.slice(1).map((row, i) => {
       const name = (row[headerMap.name] ?? '').trim()
       const unit = (row[headerMap.unit] ?? '').trim().toLowerCase()
-      const priceStr = (row[headerMap.price] ?? '').trim().replace(/^\$/, '')
+      const priceStr = (row[headerMap.price] ?? '')
+        .trim()
+        .replace(/^\$/, '')
+        .replace(/,/g, '')
       const category = (row[headerMap.category] ?? '').trim()
 
       let error: string | null = null
@@ -173,12 +207,14 @@ export function ImportModal({
 
   const validCount = preview.filter((r) => !r.error).length
   const errorCount = preview.length - validCount
+  const allSkipped =
+    result !== null && result.created === 0 && result.reactivated === 0
 
   return (
     <Modal open={open} onClose={handleClose} title="Import materials" className="max-w-2xl">
       {phase === 'idle' && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p id="csv-help" className="text-sm text-gray-600">
             Upload a CSV with columns:{' '}
             <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">
               {REQUIRED_HEADERS.join(', ')}
@@ -193,6 +229,7 @@ export function ImportModal({
           <div>
             <label
               htmlFor="csv-file"
+              aria-describedby="csv-help"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-[#68BD45] text-white hover:bg-[#5aa83c] cursor-pointer focus-within:ring-2 focus-within:ring-[#68BD45] focus-within:ring-offset-2"
             >
               <FileText className="w-4 h-4" />
@@ -228,7 +265,11 @@ export function ImportModal({
             <span className="text-gray-700 truncate" title={filename}>
               {filename}
             </span>
-            <span className="text-gray-500 shrink-0 ml-2">
+            <span
+              className="text-gray-500 shrink-0 ml-2"
+              role="status"
+              aria-live="polite"
+            >
               <span className="text-green-700 font-medium">{validCount}</span> ready,{' '}
               <span className={errorCount ? 'text-red-700 font-medium' : ''}>
                 {errorCount}
@@ -245,7 +286,7 @@ export function ImportModal({
               <span>{submitError}</span>
             </div>
           )}
-          <div className="border border-gray-200 rounded-lg overflow-hidden max-h-72 overflow-y-auto">
+          <div className="border border-gray-200 rounded-lg max-h-72 overflow-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 sticky top-0">
                 <tr>
@@ -268,29 +309,47 @@ export function ImportModal({
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {preview.map((row) => (
-                  <tr
-                    key={row.rowNumber}
-                    className={row.error ? 'bg-red-50' : ''}
-                    title={row.error ?? ''}
-                  >
-                    <td className="px-2 py-1 text-xs text-gray-400 tabular-nums">
-                      {row.rowNumber}
-                    </td>
-                    <td className="px-2 py-1 truncate max-w-[200px]">{row.name}</td>
-                    <td className="px-2 py-1 text-xs text-gray-600">{row.unit}</td>
-                    <td className="px-2 py-1 tabular-nums">{row.price}</td>
-                    <td className="px-2 py-1 text-xs text-gray-600">{row.category}</td>
-                  </tr>
+                  <Fragment key={row.rowNumber}>
+                    <tr
+                      className={row.error ? 'bg-red-50' : ''}
+                      title={row.error ?? undefined}
+                    >
+                      <td className="px-2 py-1 text-xs text-gray-400 tabular-nums align-top">
+                        {row.rowNumber}
+                      </td>
+                      <td className="px-2 py-1 truncate max-w-[120px] sm:max-w-[200px] align-top">
+                        {row.name}
+                      </td>
+                      <td className="px-2 py-1 text-xs text-gray-600 align-top">
+                        {row.unit}
+                      </td>
+                      <td className="px-2 py-1 tabular-nums align-top">{row.price}</td>
+                      <td className="px-2 py-1 text-xs text-gray-600 align-top">
+                        {row.category}
+                      </td>
+                    </tr>
+                    {row.error && (
+                      <tr className="bg-red-50">
+                        <td colSpan={5} className="px-2 py-1 text-xs text-red-700">
+                          <AlertCircle
+                            className="inline w-3 h-3 mr-1 -mt-0.5"
+                            aria-hidden="true"
+                          />
+                          Row {row.rowNumber}: {row.error}
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
           </div>
-          {errorCount > 0 && (
-            <p className="text-xs text-gray-500">
-              Rows with errors will be skipped. Hover an error row for details.
+          {validCount === 0 && (
+            <p className="text-xs text-red-700">
+              No valid rows. Fix the errors or choose a different file.
             </p>
           )}
-          <div className="flex justify-between gap-2 pt-2">
+          <div className="flex flex-wrap justify-between gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={reset}>
               Choose a different file
             </Button>
@@ -311,27 +370,58 @@ export function ImportModal({
       )}
 
       {phase === 'submitting' && (
-        <p className="text-sm text-gray-600 py-6 text-center">Importing…</p>
+        <p
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          className="text-sm text-gray-600 py-6 text-center"
+        >
+          Importing…
+        </p>
       )}
 
       {phase === 'done' && result && (
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 px-3 py-3 rounded-lg bg-green-50 border border-green-200">
-            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-            <div className="text-sm text-green-800 space-y-0.5">
-              <p>
-                <span className="font-semibold">{result.created}</span> created
-              </p>
-              {result.reactivated > 0 && (
+        <div className="space-y-4" role="status" aria-live="polite">
+          <div
+            className={`flex items-start gap-3 px-3 py-3 rounded-lg border ${
+              allSkipped
+                ? 'bg-blue-50 border-blue-200'
+                : 'bg-green-50 border-green-200'
+            }`}
+          >
+            {allSkipped ? (
+              <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            )}
+            <div
+              className={`text-sm space-y-0.5 ${
+                allSkipped ? 'text-blue-800' : 'text-green-800'
+              }`}
+            >
+              {allSkipped ? (
                 <p>
-                  <span className="font-semibold">{result.reactivated}</span> reactivated
+                  Nothing new — all {result.skipped}{' '}
+                  {result.skipped === 1 ? 'row was' : 'rows were'} already in your list.
                 </p>
-              )}
-              {result.skipped > 0 && (
-                <p>
-                  <span className="font-semibold">{result.skipped}</span> skipped
-                  (already in list)
-                </p>
+              ) : (
+                <>
+                  <p>
+                    <span className="font-semibold">{result.created}</span> created
+                  </p>
+                  {result.reactivated > 0 && (
+                    <p>
+                      <span className="font-semibold">{result.reactivated}</span>{' '}
+                      reactivated
+                    </p>
+                  )}
+                  {result.skipped > 0 && (
+                    <p>
+                      <span className="font-semibold">{result.skipped}</span> skipped
+                      (already in list)
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>
