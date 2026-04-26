@@ -1,12 +1,13 @@
 # Energi Electric App — Product Brief v1
 
-**Status:** Draft v1.1 — based on two Joe–Kenny transcripts (2026-04-24). Dinner follow-up pending to close remaining Open Questions.
+**Status:** v1.3 — M3 (Materials + Quotes) functionally complete, M1 (Rebrand) closed. Joe can now build a quote and convert it to an invoice end-to-end. Awaiting Joe's contact info / SMTP / Stripe / Jobber export to unblock the remaining milestones.
 **Source of truth:** This file. ChatPRD mirror (uuid `eac959a6-cf89-4505-ac87-9874cd3dc694`) is now stale — re-sync manually if needed.
 
 **Changelog:**
 - v1.0 (2026-04-24): Initial draft from first transcript
 - v1.1 (2026-04-24): Incorporated second transcript — materials DB is internal (not customer-facing itemization), quote → invoice workflow confirmed, customer-facing invoice format simplified to "Provided material and labor for [description]"
 - v1.2 (2026-04-24): Joe's materials prototype source code received + archived at `docs/joe-materials-prototype.tsx`. Concrete data model, 59 seed materials, exact calc formula, markup/tax/labor rules pulled from prototype and codified. Corrected brand green to `#045815`. Kenny resolved: go-live date (ASAP), crew size (3-4), domain (keep Vercel URL), per-line markup (global only), invoice reminders (deferred to V2).
+- v1.3 (2026-04-25): M3 + M1 ship. Migration `010_materials_quotes.sql` applied to Supabase. 6 PRs merged (#47–#52): schema + 59 seed materials, materials admin CRUD with soft-delete reactivation, CSV import/export, full quote builder (line items, pricing knobs, live totals), quote→invoice conversion (lock-first single-flight, penny-precision invariant), and an M1 cleanup that landed the brand sweep (`#68BD45` → `#045815` across 51 files), the mobile admin nav drawer (hamburger + slide-in panel with focus trap, `inert` while closed), the schedule overflow fix, and the `/customers` dead-link replacement. Auto-grow (Ops #33) deferred — manual entry + CSV import covers V1. See `docs/session-log-2026-04-25.md` for the full record.
 
 ---
 
